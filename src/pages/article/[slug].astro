@@ -8,15 +8,26 @@ import BannerTitle from '../../components/BannerTitle.astro';
 import { replaceImageUrls } from '../../lib/utils';
 
 export async function getStaticPaths() {
-  const { data } = await client.query({
-    query: GET_ALL_POSTS,
-    variables: { first: 500 },
-  });
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_POSTS,
+      variables: { first: 500 },
+    });
 
-  return data.posts.nodes.map(page => ({
-    params: { slug: page?.slug },
-    props: { page },
-  }));
+    // Handle the case where no data is returned
+    if (!data || !data.posts) {
+      console.error('No posts data found');
+      return [];
+    }
+
+    return data.posts.nodes.map(page => ({
+      params: { slug: page?.slug },
+      props: { page },
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
 }
 
 const { slug } = Astro.params;
