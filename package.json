@@ -43,7 +43,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "serve": "serve ./dist",
+    "serve": "serve ./dist/client",
     "fetch-images": "node fetchAndSaveImages.js",
     "fetch-content-images": "node fetchAndSaveContentImages.js",
     "test": "jest",

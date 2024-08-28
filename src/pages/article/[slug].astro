@@ -1,6 +1,7 @@
 ---
+export const prerender = true;
 import client from '../../lib/apolloClient';
-import { GET_POSTS } from '../../lib/queries';
+import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
@@ -8,13 +9,13 @@ import { replaceImageUrls } from '../../lib/utils';
 
 export async function getStaticPaths() {
   const { data } = await client.query({
-    query: GET_POSTS,
-    variables: { first: 200 },
+    query: GET_ALL_POSTS,
+    variables: { first: 500 },
   });
 
   return data.posts.nodes.map(page => ({
     params: { slug: page?.slug },
-    props: { page },  // Passing the page data as props to the component
+    props: { page },
   }));
 }
 
@@ -22,13 +23,12 @@ const { slug } = Astro.params;
 
 // Fetch data for the specific page using the slug
 const { data } = await client.query({
-    query: GET_POSTS,
-    variables: { first: 200 },
+    query: GET_POST,
+    variables: { slug },
   });
 
-console.log('records returned');
-const page = data.posts.nodes.find(p => p.slug === slug);
-console.log('page');
+
+const page = data.postBy;
 
 if (!page) {
   throw new Error(`Post not found for slug: ${slug}`);

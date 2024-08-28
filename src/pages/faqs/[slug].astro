@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import FaqDisplay from '../../components/FaqDisplay.astro';
@@ -20,50 +21,50 @@ const { slug } = Astro.params;
 
 console.log('slug:', slug);
 
-let pageData;
+let page;
 
 try {
   const { data } = await client.query({
     query: GET_TEMPLATE,
     variables: { slug },
   });
-  pageData = data?.templateBy;
+  page = data?.templateBy;
 } catch (e) {
   console.error('Error fetching page data:', e);
 }
 
-if (!pageData) {
+if (!page) {
   // return Astro.redirect('/404');
 }
 
 let cleanContent = '';
 let faqTopicIds = [];
 
-if (pageData && pageData.content) {
+if (page && page.content) {
   // Extract FAQ topic IDs from content
   const shortcodeRegex = /<p>\[faq-term=(\d+)\]<\/p>/g;
   faqTopicIds = [];
 
   let match;
-  while ((match = shortcodeRegex.exec(pageData.content)) !== null) {
+  while ((match = shortcodeRegex.exec(page.content)) !== null) {
     faqTopicIds.push(parseInt(match[1]));
   }
 
-  cleanContent = pageData.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
+  cleanContent = page.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
 }
 ---
 
-<Layout title={pageData ? pageData.title : 'FAQ Page'} templateId={pageData?.databaseId}>
-  <BannerTitle title={pageData ? pageData.title : 'FAQ Page'} />
+<Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription}>
+  <BannerTitle title={page ? page.title : 'FAQ Page'} />
   <div class="main-body content">
-    {pageData && (
+    {page && (
       <>
-        {pageData.bannerImage && (
+        {page.bannerImage && (
           <Image
-            src={pageData.bannerImage.sourceUrl}
-            width={pageData.bannerImage.mediaDetails.width}
-            height={pageData.bannerImage.mediaDetails.height}
-            alt={pageData.title}
+            src={page.bannerImage.sourceUrl}
+            width={page.bannerImage.mediaDetails.width}
+            height={page.bannerImage.mediaDetails.height}
+            alt={page.title}
             class="w-full h-auto mb-8 rounded-lg shadow-md"
           />
         )}

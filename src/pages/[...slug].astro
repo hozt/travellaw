@@ -1,5 +1,6 @@
 ---
 // /pages/[...slug].astro
+export const prerender = true;
 import client from '../lib/apolloClient';
 import { GET_PAGES, GET_REDIRECTS } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
@@ -54,7 +55,6 @@ const page = data.pages.nodes.find(p => p.uri === fullPath);
 if (!page) {
   throw new Error(`Page not found for path: ${fullPath}`);
 }
-
 
 const {
   title,

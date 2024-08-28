@@ -24,7 +24,7 @@ if (!categories) {
 const title = page?.title || `Categories`;
 ---
 
-<Layout title={title}>
+<Layout title={title} description={page?.metaDescription}>
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}

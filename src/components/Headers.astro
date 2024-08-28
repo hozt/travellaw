@@ -3,18 +3,17 @@ import client from '../lib/apolloClient';
 import { Image } from 'astro:assets';
 import { GET_SITE_SETTINGS } from '../lib/queries';
 import Navigation from './Navigation.astro';
-
+import { localImage } from '../lib/utils';
 const { data } = await client.query({
   query: GET_SITE_SETTINGS,
 });
 
 const siteSettings = data?.customSiteSettings;
 
-
-const logoUrl = siteSettings?.logo?.sourceUrl || null;
+const logoUrl = siteSettings?.logo?.sourceUrl ? localImage(siteSettings?.logo?.sourceUrl, 'logos') : null;
 const logoWidth = siteSettings?.logo?.mediaDetails?.width || 150;
 const logoHeight = siteSettings?.logo?.mediaDetails?.height || 150;
-const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl || null;
+const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl ? localImage(siteSettings?.mobileLogo?.sourceUrl, 'logos') : null;
 const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || 150;
 const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || 150;
 const siteTitle = siteSettings?.siteTitle || '';

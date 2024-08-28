@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import BannerTitle from "../../components/BannerTitle.astro";
@@ -50,7 +51,7 @@ if (!posts) {
 
 ---
 
-<Layout title={title}>
+<Layout title={title} description={page?.metaDescription}>
   <Breadcrumb crumbs={[{ label: "Tag", path: "/tag" }, { label: title }]} />
   <BannerTitle
     title={title}

@@ -34,7 +34,7 @@ const updatedContent = await replaceImageUrls(content);
     <Seo title={title} description={metaDescription} />
   </head>
   <body class="front">
-    <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId}>
+    <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error.message}</div>}
       {!loading && !error && (

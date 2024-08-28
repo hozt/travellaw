@@ -1,5 +1,6 @@
 ---
 // src/pages/articles/[page].astro
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
 import ArticleList from "../../components/ArticleList.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
@@ -53,7 +54,7 @@ const totalPages =
 
 ---
 
-<Layout title={`${title} - Page ${currentPage}`}>
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription}>
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}

@@ -49,10 +49,14 @@ try {
   error = e.message;
 }
 
+if (!page) {
+  Astro.redirect('/404');
+}
+
 const title = page?.title || "Testimonials";
 ---
 
-<Layout title={title} templateId={page?.databaseId} class="testimonials">
+<Layout title={title} templateId={page?.databaseId} class="testimonials" description={page?.metaDescription}>
   {error ? (
     <p>Error: {error}</p>
   ) : (

@@ -31,7 +31,7 @@ import { config } from 'dotenv';
 const siteUrl = config().parsed.SITE_URL;
 const apiUrl = config().parsed.API_URL;
 
-export async function replaceImageUrls(content, localImageDir = 'public/images/content') {
+export async function replaceImageUrls(content, localImageDir = 'images/content') {
   const $ = cheerio.load(content);
 
   if (!fs.existsSync(localImageDir)) {
@@ -79,4 +79,13 @@ export async function replaceImageUrls(content, localImageDir = 'public/images/c
   await Promise.all(imagePromises);
 
   return $.html();
+}
+
+export function localImage(imageUrl, path) {
+  let imageLocal = '';
+
+  if (imageUrl) {
+    imageLocal = `/images/${path}/` + imageUrl.split('/').pop();
+  }
+  return imageLocal;
 }

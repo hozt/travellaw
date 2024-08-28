@@ -15,7 +15,7 @@ const template = templateData.templateBy;
 const title = template?.title || `Contact`;
 ---
 
-<Layout title={title}>
+<Layout title={title} description={template?.metaDescription}>
   <Breadcrumb crumbs={[{label: title }]} />
   <BannerTitle
     title={title}

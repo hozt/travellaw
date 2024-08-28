@@ -1,14 +1,14 @@
 ---
 import { Image } from 'astro:assets';
+import { localImage } from '../lib/utils';
+
 const { title, subtitle, image, width, height } = Astro.props;
 
 let imageLocal = '';
 
 if (image) {
-  imageLocal = `/public/images/banners/` + image.split('/').pop();
+  imageLocal = localImage(image, 'banners');
 }
-
-//import bannerImage from imageFile;
 
 const alt = title;
 

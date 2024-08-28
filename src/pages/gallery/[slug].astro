@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
 import { Image } from 'astro:assets';
 import client from '../../lib/apolloClient';
@@ -79,7 +80,7 @@ try {
 const title = gallery?.title || "Photo Gallery";
 ---
 
-<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId}>
+<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId} description={template?.metaDescription}>
   <Breadcrumb crumbs={[{ label: "Gallery", path: "/gallery" }, { label: title }]} />
     <BannerTitle
       title={title}

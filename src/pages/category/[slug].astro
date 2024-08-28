@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import BannerTitle from "../../components/BannerTitle.astro";
@@ -41,7 +42,7 @@ const categoryName = data?.category?.name;
 const title = page?.title || `Category ${categoryName}`;
 ---
 
-<Layout title={title}>
+<Layout title={title} templateId={page?.databaseId}>
   <Breadcrumb crumbs={[{ label: "Category", path: "/category" }, { label: title }]} />
   <BannerTitle
     title={title}

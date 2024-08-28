@@ -18,7 +18,7 @@ const videos = videosData.videos.nodes;
 const title = page?.title || `Video`;
 ---
 
-<Layout title={title}>
+<Layout title={title} templateId={page?.templateId} description={page?.metaDescription}>
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}

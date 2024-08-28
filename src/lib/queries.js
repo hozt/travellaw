@@ -135,24 +135,33 @@ export const GET_PAGES = gql`
   }
 `;
 
-export const GET_POSTS = gql`
+export const GET_ALL_POSTS = gql`
   query($first: Int!) {
     posts(first: $first, where: {status: PUBLISH}) {
       nodes {
         databaseId
-        subtitle
-        title
         slug
-        metaDescription
-        date
-        content
-        bannerImage {
-          altText
-          sourceUrl
-          mediaDetails {
-            width
-            height
-          }
+      }
+    }
+  }
+`;
+
+export const GET_POST = gql`
+  query($slug: String!) {
+    postBy(slug: $slug) {
+      databaseId
+      subtitle
+      title
+      slug
+      metaDescription
+      date
+      content
+      bannerImage {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
         }
       }
     }
@@ -295,6 +304,7 @@ export const GET_TEMPLATE = gql`
       databaseId
       content
       subtitle
+      metaDescription
       bannerImage {
         sourceUrl
         mediaDetails {
@@ -380,6 +390,7 @@ export const GET_FORM = gql`
       databaseId
       content
       subtitle
+      metaDescription
       bannerImage {
         sourceUrl
         mediaDetails {
