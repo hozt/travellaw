@@ -1,0 +1,46 @@
+.astro
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Dependency directories
+.pnp/
+.pnp.js
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
+# Astro cache
+astro/
+
+# Yarn or npm lock files
+yarn.lock
+package-lock.json
+
+# Build cache
+.cache/
+
+# Generated files
+*.tgz
+
+# Local configuration files
+*.local

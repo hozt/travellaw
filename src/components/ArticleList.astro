@@ -1,0 +1,34 @@
+---
+// src/components/ArticleList.astro
+
+const { articles } = Astro.props;
+---
+
+<div class="article-list">
+  {articles.map((article) => (
+    <article class="pb-4 mb-8 border-b article-preview">
+      <div class="text-lg font-semibold">
+        <a href={`/article/${article.slug}`} class="no-underline">
+          {article.title}
+        </a>
+      </div>
+      {article.excerpt && (
+        <div class="mb-4 text-gray-700" set:html={article.excerpt} />
+      )}
+      <div class="flex items-center justify-between text-sm text-gray-500">
+        {article.date && (
+          <time datetime={article.date}>
+            {new Date(article.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        )}
+        {article.author && (
+          <span>By {article.author.name}</span>
+        )}
+      </div>
+    </article>
+  ))}
+</div>

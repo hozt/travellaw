@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import FaqDisplay from '../../components/FaqDisplay.astro';
+import BannerTitle from '../../components/BannerTitle.astro';
+import client from '../../lib/apolloClient';
+import { GET_TEMPLATE, GET_FAQ_TOPICS } from '../../lib/queries';
+
+export async function getStaticPaths() {
+  const data = await client.query({
+    query: GET_FAQ_TOPICS,
+  });
+  const topics = data.data.faqTopics.nodes.filter(topic => topic.parentId === null);
+  return topics.map(topic => ({
+    params: { slug: topic.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+console.log('slug:', slug);
+
+let pageData;
+
+try {
+  const { data } = await client.query({
+    query: GET_TEMPLATE,
+    variables: { slug },
+  });
+  pageData = data?.templateBy;
+} catch (e) {
+  console.error('Error fetching page data:', e);
+}
+
+if (!pageData) {
+  // return Astro.redirect('/404');
+}
+
+let cleanContent = '';
+let faqTopicIds = [];
+
+if (pageData && pageData.content) {
+  // Extract FAQ topic IDs from content
+  const shortcodeRegex = /<p>\[faq-term=(\d+)\]<\/p>/g;
+  faqTopicIds = [];
+
+  let match;
+  while ((match = shortcodeRegex.exec(pageData.content)) !== null) {
+    faqTopicIds.push(parseInt(match[1]));
+  }
+
+  cleanContent = pageData.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
+}
+---
+
+<Layout title={pageData ? pageData.title : 'FAQ Page'} templateId={pageData?.databaseId}>
+  <BannerTitle title={pageData ? pageData.title : 'FAQ Page'} />
+  <div class="main-body content">
+    {pageData && (
+      <>
+        {pageData.bannerImage && (
+          <Image
+            src={pageData.bannerImage.sourceUrl}
+            width={pageData.bannerImage.mediaDetails.width}
+            height={pageData.bannerImage.mediaDetails.height}
+            alt={pageData.title}
+            class="w-full h-auto mb-8 rounded-lg shadow-md"
+          />
+        )}
+        <div class="mb-8" set:html={cleanContent}></div>
+        {faqTopicIds.length > 0 && (
+          <FaqDisplay faqTopicIds={faqTopicIds} />
+        )}
+      </>
+    )}
+  </div>
+</Layout>

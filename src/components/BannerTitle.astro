@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+const { title, subtitle, image, width, height } = Astro.props;
+
+let imageLocal = '';
+
+if (image) {
+  imageLocal = `/public/images/banners/` + image.split('/').pop();
+}
+
+//import bannerImage from imageFile;
+
+const alt = title;
+
+// Define the widths for responsive images
+const widths = [320, 768, 1024, 1440, 2000];
+
+// Define the formats to generate (e.g., webp, avif, jpg)
+const formats = ['avif', 'webp', 'jpg'];
+
+// Define the sizes attribute to make the image full width of the viewport
+const sizes = "100vw"; // This ensures the image takes up 100% of the viewport width
+---
+
+<div class={`banner relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
+  {imageLocal && (
+    <Image
+      src={imageLocal}
+      widths={widths}
+      formats={formats}
+      sizes={sizes}
+      alt={alt}
+      class="responsive-image"
+      width={width} || 500,
+      height={height} || 300
+    />
+  )}
+  <div class=`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`>
+    <h1 class="text-2xl text-center md:text-4xl">{title}</h1>
+    {subtitle && <h2 class="text-lg text-center md:text-xl">{subtitle}</h2>}
+  </div>
+</div>
+

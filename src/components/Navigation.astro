@@ -1,0 +1,37 @@
+---
+import client from '../lib/apolloClient';
+import { GET_MENU_ITEMS } from '../lib/queries';
+import CustomLink from './CustomLink.astro';
+
+const menuItemsToFetch = 100; // Adjust this number as needed
+
+const { data } = await client.query({
+  query: GET_MENU_ITEMS,
+  variables: { first: menuItemsToFetch },
+});
+
+const menuItems = data?.menuItems?.nodes || [];
+
+// Helper function to determine classes
+function getClassNames(item) {
+  const menuClass = `menu-${item.label.replace(/ /g, '-').toLowerCase()}`;
+  return `${item.cssClasses?.join(' ') || ''} ${item.childItems?.nodes?.length > 0 ? 'group ' : ''}${menuClass}`;
+}
+---
+
+<ul class="flex-wrap p-0 mx-auto list-none lg:flex main-menu md:justify-center">
+  {menuItems.map(item => !item.parentDatabaseId && (
+    <li class={getClassNames(item)} key={item.id}>
+      <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
+      {item.childItems?.nodes?.length > 0 && (
+        <ul class="sub-menu">
+          {item.childItems.nodes.map(child => (
+            <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+              <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>

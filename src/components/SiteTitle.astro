@@ -1,0 +1,13 @@
+---
+import client from '../lib/apolloClient';
+import { GET_SITE_TITLE } from '../lib/queries';
+
+// Fetch the data
+const { data } = await client.query({
+  query: GET_SITE_TITLE,
+});
+
+const siteTitle = data?.customSiteSettings?.siteTitle || null;
+---
+
+{siteTitle ? <span>{siteTitle}</span> : null}

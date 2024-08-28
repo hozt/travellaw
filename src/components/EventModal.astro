@@ -1,0 +1,30 @@
+---
+import dayjs from 'dayjs';
+
+const { event, onClose } = Astro.props;
+
+const imageData = event?.featuredImage ? event.featuredImage.node.sourceUrl : null;
+
+const formatDateTime = (datetime) => dayjs(datetime).format('MMMM D, YYYY h:mm A');
+const formatTime = (datetime) => dayjs(datetime).format('h:mm A');
+alert('Hello from EventModal.astro!');
+---
+
+<div
+  class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+>
+  <div class="w-3/4 max-w-xl p-6 bg-white rounded shadow-lg">
+    <h2 id="modal-title" class="mb-4 text-2xl font-bold">{event.title}</h2>
+    <p class="mb-2 text-sm">
+      {formatDateTime(event.startDatetime)} - {formatTime(event.endDatetime)}
+    </p>
+    {imageData && (
+      <img src={imageData} alt={event.title} class="mb-4" />
+    )}
+    <div class="mb-4 text-sm" innerHTML={event.content} />
+    <button class="px-4 py-2 text-white rounded bg-secondary" on:click={onClose}>Close</button>
+  </div>
+</div>

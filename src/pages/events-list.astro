@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Seo from '../components/Seo.astro';
+import BannerTitle from '../components/BannerTitle.astro';
+import EventList from '../components/EventList.astro';
+
+const title = "Event Calendar";
+---
+
+<Layout title={title} classes="events mb-8">
+  <Seo title={title} />
+  <BannerTitle title={title} />
+  <EventList />
+  <div class="mt-4 text-lg text-center">
+    <a href="/events/">Month View</a>
+  </div>
+</Layout>

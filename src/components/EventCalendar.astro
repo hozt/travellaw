@@ -1,0 +1,123 @@
+---
+import { GET_EVENTS } from '../lib/queries';
+import client from '../lib/apolloClient';
+
+const { data } = await client.query({
+  query: GET_EVENTS,
+});
+
+const events = data.events.nodes;
+const initialDate = new Date().toISOString();
+---
+
+<div id="calendar" class="max-w-4xl p-4 mx-auto">
+  <div class="flex items-center justify-between mb-4 text-sm">
+    <button id="prevMonth" class="w-20 px-2 py-1 text-white rounded bg-secondary">Previous</button>
+    <div id="currentMonthYear" class="text-2xl font-bold"></div>
+    <button id="nextMonth" class="w-20 px-2 py-1 text-white rounded bg-secondary">Next</button>
+  </div>
+  <div id="calendarGrid" class="grid grid-cols-7 gap-px border border-gray-300">
+    <!-- Calendar grid will be populated by JavaScript -->
+  </div>
+</div>
+
+<div id="modalContainer"></div>
+
+<script define:vars={{ events, initialDate }}>
+  // This script will load dayjs and then initialize our calendar
+  function loadDayjs(callback) {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/dayjs@1.8.21/dayjs.min.js';
+    script.onload = callback;
+    document.head.appendChild(script);
+  }
+
+  loadDayjs(() => {
+    let currentDate = dayjs(initialDate);
+
+    function updateCalendar() {
+      const currentMonthYear = document.getElementById('currentMonthYear');
+      currentMonthYear.textContent = currentDate.format('MMMM YYYY');
+
+      const calendarGrid = document.getElementById('calendarGrid');
+      calendarGrid.innerHTML = '';
+
+      const daysInMonth = currentDate.daysInMonth();
+      const firstDayOfMonth = currentDate.startOf('month').day();
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'border p-1 px-2 min-h-20 bg-neutral-50 border-gray-300';
+        calendarGrid.appendChild(emptyDay);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'border p-1 px-2 min-h-20 bg-neutral-50 border-gray-300';
+        dayElement.innerHTML = `<div class="font-bold">${day}</div>`;
+
+        const dayEvents = events.filter(event => {
+          const eventDate = dayjs(event.startDatetime);
+          return eventDate.month() === currentDate.month() &&
+                 eventDate.year() === currentDate.year() &&
+                 eventDate.date() === day;
+        });
+
+        dayEvents.forEach(event => {
+          const eventElement = document.createElement('div');
+          eventElement.className = 'event p-1 mb-2 bg-white border rounded cursor-pointer';
+          eventElement.innerHTML = `<div class="text-xs font-semibold">${event.title}</div>`;
+          eventElement.addEventListener('click', () => openModal(event));
+          dayElement.appendChild(eventElement);
+        });
+
+        calendarGrid.appendChild(dayElement);
+      }
+    }
+
+    function openModal(event) {
+      const modalContainer = document.getElementById('modalContainer');
+      modalContainer.innerHTML = `
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div class="p-4 bg-white rounded-lg">
+            <h2 class="text-xl font-bold">${event.title}</h2>
+            ${event.content ? `<div class="mt-2" set:html={event.content}></div>` : ''}
+            <button id="closeModal" class="px-4 py-2 mt-4 text-white bg-red-500 rounded">Close</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+    }
+
+    function closeModal() {
+      const modalContainer = document.getElementById('modalContainer');
+      modalContainer.innerHTML = '';
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentDate = currentDate.subtract(1, 'month');
+      updateCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentDate = currentDate.add(1, 'month');
+      updateCalendar();
+    });
+
+    // Check for event in URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventParam = urlParams.get('event');
+    if (eventParam) {
+      try {
+        const event = JSON.parse(decodeURIComponent(eventParam));
+        openModal(event);
+      } catch (error) {
+        console.error('Error parsing event from URL:', error);
+      }
+    }
+
+    // Initial calendar update
+    updateCalendar();
+  });
+</script>

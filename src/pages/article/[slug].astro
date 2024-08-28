@@ -1,0 +1,66 @@
+---
+import client from '../../lib/apolloClient';
+import { GET_POSTS } from '../../lib/queries';
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import BannerTitle from '../../components/BannerTitle.astro';
+import { replaceImageUrls } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_POSTS,
+    variables: { first: 200 },
+  });
+
+  return data.posts.nodes.map(page => ({
+    params: { slug: page?.slug },
+    props: { page },  // Passing the page data as props to the component
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Fetch data for the specific page using the slug
+const { data } = await client.query({
+    query: GET_POSTS,
+    variables: { first: 200 },
+  });
+
+console.log('records returned');
+const page = data.posts.nodes.find(p => p.slug === slug);
+console.log('page');
+
+if (!page) {
+  throw new Error(`Post not found for slug: ${slug}`);
+}
+
+let updatedContent = '';
+try {
+  updatedContent = await replaceImageUrls(page?.content);
+} catch (error) {
+  console.error('Error replacing image URLs:', error);
+}
+
+---
+
+<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="page">
+  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/1'}, { label: page?.title }]} />
+  <BannerTitle
+    title={page?.title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
+  />
+  <div class="main-body content">
+    {page?.featuredImage?.sourceUrl && (
+      <img
+        src={page?.featuredImage.sourceUrl}
+        alt={`Featured image for ${page?.title}`}
+        class="mb-4 ml-4 float-end"
+        width="400"
+      />
+    )}
+    <div set:html={updatedContent} />
+  </div>
+</Layout>

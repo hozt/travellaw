@@ -1,0 +1,31 @@
+---
+const { url, label, classes, indicator } = Astro.props;
+const apiUrl = import.meta.env.API_URL;
+
+function hasClassNoLink(classes) {
+  return classes && classes.includes("no-link");
+}
+
+function isExternalUrl(url) {
+  return /^(https?:|mailto:|tel:)/.test(url);
+}
+
+let adjustedUrl = url === '/index/' ? '/' : url.replace(apiUrl, '');
+
+---
+
+{!hasClassNoLink(classes) ? (
+  isExternalUrl(adjustedUrl) ? (
+    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={classes?.join(' ')}>
+      {label} {indicator && <span class="indicator"></span>}
+    </a>
+  ) : (
+    <a href={adjustedUrl} class={classes?.join(' ')}>
+      {label} {indicator && <span class="indicator"></span>}
+    </a>
+  )
+) : (
+  <span class={`${classes?.join(' ')}`}>
+    {label} {indicator && <span class="indicator"></span>}
+  </span>
+)}

@@ -1,0 +1,80 @@
+---
+import client from '../lib/apolloClient';
+import Layout from "../layouts/Layout.astro";
+import BannerTitle from "../components/BannerTitle.astro";
+import pkg from '@apollo/client';
+const { gql } = pkg;
+
+const GET_TESTIMONIALS_AND_TEMPLATE = gql`
+  query MyQuery {
+    testimonials(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
+      edges {
+        node {
+          databaseId
+          title
+          content
+          source
+        }
+      }
+    }
+    templateBy(templateId: 10, slug: "testimontials") {
+      title
+      subtitle
+      bannerImage {
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+let testimonials = [];
+let page = null;
+let error = null;
+
+try {
+  // Fetch data using the Apollo Client
+  const { data } = await client.query({
+    query: GET_TESTIMONIALS_AND_TEMPLATE,
+    fetchPolicy: 'cache-first', // Use cache if available
+  });
+
+  testimonials = data.testimonials.edges;
+  page = data.templateBy;
+} catch (e) {
+  console.error('Error fetching data:', e);
+  error = e.message;
+}
+
+const title = page?.title || "Testimonials";
+---
+
+<Layout title={title} templateId={page?.databaseId} class="testimonials">
+  {error ? (
+    <p>Error: {error}</p>
+  ) : (
+    <>
+      <BannerTitle
+        title={title}
+        subtitle={page?.subtitle}
+        image={page?.bannerImage?.sourceUrl}
+        width={page?.bannerImage?.mediaDetails?.width}
+        height={page?.bannerImage?.mediaDetails?.height}
+      />
+      <div class="main-body testimonials-wrapper">
+        <div class="space-y-8">
+          {testimonials.map(({ node }) => (
+            <div key={node.databaseId} class="testimonial">
+              <h2>{node.title}</h2>
+              <div class="testimonial-content" set:html={node.content} />
+              <p class="testimonial-source">- {node.source}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )}
+</Layout>

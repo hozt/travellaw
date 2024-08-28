@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+const { post, isLast } = Astro.props;
+
+const {
+  title,
+  excerpt,
+  slug,
+  featuredImage
+} = post;
+
+const imageUrl = featuredImage?.node?.sourceUrl;
+let imageLocal = '';
+if (imageUrl) {
+    imageLocal = `/public/images/featured/` + imageUrl.split('/').pop();
+}
+const altText = featuredImage?.node?.altText || title;
+const imageWidth = featuredImage?.node?.mediaDetails?.width || 150;
+const imageHeight = featuredImage?.node?.mediaDetails?.height || 150;
+---
+
+<article class={`flex post-preview ${isLast ? 'mb-0' : 'mb-6'}`}>
+  {imageUrl && (
+    <Image
+      src={imageLocal}
+      alt={altText}
+      width=120
+      height=120
+      format="webp"
+    />
+  )}
+  <div>
+    <div class="post-title"><a href={`/article/${slug}`} class="no-link">{title}</a></div>
+    <div class="post-excerpt" set:html={excerpt} />
+    <div class="post-read-more">
+      <a href={`/article/${slug}`} class="read-more">Read More</a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,19 @@
+---
+const { terms } = Astro.props;
+
+if (!terms || !terms.nodes) return null;
+
+const tags = terms.nodes.filter(term => term.nodeType === "Tag");
+if (tags.length === 0) {
+  return null;
+}
+---
+
+<div class="tags">
+  <span class="mr-4 font-semibold">Tags:</span>
+  {tags.map(tag => (
+    <a href={tag.link} class="mr-4 tag-link" key={tag.slug}>
+      {tag.name}
+    </a>
+  ))}
+</div>

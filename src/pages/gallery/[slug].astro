@@ -1,0 +1,179 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Image } from 'astro:assets';
+import client from '../../lib/apolloClient';
+import { gql } from '@apollo/client/core';
+import BannerTitle from "../../components/BannerTitle.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+
+export async function getStaticPaths() {
+  const GET_GALLERY_SLUGS = gql`
+    query GetGallerySlugs {
+      galleries {
+        nodes {
+          slug
+        }
+      }
+      templateBy(slug: "gallery") {
+        databaseId
+        title
+        subtitle
+        bannerImage {
+            sourceUrl
+            mediaDetails {
+                width
+                height
+                }
+            }
+        }
+    }
+  `;
+
+  const { data } = await client.query({
+    query: GET_GALLERY_SLUGS,
+  });
+
+  return data.galleries.nodes.map((gallery) => ({
+    params: { slug: gallery.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const GET_GALLERY = gql`
+  query GetGallery($slug: String!) {
+    galleryBy(slug: $slug) {
+      title
+      content
+      databaseId
+      galleryImages {
+        sourceUrl
+        mediaDetails {
+          height
+          width
+        }
+      }
+    }
+  }
+`;
+
+let gallery = null;
+let error = null;
+let template = null;
+
+try {
+  const { data } = await client.query({
+    query: GET_GALLERY,
+    variables: { slug },
+    fetchPolicy: 'cache-first',
+  });
+
+  gallery = data.galleryBy;
+  template = data.templateBy;
+  console.log('template', template);
+} catch (e) {
+  console.error('Error fetching gallery data:', e);
+  error = e.message;
+}
+
+const title = gallery?.title || "Photo Gallery";
+---
+
+<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId}>
+  <Breadcrumb crumbs={[{ label: "Gallery", path: "/gallery" }, { label: title }]} />
+    <BannerTitle
+      title={title}
+      subtitle={template?.subtitle}
+      image={template?.bannerImage?.sourceUrl}
+      width={template?.bannerImage?.mediaDetails?.width}
+      height={template?.bannerImage?.mediaDetails?.height}
+    />
+  {error ? (
+    <p class="mt-8 text-xl text-center text-red-500">{error}</p>
+  ) : (
+    <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      {gallery?.content && (
+        <div class="mb-8 prose max-w-none" set:html={gallery.content} />
+      )}
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {gallery?.galleryImages?.map((image, index) => (
+          <div class="overflow-hidden transition-transform duration-300 rounded-lg shadow-md cursor-pointer hover:scale-105">
+            <Image
+              src={image.sourceUrl}
+              alt={`Gallery image ${index + 1}`}
+              width={image.mediaDetails.width}
+              height={image.mediaDetails.height}
+              class="object-cover w-full h-auto"
+              loading={index < 4 ? "eager" : "lazy"}
+              data-index={index}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</Layout>
+
+<div id="lightbox" class="fixed inset-0 z-50 items-center justify-center hidden bg-black bg-opacity-90">
+  <button id="prevButton" class="absolute text-4xl text-white transform -translate-y-1/2 left-4 top-1/2">&lt;</button>
+  <img id="lightboxImage" src="" alt="Lightbox image" class="max-h-[90vh] max-w-[90vw] object-contain" />
+  <button id="nextButton" class="absolute text-4xl text-white transform -translate-y-1/2 right-4 top-1/2">&gt;</button>
+  <button id="closeButton" class="absolute text-4xl text-white top-4 right-4">&times;</button>
+</div>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = document.getElementById('lightboxImage');
+  const prevButton = document.getElementById('prevButton');
+  const nextButton = document.getElementById('nextButton');
+  const closeButton = document.getElementById('closeButton');
+  const galleryImages = document.querySelectorAll('.grid img');
+  let currentIndex = 0;
+
+  function openLightbox(index) {
+    currentIndex = index;
+    const image = galleryImages[index];
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt;
+    lightbox.classList.remove('hidden');
+    lightbox.classList.add('flex');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.add('hidden');
+    lightbox.classList.remove('flex');
+  }
+
+  function showNextImage() {
+    currentIndex = (currentIndex + 1) % galleryImages.length;
+    openLightbox(currentIndex);
+  }
+
+  function showPrevImage() {
+    currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+    openLightbox(currentIndex);
+  }
+
+  galleryImages.forEach((img, index) => {
+    img.addEventListener('click', () => openLightbox(index));
+  });
+
+  closeButton.addEventListener('click', closeLightbox);
+  nextButton.addEventListener('click', showNextImage);
+  prevButton.addEventListener('click', showPrevImage);
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('hidden')) {
+      if (e.key === 'ArrowRight') showNextImage();
+      if (e.key === 'ArrowLeft') showPrevImage();
+      if (e.key === 'Escape') closeLightbox();
+    }
+  });
+</script>

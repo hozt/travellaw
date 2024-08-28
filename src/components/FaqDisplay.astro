@@ -1,0 +1,62 @@
+---
+import client from '../lib/apolloClient';
+import { GET_FAQS } from '../lib/queries';
+
+export interface FaqDisplayProps {
+  faqTopicIds: number[];
+}
+
+const { faqTopicIds } = Astro.props;
+
+const { data } = await client.query({
+  query: GET_FAQS
+});
+
+if (!data || !data.faqTopics || !data.faqs) {
+  console.error('No FAQ data returned from the query');
+}
+
+// Filter and group FAQs client-side
+const groupedFaqs = faqTopicIds.map(id => {
+  const topic = data.faqTopics.nodes.find(topic => topic.faqTopicId === id);
+  const topicFaqs = data.faqs.nodes.filter(faq =>
+    faq.faqTopics.nodes.some(faqTopic => faqTopic.databaseId === id)
+  );
+
+  return {
+    id,
+    name: topic?.name || `Topic ${id}`,
+    description: topic?.description || '',
+    count: topic?.count || 0,
+    faqs: topicFaqs
+  };
+});
+
+---
+
+<div>
+  {groupedFaqs.length > 0 ? (
+    groupedFaqs.map(group => (
+      <div key={group.id} class="mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">{group.name}</h2>
+        <p class="mb-2 text-gray-600">{group.description}</p>
+        {group.faqs.length > 0 ? (
+          <div class="mt-4">
+            {group.faqs.map(faq => (
+              <details key={faq.faqId} class="mb-4 faq-item">
+                <summary class="text-lg font-medium text-blue-600 cursor-pointer hover:text-blue-800">
+                  {faq.title}
+                </summary>
+                <div class="mt-2 text-gray-700 faq-content" set:html={faq.content}></div>
+              </details>
+            ))}
+          </div>
+        ) : (
+          <p class="text-gray-500">No FAQs available for this topic.</p>
+        )}
+      </div>
+    ))
+  ) : (
+    <p class="text-center text-gray-500">No FAQ topics found.</p>
+  )}
+</div>

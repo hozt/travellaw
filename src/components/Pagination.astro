@@ -1,0 +1,31 @@
+---
+const { currentPage, totalPages } = Astro.props;
+
+const isFirst = currentPage === 1;
+const isLast = currentPage === totalPages;
+const prevPage = currentPage - 1;
+const nextPage = currentPage + 1;
+---
+
+<nav aria-label="Article pagination" class="flex items-center justify-center mt-8 mb-2 space-x-2 md:space-x-4 pagination">
+  <div class="flex items-center space-x-1">
+    {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+      <a
+        href={`/articles/${num}`}
+        aria-current={currentPage === num ? 'page' : undefined}
+        class={`flex items-center ${currentPage === num ? 'pagination-active' : 'pagination-non-active'}`}
+      >
+        {num}
+      </a>
+    ))}
+  </div>
+
+  <div class="flex items-center">
+    {!isLast && (
+      <a rel="next" href={`/articles/${nextPage}`} class="flex items-center pagination-next">
+        Next
+        <span class="icon-[mdi--navigate-next] icon text-3xl"></span>
+      </a>
+    )}
+  </div>
+</nav>

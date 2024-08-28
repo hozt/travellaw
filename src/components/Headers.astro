@@ -1,0 +1,76 @@
+---
+import client from '../lib/apolloClient';
+import { Image } from 'astro:assets';
+import { GET_SITE_SETTINGS } from '../lib/queries';
+import Navigation from './Navigation.astro';
+
+const { data } = await client.query({
+  query: GET_SITE_SETTINGS,
+});
+
+const siteSettings = data?.customSiteSettings;
+
+
+const logoUrl = siteSettings?.logo?.sourceUrl || null;
+const logoWidth = siteSettings?.logo?.mediaDetails?.width || 150;
+const logoHeight = siteSettings?.logo?.mediaDetails?.height || 150;
+const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl || null;
+const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || 150;
+const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || 150;
+const siteTitle = siteSettings?.siteTitle || '';
+---
+
+<div class="mx-auto top-header">
+  <div class="flex items-center justify-center">
+    <button
+      id="menu-toggle"
+      class="w-10 py-2 ml-2 text-4xl lg:hidden"
+      aria-label="Toggle Menu"
+    >
+      <span id="menu-icon" class="icon-[mdi--menu]"></span>
+    </button>
+
+    <a href="/">
+      {mobileLogoUrl && (
+        <Image
+          src={mobileLogoUrl}
+          alt={siteTitle}
+          class="w-full lg:hidden logo-mobile"
+          format="webp"
+          width={mobileLogoWidth}
+          height={mobileLogoHeight}
+        />
+      )}
+      {logoUrl && (
+        <Image
+          src={logoUrl}
+          alt={siteTitle}
+          class="hidden logo-desktop lg:block"
+          format="webp"
+          width={logoWidth}
+          height={logoHeight}
+        />
+      )}
+    </a>
+  </div>
+  <nav id="main-nav" class="hidden lg:block">
+    <Navigation class="flex-wrap p-0 mx-auto list-none lg:flex main-menu md:justify-center" />
+  </nav>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuIcon = document.getElementById('menu-icon');
+    const mainNav = document.getElementById('main-nav');
+    if (!menuToggle || !menuIcon || !mainNav) return;
+
+    menuToggle.addEventListener('click', () => {
+      const isExpanded = mainNav.classList.contains('block');
+      mainNav.classList.toggle('block', !isExpanded);
+      mainNav.classList.toggle('hidden', isExpanded);
+      menuIcon.classList.toggle('icon-[mdi--menu]', isExpanded);
+      menuIcon.classList.toggle('icon-[mdi--close]', !isExpanded);
+    });
+  });
+</script>

@@ -1,0 +1,91 @@
+---
+// /pages/[...slug].astro
+import client from '../lib/apolloClient';
+import { GET_PAGES, GET_REDIRECTS } from '../lib/queries';
+import Layout from '../layouts/Layout.astro';
+import BannerTitle from '../components/BannerTitle.astro';
+import { replaceImageUrls } from '../lib/utils';
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_PAGES,
+    variables: { first: 200 },
+  });
+
+  return data.pages.nodes.map(page => {
+    const slugArray = page.uri.split('/').filter(Boolean);
+    return {
+      params: { slug: slugArray.join('/') }, // Join the slug array into a single string
+      props: { page },
+    };
+  });
+}
+
+const { slug } = Astro.params; // This is a string in Astro
+const fullPath = `/${slug}/`; // Ensure it has leading and trailing slashes
+
+// Fetch pages and redirects data
+const { data } = await client.query({
+  query: GET_PAGES,
+  variables: { first: 200 }, // Fetch the first 200 pages
+});
+
+const { data: redirectData } = await client.query({
+  query: GET_REDIRECTS,
+});
+
+// Check for redirects
+const redirect = redirectData.redirects.find(r =>
+  r.old_url === fullPath // Directly compare the string paths
+);
+
+// If a redirect match is found, perform the redirect
+if (redirect) {
+  return {
+    redirect: {
+      destination: redirect.new_url,
+      statusCode: redirect.status_code || 301, // Default to 301 if no status code is provided
+    },
+  };
+}
+
+const page = data.pages.nodes.find(p => p.uri === fullPath);
+
+if (!page) {
+  throw new Error(`Page not found for path: ${fullPath}`);
+}
+
+
+const {
+  title,
+  subtitle,
+  content,
+  bannerImage,
+  featuredImage,
+  metaDescription,
+  databaseId
+} = page;
+
+const updatedContent = await replaceImageUrls(content);
+---
+
+<Layout pageId={databaseId} title={title} description={metaDescription} classes="page">
+  <BannerTitle
+    title={title}
+    subtitle={subtitle}
+    image={bannerImage?.sourceUrl}
+    width={bannerImage?.mediaDetails?.width}
+    height={bannerImage?.mediaDetails?.height}
+  />
+  <div class="main-body content">
+    {featuredImage?.node?.sourceUrl && (
+      <img
+        src={featuredImage.node.sourceUrl}
+        alt={`Featured image for ${title}`}
+        class="mb-4 ml-4 float-end"
+        width="400"
+      />
+    )}
+    <div set:html={updatedContent} />
+  </div>
+</Layout>

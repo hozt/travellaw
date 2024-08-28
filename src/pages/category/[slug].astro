@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import BannerTitle from "../../components/BannerTitle.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import client from "../../lib/apolloClient";
+import {
+  GET_POSTS_BY_CATEGORY,
+  GET_CATEGORIES,
+  GET_TEMPLATE,
+} from "../../lib/queries";
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_CATEGORIES,
+    variables: { first: 200 },
+  });
+
+  return data.categories.nodes.map((page) => ({
+    params: { slug: page.slug },
+    props: { page }, // Passing the page data as props to the component
+  }));
+}
+
+const { data: templateData } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: "video" },
+});
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+    query: GET_POSTS_BY_CATEGORY,
+    variables: { slug },
+});
+
+const page = templateData.templateBy;
+const posts = data?.category?.posts?.nodes;
+const categoryName = data?.category?.name;
+
+const title = page?.title || `Category ${categoryName}`;
+---
+
+<Layout title={title}>
+  <Breadcrumb crumbs={[{ label: "Category", path: "/category" }, { label: title }]} />
+  <BannerTitle
+    title={title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails.width}
+    height={page?.bannerImage?.mediaDetails.height}
+  />
+  <div class="container mx-auto">
+    {page?.content && <div class="content" set:html={page?.content} />}
+
+    <div class="category">
+      {
+        posts.map((post) => (
+          <div key={post.databaseId} class="pb-4 border-b-2 blog-post">
+            <h3 class="mb-2">
+              <a href={`/article/${post.slug}`} class="no-underline">
+                {post.title}
+              </a>
+            </h3>
+            <div class="flex">
+              {post.featuredImage && (
+                <a href={`/article/${post.slug}`}>
+                  <Image
+                    src={post.featuredImage.node.sourceUrl}
+                    width={150}
+                    height={150}
+                    alt={`Featured image for ${post.title}`}
+                    class="w-24 mr-4 lg:w-32"
+                  />
+                </a>
+              )}
+              <div class="">
+                <div class="flex-grow blog-excerpt" set:html={post.excerpt} />
+                <div class="mt-4 uppercase">
+                  <a href={`/article/${post.slug}`} class="no-underline">
+                    Read
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Layout>

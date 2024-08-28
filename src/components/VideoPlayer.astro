@@ -1,0 +1,46 @@
+---
+import { YouTube } from '@astro-community/astro-embed-youtube';
+import { Vimeo } from '@astro-community/astro-embed-vimeo';
+
+interface Props {
+  url: string;
+  title?: string;
+  width?: string;
+}
+
+const { url, title, width } = Astro.props;
+
+function getVideoType(url: string): 'youtube' | 'vimeo' | null {
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return 'youtube';
+  } else if (url.includes('vimeo.com')) {
+    return 'vimeo';
+  }
+  return null;
+}
+
+function getVideoId(url: string, type: 'youtube' | 'vimeo'): string | null {
+  const regex = type === 'youtube'
+    ? /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+    : /vimeo\.com\/(?:.*#|.*\/videos?\/)?([0-9]+)/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+const videoType = getVideoType(url);
+const videoId = videoType ? getVideoId(url, videoType) : null;
+---
+
+<div class={`video-player ${width}`}>
+    <div class="relative w-full">
+        {videoType === 'youtube' && videoId && (
+            <YouTube id={videoId} class="mx-auto" />
+        )}
+        {videoType === 'vimeo' && videoId && (
+            <Vimeo id={videoId} class="mx-auto" />
+        )}
+        {!videoType && (
+            <p>Unsupported video URL</p>
+        )}
+    </div>
+</div>

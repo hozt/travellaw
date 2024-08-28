@@ -1,0 +1,62 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BannerTitle from "../../components/BannerTitle.astro";
+import VideoPlayer from "../../components/VideoPlayer.astro";
+import client from '../../lib/apolloClient';
+import { gql } from '@apollo/client/core';
+
+export async function getStaticPaths() {
+  const GET_VIDEO_SLUGS = gql`
+    query VideoSlugs {
+      videos {
+        nodes {
+          slug
+        }
+      }
+    }`;
+
+  const { data } = await client.query({
+    query: GET_VIDEO_SLUGS,
+  });
+
+  return data.videos.nodes.map((video) => ({
+    params: { slug: video.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const GET_VIDEO = gql`
+  query GetVideo($slug: String!) {
+    videoBy(slug: $slug) {
+      title
+      content
+      videoUrl
+    }
+  }
+`;
+
+let video = null;
+let error = null;
+
+try {
+  const { data } = await client.query({
+    query: GET_VIDEO,
+    variables: { slug },
+    fetchPolicy: 'cache-first',
+  });
+
+  video = data.videoBy;
+} catch (e) {
+  console.error('Error fetching video data:', e);
+  error = e.message;
+}
+
+---
+
+<Layout title={video?.title} postId={video?.databaseId} classes="video">
+  <BannerTitle title={video?.title} subtitle={video?.subtitle} />
+  <div class="">
+    <VideoPlayer url={video?.videoUrl} title={video?.title} width="max-w-auto" />
+  </div>
+</Layout>

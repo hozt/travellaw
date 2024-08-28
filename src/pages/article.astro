@@ -1,0 +1,8 @@
+---
+// src/pages/articles/index.astro
+import { fetchArticles } from '../lib/api';
+export const prerender = false;
+
+const articles = await fetchArticles(1);
+return Astro.redirect('/articles/1');
+---
