@@ -1,6 +1,10 @@
 import pkg from '@apollo/client';
 const graphQL = import.meta.env.GRAPHQL_URL;
 
+if (!graphQL) {
+  throw new Error('GRAPHQL_URL environment variable is not set');
+}
+
 const { ApolloClient, InMemoryCache } = pkg;
 
 const client = new ApolloClient({
