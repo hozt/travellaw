@@ -6,7 +6,7 @@ import * as cheerio from 'cheerio';
 import { config } from 'dotenv';
 
 config(); // Load environment variables
-const endpoint = process.env.GRAPHQL_URL;
+const endpoint = 'https://travellaw.hozt.com/graphql'; //process.env.GRAPHQL_URL;
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
