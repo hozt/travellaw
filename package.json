@@ -8,20 +8,18 @@
     "@astro-community/astro-embed-youtube": "^0.5.3",
     "@astrojs/cloudflare": "^11.0.4",
     "@astrojs/node": "^8.3.3",
-    "@astrojs/react": "^3.6.2",
     "@astrojs/sitemap": "^3.1.6",
+    "@astrojs/tailwind": "^5.1.0",
     "@iconify-json/map": "^1.1.10",
     "@iconify-json/mdi": "^1.1.68",
     "@iconify/tailwind": "^1.1.2",
     "astro-compress": "^2.3.1",
-    "axios": "^1.7.3",
     "dayjs": "^1.11.13",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
     "js-cookie": "^3.0.5",
     "node-html-parser": "^6.1.13",
     "serve": "^14.2.3",
-    "sharp": "^0.33.4",
     "wrangler": "^3.72.3"
   },
   "devDependencies": {
@@ -29,17 +27,13 @@
     "astro": "^4.13.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",
-    "sass": "^1.77.8",
-    "tailwindcss": "^3.4.9"
+    "sass": "^1.77.8"
   },
   "scripts": {
     "dev": "astro dev",
     "build": "npm run fetch-images && astro build",
-    "preview": "astro preview",
     "serve": "serve ./dist",
     "fetch-images": "node fetchAndSaveImages.js",
-    "fetch-content-images": "node fetchAndSaveContentImages.js",
-    "test": "jest",
     "clean": "rm -rf dist .astro node_modules/.vite"
   }
 }

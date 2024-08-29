@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
 
 const graphQL = import.meta.env.GRAPHQL_URL;
 

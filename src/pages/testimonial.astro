@@ -2,33 +2,7 @@
 import client from '../lib/apolloClient';
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import { gql } from '@apollo/client';
-
-const GET_TESTIMONIALS_AND_TEMPLATE = gql`
-  query MyQuery {
-    testimonials(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
-      edges {
-        node {
-          databaseId
-          title
-          content
-          source
-        }
-      }
-    }
-    templateBy(templateId: 10, slug: "testimontials") {
-      title
-      subtitle
-      bannerImage {
-        sourceUrl
-        mediaDetails {
-          width
-          height
-        }
-      }
-    }
-  }
-`;
+import { GET_TESTIMONIALS_AND_TEMPLATE } from "../lib/queries";
 
 let testimonials = [];
 let page = null;

@@ -6,7 +6,6 @@ let isSubmitted = false;
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
-  console.log('formData', formData);
   const turnstileResponse = formData.get('cf-turnstile-response');
 
   try {

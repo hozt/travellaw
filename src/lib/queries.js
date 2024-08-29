@@ -1,4 +1,5 @@
-import { gql } from '@apollo/client';
+
+import { gql } from '@apollo/client/core';
 
 export const GET_PAGE_DATA = gql`
   query GetIndexPage {
@@ -186,7 +187,6 @@ export const GET_POSTS_EXCERPTS = gql`
     }
   }
 `;
-
 
 export const GET_POSTS_BY_CATEGORY = gql`
   query GET_POSTS_BY_CATEGORY($slug: ID!) {
@@ -407,6 +407,91 @@ export const GET_REDIRECTS = gql`
       new_url
       old_url
       status_code
+    }
+  }
+`;
+
+export const GET_TESTIMONIALS_AND_TEMPLATE = gql`
+  query {
+    testimonials(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
+      edges {
+        node {
+          databaseId
+          title
+          content
+          source
+        }
+      }
+    }
+    templateBy(templateId: 10, slug: "testimontials") {
+      title
+      subtitle
+      bannerImage {
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+export const GET_VIDEO_SLUGS = gql`
+  query VideoSlugs {
+    videos {
+      nodes {
+        slug
+      }
+    }
+  }
+`;
+
+export const GET_VIDEO = gql`
+  query GetVideo($slug: String!) {
+    videoBy(slug: $slug) {
+      title
+      content
+      videoUrl
+    }
+  }
+`;
+
+export const GET_GALLERY_SLUGS = gql`
+  query GetGallerySlugs {
+    galleries {
+      nodes {
+        slug
+      }
+    }
+    templateBy(slug: "gallery") {
+      databaseId
+      title
+      subtitle
+      bannerImage {
+          sourceUrl
+          mediaDetails {
+              width
+              height
+              }
+          }
+      }
+  }
+`;
+
+export const GET_GALLERY = gql`
+  query GetGallery($slug: String!) {
+    galleryBy(slug: $slug) {
+      title
+      content
+      databaseId
+      galleryImages {
+        sourceUrl
+        mediaDetails {
+          height
+          width
+        }
+      }
     }
   }
 `;

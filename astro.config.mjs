@@ -1,7 +1,8 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'vite';
 import Compress from "astro-compress";
 import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
+import tailwind from "@astrojs/tailwind";
 
 const site = process.env.SITE_URL || 'https://travellaw.com';
 
@@ -12,7 +13,8 @@ export default defineConfig({
   },
   integrations: [
     Compress(),
-    sitemap()
+    sitemap(),
+    tailwind()
   ],
   site: site,
   adapter: cloudflare(),
