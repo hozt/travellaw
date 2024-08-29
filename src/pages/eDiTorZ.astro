@@ -1,0 +1,15 @@
+---
+export const prerender = false;
+
+const editorKey = import.meta.env.EDITOR_KEY;
+
+if (Astro.request.method === 'GET') {
+  const response = Astro.response;
+
+  // Set the cookie
+  response.headers.set('Set-Cookie', `isEditor=${editorKey}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`);
+
+  // Redirect to another page after setting the cookie
+  return Astro.redirect('/', 303);
+}
+---
