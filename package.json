@@ -33,7 +33,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run fetch-images && astro build",
     "preview": "astro preview",
     "serve": "serve ./dist",
     "fetch-images": "node fetchAndSaveImages.js",
