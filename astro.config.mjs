@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import Compress from "astro-compress";
 import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
@@ -6,6 +7,7 @@ export default defineConfig({
   build: {
     format: 'directory'
   },
+  integrations: [Compress()],
   adapter: cloudflare(),
   vite: {
     define: {

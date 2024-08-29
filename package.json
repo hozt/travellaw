@@ -12,6 +12,7 @@
     "@iconify-json/map": "^1.1.10",
     "@iconify-json/mdi": "^1.1.68",
     "@iconify/tailwind": "^1.1.2",
+    "astro-compress": "^2.3.1",
     "axios": "^1.7.3",
     "dayjs": "^1.11.13",
     "graphql": "^16.9.0",

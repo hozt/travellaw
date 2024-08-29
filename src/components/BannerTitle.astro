@@ -27,11 +27,12 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
     <Image
       src={imageLocal}
       widths={widths}
-      formats={formats}
       sizes={sizes}
       alt={alt}
       class="responsive-image"
       width={width} || 500,
+      decoding="async"
+      loading="lazy"
       height={height} || 300
     />
   )}
