@@ -5,19 +5,27 @@ let serverError = '';
 let isSubmitted = false;
 
 if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  const turnstileResponse = formData.get('cf-turnstile-response');
-
   try {
+    const formData = await Astro.request.formData();
+    const turnstileResponse = formData.get('cf-turnstile-response');
+
     const response = await fetch('/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...formData, 'cf-turnstile-response': turnstileResponse }),
+      body: JSON.stringify({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        message: formData.get('message'),
+        'cf-turnstile-response': turnstileResponse,
+      }),
     });
-  //
-  if (!response.ok) {
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
       throw new Error('Failed to send email');
     }
 
@@ -26,113 +34,67 @@ if (Astro.request.method === 'POST') {
       throw new Error(result.error);
     }
 
-    // setIsSubmitted(true);
+    isSubmitted = true;
   } catch (error) {
     console.error('Error:', error);
-    // setError(error.message);
-  } finally {
-    console.log('finally');
-    // setIsSubmitting(false);
-    //isSubmittingRef.current = false;
-  }
-};
-/*
-    // Validate Turnstile response
-    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
-    const turnstileValidation = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        secret: turnstileSecret,
-        response: turnstileResponse,
-      }),
-    });
-
-    const turnstileResult = await turnstileValidation.json();
-
-    if (!turnstileResult.success) {
-      throw new Error('Turnstile validation failed');
-    }
-
-    // Here you would handle the form submission, e.g., sending an email
-    isSubmitted = true;
-
-    // Return a JSON response
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (error) {
     serverError = error.message;
-    // Return a JSON response for errors too
-    return new Response(JSON.stringify({ success: false, error: serverError }), {
-      status: 400,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
   }
 }
-  */
 
 const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <div class="max-w-lg p-6 mx-auto">
-    {isSubmitted ? (
-      <div class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
-        <strong class="font-bold">Success!</strong>
-        <span class="block sm:inline"> Your message has been sent.</span>
+  {isSubmitted ? (
+    <div class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
+      <strong class="font-bold">Success!</strong>
+      <span class="block sm:inline"> Your message has been sent.</span>
+    </div>
+  ) : (
+    <form method="POST">
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
+          Name <span class="text-red-500">*</span>
+        </label>
+        <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
       </div>
-    ) : (
-      <form method="POST">
-        <div class="mb-4">
-          <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
-            Name <span class="text-red-500">*</span>
-          </label>
-          <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        </div>
 
-        <div class="mb-4">
-          <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="email">
-            Email <span class="text-red-500">*</span>
-          </label>
-          <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        </div>
-
-        <div class="mb-4">
-          <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="phone">
-            Phone
-          </label>
-          <input type="tel" name="phone" id="phone" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <div class="mb-4">
-          <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="message">
-            Your Message <span class="text-red-500">*</span>
-          </label>
-          <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-        </div>
-
-        <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey}></div>
-
-        <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
-          Send
-        </button>
-      </form>
-    )}
-
-    {serverError && (
-      <div class="relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
-        <strong class="font-bold">Error:</strong>
-        <span class="block sm:inline"> {serverError}</span>
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="email">
+          Email <span class="text-red-500">*</span>
+        </label>
+        <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
       </div>
-    )}
-  </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="phone">
+          Phone
+        </label>
+        <input type="tel" name="phone" id="phone" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="message">
+          Your Message <span class="text-red-500">*</span>
+        </label>
+        <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+      </div>
+
+      <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+
+      <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
+        Send
+      </button>
+    </form>
+  )}
+
+  {serverError && (
+    <div class="relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline"> {serverError}</span>
+    </div>
+  )}
+</div>
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
@@ -158,6 +120,8 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         throw new Error('Failed to send email');
       }
 
@@ -169,6 +133,7 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
       // Reload the page to show the success message
       window.location.reload();
     } catch (error) {
+      console.error('Error:', error);
       const errorElement = document.createElement('div');
       errorElement.className = 'relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded';
       errorElement.setAttribute('role', 'alert');
