@@ -31,21 +31,17 @@ footer ul.sub-menu {
 
 
 .logo-desktop {
-    @apply mx-auto max-w-[450px] my-5;
+    @apply mx-auto max-w-[400px] my-8;
 }
 
 .logo-mobile {
-    @apply my-5 ml-2 mr-10 w-[250px];
+    @apply my-8 ml-2 mr-10 w-[250px];
 }
 
-
-
 .banner-image {
-    @apply text-white drop-shadow-md mb-6;
-
+    @apply text-white drop-shadow-md mb-6 h-96 lg:h-auto;
     .banner-text {
-        @apply bg-black bg-opacity-30 inset-0 lg:top-auto lg:pb-8;
-        /* Cover the full image */
+        @apply bg-black bg-opacity-30 inset-0 top-auto pb-8;
         h2 {
           @apply mt-0;
         }
@@ -54,7 +50,6 @@ footer ul.sub-menu {
 
 .no-banner-image {
     @apply mt-6 text-secondary h-auto;
-
     .banner-text {
         @apply max-w-screen-lg mx-4 pb-6 md:mx-auto;
     }
@@ -74,7 +69,6 @@ footer ul.sub-menu {
         @apply text-lg md:text-xl mt-2;
     }
 }
-
 
 
 footer {
