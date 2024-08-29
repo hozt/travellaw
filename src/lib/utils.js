@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import fs from 'fs';
-import path from 'path';
-import { URL } from 'url';
+// import fs from 'fs';
+// import path from 'path';
+// import { URL } from 'url';
 
 /**
  * Download image and save it locally.
@@ -27,16 +27,15 @@ export async function downloadImage(url, filepath) {
  * @param {string} localImageDir - The directory to save the local images.
  * @returns {Promise<string>} - The updated HTML content with local image paths.
  */
-import { config } from 'dotenv';
-const siteUrl = config().parsed.SITE_URL;
-const apiUrl = config().parsed.API_URL;
+const siteUrl = import.meta.env.SITE_URL;
+const apiUrl = import.meta.env.API_URL;
 
 export async function replaceImageUrls(content, localImageDir = 'images/content') {
   const $ = cheerio.load(content);
 
-  if (!fs.existsSync(localImageDir)) {
-    fs.mkdirSync(localImageDir, { recursive: true });
-  }
+  // if (!fs.existsSync(localImageDir)) {
+  //   fs.mkdirSync(localImageDir, { recursive: true });
+  // }
 
   // replace remove links at siteUrl and to local links
   $('a').each((index, a) => {
@@ -56,7 +55,7 @@ export async function replaceImageUrls(content, localImageDir = 'images/content'
   });
 
   const imagePromises = [];
-  const currentDomain = new URL('https://travellaw.com').hostname;  // Replace with your actual domain
+  const currentDomain = new URL(siteUrl).hostname;  // Replace with your actual domain
 
   $('img').each((index, img) => {
     const src = $(img).attr('src');

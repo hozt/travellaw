@@ -1,9 +1,14 @@
 import { defineConfig } from 'astro/config';
-import node from '@astrojs/node';
+import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
-  output: 'hybrid', // or 'hybrid' if needed
-  adapter: node({
-    mode: 'standalone' // You can also use 'middleware' for a different setup
-  }),
+  output: 'server',
+  adapter: cloudflare(),
+  vite: {
+    define: {
+      'import.meta.env.SITE_URL': JSON.stringify(process.env.SITE_URL),
+      'import.meta.env.API_URL': JSON.stringify(process.env.API_URL),
+      'import.meta.env.GRAPHQL_URL': JSON.stringify(process.env.GRAPHQL_URL),
+    },
+  },
 });

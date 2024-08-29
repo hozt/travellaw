@@ -1,16 +1,10 @@
-import pkg from '@apollo/client';
-import dotenv from 'dotenv';
-dotenv.config();
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
-const graphQL = process.env.GRAPHQL_URL;
-
-//const graphQL = import.meta.env.GRAPHQL_URL;
+const graphQL = import.meta.env.GRAPHQL_URL;
 
 if (!graphQL) {
   throw new Error('GRAPHQL_URL environment variable is not set');
 }
-
-const { ApolloClient, InMemoryCache } = pkg;
 
 const client = new ApolloClient({
   uri: graphQL,
@@ -28,4 +22,7 @@ async function clearCache() {
   }
 }
 
-clearCache();
+// Only call clearCache if it's not a production environment
+if (import.meta.env.DEV) {
+  clearCache();
+}

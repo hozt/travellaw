@@ -2,8 +2,7 @@
 import client from '../lib/apolloClient';
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import pkg from '@apollo/client';
-const { gql } = pkg;
+import { gql } from '@apollo/client';
 
 const GET_TESTIMONIALS_AND_TEMPLATE = gql`
   query MyQuery {

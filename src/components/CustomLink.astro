@@ -1,9 +1,6 @@
 ---
-import dotenv from 'dotenv';
-dotenv.config();
-
 const { url, label, classes, indicator } = Astro.props;
-const apiUrl = process.env.API_URL;
+const apiUrl = import.meta.env.SCRIPT_URL;
 
 function hasClassNoLink(classes) {
   return classes && classes.includes("no-link");

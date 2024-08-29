@@ -39,7 +39,7 @@ if (Astro.request.method === 'POST') {
 };
 /*
     // Validate Turnstile response
-    const turnstileSecret = import.meta.env.TURNSTILE_SECRET_KEY;
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
     const turnstileValidation = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: {
@@ -80,7 +80,7 @@ if (Astro.request.method === 'POST') {
 }
   */
 
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <div class="max-w-lg p-6 mx-auto">

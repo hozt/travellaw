@@ -6,6 +6,7 @@
     "@apollo/client": "^3.11.4",
     "@astro-community/astro-embed-vimeo": "^0.3.7",
     "@astro-community/astro-embed-youtube": "^0.5.3",
+    "@astrojs/cloudflare": "^11.0.4",
     "@astrojs/node": "^8.3.3",
     "@astrojs/react": "^3.6.2",
     "@iconify-json/map": "^1.1.10",
@@ -14,7 +15,7 @@
     "axios": "^1.7.3",
     "cheerio": "^1.0.0",
     "dayjs": "^1.11.13",
-    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
     "he": "^1.2.0",
@@ -24,7 +25,8 @@
     "react-scripts": "^5.0.1",
     "rehype-sanitize": "^6.0.0",
     "serve": "^14.2.3",
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "wrangler": "^3.72.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",

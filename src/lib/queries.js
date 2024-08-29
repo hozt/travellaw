@@ -1,5 +1,4 @@
-import pkg from '@apollo/client';
-const { gql } = pkg;
+import { gql } from '@apollo/client';
 
 export const GET_PAGE_DATA = gql`
   query GetIndexPage {
