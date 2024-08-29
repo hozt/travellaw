@@ -12,6 +12,7 @@ import SiteTitle from '../components/SiteTitle.astro';
 const editorKey = import.meta.env.EDITOR_KEY;
 let isLoggedIn = false;
 // Check for the cookie
+/*
 if (Astro.cookies.has("isEditor")) {
   const editorCookie = Astro.cookies.get("isEditor").value;
   if (editorCookie === editorKey) {
@@ -36,7 +37,7 @@ if (!isLoggedIn) {
     });
   }
 }
-
+*/
 const { pageId, postId, templateId } = Astro.props;
 
 ---

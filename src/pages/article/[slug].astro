@@ -11,7 +11,7 @@ export async function getStaticPaths() {
   try {
     const { data } = await client.query({
       query: GET_ALL_POSTS,
-      variables: { first: 500 },
+      variables: { first: 5 },
     });
 
     // Handle the case where no data is returned

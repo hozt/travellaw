@@ -1,13 +1,7 @@
 import { request, gql } from 'graphql-request';
-import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
-import * as cheerio from 'cheerio';
-import { loadEnv } from 'vite';
+import { parse } from 'node-html-parser';
 
-// const endpoint = process.env.GRAPHQL_URL;
-const env = loadEnv(process.env.NODE_ENV, process.cwd(), '');
-const endpoint = env.GRAPHQL_URL;
+const endpoint = 'https://travellaw.hozt.com/graphql' //import.meta.env.GRAPHQL_URL;
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
@@ -22,6 +16,7 @@ const query = gql`
         bannerImage {
           sourceUrl
         }
+        content
       }
     }
     posts(first: $first) {
@@ -34,6 +29,7 @@ const query = gql`
             sourceUrl
           }
         }
+        content
       }
     }
     forms(first: $first) {
@@ -72,50 +68,15 @@ const query = gql`
   }
 `;
 
-async function downloadImage(url, filepath) {
-  try {
-    const response = await axios({
-      url,
-      responseType: 'stream',
-    });
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to download image: ${url} - Status Code: ${response.status}`);
-    }
-
-    return new Promise((resolve, reject) => {
-      response.data
-        .pipe(fs.createWriteStream(filepath))
-        .on('finish', () => {
-          console.log(`Successfully downloaded: ${filepath}`);
-          resolve();
-        })
-        .on('error', (e) => {
-          console.error(`Error writing to file ${filepath}:`, e.message);
-          reject(e);
-        });
-    });
-  } catch (error) {
-    console.error(`Error downloading image from ${url}:`, error.message);
-  }
-}
-
 function extractImageUrlsFromContent(htmlContent) {
   if (!htmlContent) {
     return [];
   }
-  const $ = cheerio.load(htmlContent);
-  const imageUrls = [];
-  $('img').each((_, img) => {
-    const src = $(img).attr('src');
-    if (src) {
-      imageUrls.push(src);
-    }
-  });
-  return imageUrls;
+  const root = parse(htmlContent);
+  return root.querySelectorAll('img').map(img => img.getAttribute('src')).filter(Boolean);
 }
 
-async function fetchAndSaveImages() {
+async function fetchImageUrls() {
   try {
     const data = await request(endpoint, query, { first: recordsToFetch });
 
@@ -123,107 +84,69 @@ async function fetchAndSaveImages() {
       throw new Error('No data returned from the GraphQL API');
     }
 
-    const directories = {
-      bannerImagesDir: path.join('public', 'images', 'banners'),
-      featuredImagesDir: path.join('public', 'images', 'featured'),
-      contentImagesDir: path.join('public', 'images', 'content'),
-      logosDir: path.join('public', 'images', 'logos'),
+    const imageUrls = {
+      bannerImages: [],
+      featuredImages: [],
+      contentImages: [],
+      logos: [],
+      galleryImages: []
     };
 
-    for (const dir of Object.values(directories)) {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-        console.log(`Created directory: ${dir}`);
-      }
-    }
-
-    const downloadPromises = [];
-
-    // Download banner images
-    downloadBanners(data.pages, directories);
-    downloadBanners(data.posts, directories);
-    downloadBanners(data.forms, directories);
-    downloadBanners(data.templates, directories);
-
-    // Download featured images
-    if (data.posts?.nodes) {
-      for (const node of data.posts.nodes) {
-        const url = node?.featuredImage?.node?.sourceUrl;
-        if (url) {
-          const filename = path.basename(url);
-          const filepath = path.join(directories.featuredImagesDir, filename);
-          console.log(`Downloading featured image: ${url}`);
-          downloadPromises.push(downloadImage(url, filepath));
+    // Collect banner images
+    ['pages', 'posts', 'forms', 'templates'].forEach(type => {
+      data[type]?.nodes?.forEach(node => {
+        if (node?.bannerImage?.sourceUrl) {
+          imageUrls.bannerImages.push(node.bannerImage.sourceUrl);
         }
+      });
+    });
+
+    // Collect featured images
+    data.posts?.nodes?.forEach(node => {
+      if (node?.featuredImage?.node?.sourceUrl) {
+        imageUrls.featuredImages.push(node.featuredImage.node.sourceUrl);
       }
+    });
+
+    // Collect content images
+    ['pages', 'posts'].forEach(type => {
+      data[type]?.nodes?.forEach(node => {
+        imageUrls.contentImages.push(...extractImageUrlsFromContent(node?.content));
+      });
+    });
+
+    // Collect logos
+    if (data.customSiteSettings?.logo?.sourceUrl) {
+      imageUrls.logos.push(data.customSiteSettings.logo.sourceUrl);
+    }
+    if (data.customSiteSettings?.mobileLogo?.sourceUrl) {
+      imageUrls.logos.push(data.customSiteSettings.mobileLogo.sourceUrl);
     }
 
-    // Download content images
-    const contentImageUrls = [
-      ...data.pages?.nodes?.flatMap(node => extractImageUrlsFromContent(node?.content)) || [],
-      ...data.posts?.nodes?.flatMap(node => extractImageUrlsFromContent(node?.content)) || [],
-    ];
+    // Collect gallery images
+    data.galleries?.nodes?.forEach(gallery => {
+      gallery.galleryImages?.forEach(image => {
+        if (image.sourceUrl) {
+          imageUrls.galleryImages.push(image.sourceUrl);
+        }
+      });
+    });
 
-    for (const url of contentImageUrls) {
-      if (url) {
-        const filename = path.basename(url);
-        const filepath = path.join(directories.contentImagesDir, filename);
-        console.log(`Downloading content image: ${url}`);
-        downloadPromises.push(downloadImage(url, filepath));
-      }
-    }
-
-    // Download logos
-    const logos = [
-      data.customSiteSettings?.logo?.sourceUrl,
-      data.customSiteSettings?.mobileLogo?.sourceUrl,
-    ].filter(url => url);
-
-    for (const url of logos) {
-      if (url) {
-        const filename = path.basename(url);
-        const filepath = path.join(directories.logosDir, filename);
-        console.log(`Downloading logo: ${url}`);
-        downloadPromises.push(downloadImage(url, filepath));
-      }
-    }
-
-    // Download gallery images
-    const galleryImages = data.galleries?.nodes?.flatMap(gallery => gallery.galleryImages?.map(image => image.sourceUrl) || []) || [];
-    for (const url of galleryImages) {
-      if (url) {
-        const filename = path.basename(url);
-        const filepath = path.join(directories.contentImagesDir, filename);
-        console.log(`Downloading gallery image: ${url}`);
-        downloadPromises.push(downloadImage(url, filepath));
-      }
-    }
-
-    // Wait for all downloads to complete
-    await Promise.all(downloadPromises);
-
-    console.log('All images downloaded successfully');
+    console.log('All image URLs collected successfully');
+    return imageUrls;
   } catch (error) {
-    console.error('Error in fetchAndSaveImages:', error.message);
+    console.error('Error in fetchImageUrls:', error.message);
+    return null;
   }
 }
 
-function downloadBanners(data, directories) {
-  const downloadPromises = [];
-  if (!data?.nodes) {
-    console.warn('No nodes data found for banners');
-    return;
+// Usage
+fetchImageUrls().then(imageUrls => {
+  if (imageUrls) {
+    console.log('Banner Images:', imageUrls.bannerImages.length);
+    console.log('Featured Images:', imageUrls.featuredImages.length);
+    console.log('Content Images:', imageUrls.contentImages.length);
+    console.log('Logos:', imageUrls.logos.length);
+    console.log('Gallery Images:', imageUrls.galleryImages.length);
   }
-  for (const node of data.nodes) {
-    const url = node?.bannerImage?.sourceUrl;
-    if (url) {
-      const filename = path.basename(url);
-      const filepath = path.join(directories.bannerImagesDir, filename);
-      console.log(`Downloading banner image: ${url} to ${filepath}`);
-      downloadPromises.push(downloadImage(url, filepath));
-    }
-  }
-}
-
-// Run the function
-fetchAndSaveImages();
+});
