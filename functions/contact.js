@@ -13,6 +13,15 @@ export async function onRequestPost({ request, env }) {
         let emailText = 'Do not reply directly to this email.\n\n';
         let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
 
+        const turnstileToken = formData['cf-turnstile-response'];
+
+        // Validate Turnstile token
+        const isTurnstileValid = await validateTurnstileToken(turnstileToken, env.TURNSTILE_SECRET_KEY);
+        if (!isTurnstileValid) {
+            console.log('Invalid Turnstile token', turnstileToken, env.TURNSTILE_SECRET_KEY);
+            return new Response(JSON.stringify({ error: 'Invalid Turnstile token' }), { status: 400 });
+        }
+
         for (const [key, value] of formData.entries()) {
             if (key !== 'cf-turnstile-response') {
                 emailText += `${key}: ${value}\n`;

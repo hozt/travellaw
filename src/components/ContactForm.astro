@@ -49,7 +49,7 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
       <span class="block sm:inline"> Your message has been sent.</span>
     </div>
   ) : (
-    <form method="POST" action="/contact">
+    <form method="POST" action="/contact" class={isSubmitted ? 'hidden' : ''}>
       <div class="mb-4">
         <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
           Name <span class="text-red-500">*</span>
@@ -78,7 +78,7 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
         <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
       </div>
 
-      <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+      <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>
 
       <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
         Send
@@ -128,8 +128,13 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
         throw new Error(result.error);
       }
 
-      // Reload the page to show the success message
-      window.location.reload();
+      // Hide the form and show the success message
+      document.querySelector('form').classList.add('hidden');
+      const successElement = document.createElement('div');
+      successElement.className = 'relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded';
+      successElement.setAttribute('role', 'alert');
+      successElement.innerHTML = `<strong class="font-bold">Success!</strong> <span class="block sm:inline"> Your message has been sent.</span>`;
+      event.target.parentNode.appendChild(successElement);
     } catch (error) {
       console.error('Error:', error);
       const errorElement = document.createElement('div');
