@@ -97,3 +97,30 @@ async function sendEmail(apiKey, apiSecret, emailData) {
         throw error;
     }
 }
+
+async function validateTurnstileToken(token, secretKey) {
+    try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                secret: secretKey,
+                response: token,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error validating Turnstile token:', errorText);
+            return false;
+        }
+
+        const data = await response.json();
+        return data.success;
+    } catch (error) {
+        console.error('Error in validateTurnstileToken:', error);
+        return false;
+    }
+}
