@@ -160,7 +160,7 @@ async function downloadImage(url, outputPath) {
     const buffer = await response.buffer();
     await fs.writeFile(outputPath, buffer);
     console.log(`Downloaded: ${url}`);
-    console.log(`Saved to: ${outputPath}`);
+    // console.log(`Saved to: ${outputPath}`);
   } catch (error) {
     console.error(`Error downloading ${url}: ${error.message}`);
   }

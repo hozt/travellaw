@@ -8,6 +8,7 @@ export async function onRequestPost({ request, env }) {
         return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
     }
 
+    /*
     const turnstileToken = formData['cf-turnstile-response'];
 
     // Validate Turnstile token
@@ -16,6 +17,7 @@ export async function onRequestPost({ request, env }) {
         console.log('Invalid Turnstile token', turnstileToken, env.TURNSTILE_SECRET_KEY);
         return new Response(JSON.stringify({ error: 'Invalid Turnstile token' }), { status: 400 });
     }
+    */
 
     const mailjetApiKey = env.MAILJET_API_KEY;
     const mailjetApiSecret = env.MAILJET_API_SECRET;

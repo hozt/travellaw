@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
-import ContactForm from "../../components/ContactForm.astro";
+import ContactFormSimple from "../../components/ContactFormSimple.astro";
 import client from "../../lib/apolloClient";
 import { GET_FORM, GET_ALL_FORMS } from "../../lib/queries";
 
@@ -47,6 +47,6 @@ if (!page) {
   />
   <div class="main-body content">
     <div set:html={page?.content} />
-    <ContactForm />
+    <ContactFormSimple />
   </div>
 </Layout>
