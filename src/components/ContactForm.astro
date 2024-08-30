@@ -7,6 +7,10 @@ if (Astro.request.method === 'POST') {
     const formData = await Astro.request.formData();
     const turnstileResponse = formData.get('cf-turnstile-response');
 
+    if (!turnstileResponse) {
+      throw new Error('Turnstile verification failed. Please try again.');
+    }
+
     const response = await fetch('/contact', {
       method: 'POST',
       headers: {
@@ -110,6 +114,23 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
     isSubmitting = true;
 
     const formData = new FormData(event.target);
+
+    // Ensure Turnstile response is included
+    const turnstileResponse = document.querySelector('input[name="cf-turnstile-response"]')?.value;
+    if (!turnstileResponse) {
+      console.error('Turnstile verification failed. Please try again.');
+      const errorElement = document.createElement('div');
+      errorElement.className = 'relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded';
+      errorElement.setAttribute('role', 'alert');
+      errorElement.innerHTML = `<strong class="font-bold">Error:</strong> <span class="block sm:inline">Turnstile verification failed. Please try again.</span>`;
+      event.target.parentNode.appendChild(errorElement);
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send';
+      isSubmitting = false;
+      return;
+    }
+
+    formData.append('cf-turnstile-response', turnstileResponse);
 
     try {
       const response = await fetch(event.target.action, {
