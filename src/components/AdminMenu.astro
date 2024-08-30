@@ -12,11 +12,6 @@ const { pageId, postId, templateId } = Astro.props;
   const editorKey = sessionStorage.getItem('isEditor');
   if (!editorKey) return;
 
-  const url = new URL(window.location.href);
-  const postId = url.searchParams.get('postId');
-  const pageId = url.searchParams.get('pageId');
-  const templateId = url.searchParams.get('templateId');
-
   try {
     const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
       headers: { 'X-Editor-Key': editorKey }
@@ -39,6 +34,5 @@ const { pageId, postId, templateId } = Astro.props;
   }
 }
 
-// Load the admin menu when the script runs
 loadAdminMenu();
 </script>
