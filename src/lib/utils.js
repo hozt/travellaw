@@ -14,12 +14,13 @@ console.log(siteUrl, apiUrl);
 export async function replaceImageUrls(content, localImageDir = 'images/content') {
   const root = parse(content);
 
-  // Helper function to replace URLs
+  // Helper function to replace URLs and add .webp extension
   const replaceUrl = (url, domain, localImageDir) => {
     const imgUrl = new URL(url);
     if (imgUrl.hostname === domain) {
       const filename = imgUrl.pathname.split('/').pop();
-      return `/${localImageDir}/${filename}`;
+      const filenameWithoutExt = filename.split('.').slice(0, -1).join('.');
+      return `/${localImageDir}/${filenameWithoutExt}.webp`;
     }
     return url;
   };
@@ -63,7 +64,9 @@ export async function replaceImageUrls(content, localImageDir = 'images/content'
 
 export function localImage(imageUrl, path) {
   if (imageUrl) {
-    return `/images/${path}/${imageUrl.split('/').pop()}`;
+    const filename = imageUrl.split('/').pop();
+    const filenameWithoutExt = filename.split('.').slice(0, -1).join('.');
+    return `/images/${path}/${filenameWithoutExt}.webp`;
   }
   return '';
 }

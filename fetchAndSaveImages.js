@@ -5,11 +5,12 @@ import path from 'path';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import sharp from 'sharp';
 dotenv.config();
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const endpoint = process.env.GRAPHQL_URL
+const endpoint = process.env.GRAPHQL_URL;
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
@@ -182,7 +183,10 @@ async function downloadImage(url, outputPath) {
     const buffer = await response.buffer();
     await fs.writeFile(outputPath, buffer);
     console.log(`Downloaded: ${url}`);
-    // console.log(`Saved to: ${outputPath}`);
+    // Convert to WebP
+    const webpOutputPath = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    await sharp(buffer).webp().toFile(webpOutputPath);
+    console.log(`Converted to WebP: ${webpOutputPath}`);
   } catch (error) {
     console.error(`Error downloading ${url}: ${error.message}`);
   }

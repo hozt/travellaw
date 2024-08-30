@@ -5,14 +5,7 @@ import client from '../lib/apolloClient';
 const { data:favIcon } = await client.query({
   query: GET_FAVICON,
 });
-/*{
-    customSiteSettings {
-      faviconLogo {
-        sourceUrl
-        mimeType
-      }
-    }
-  }*/
+
 const faviconUrl = favIcon.customSiteSettings.faviconLogo.sourceUrl;
 const faviconType = favIcon.customSiteSettings.faviconLogo.mimeType;
 
