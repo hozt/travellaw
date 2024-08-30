@@ -1,6 +1,4 @@
 ---
-// Your existing Astro component code
-// get values from Astro.props
 const { pageId, postId, templateId } = Astro.props;
 ---
 
@@ -8,24 +6,34 @@ const { pageId, postId, templateId } = Astro.props;
 
 <script define:vars={{ pageId, postId, templateId }}>
   async function loadAdminMenu() {
-    const editorKey = sessionStorage.getItem('isEditor');
-    if (!editorKey) return;
+  const editorKey = sessionStorage.getItem('isEditor');
+  if (!editorKey) return;
 
-    try {
-      const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
-        headers: { 'X-Editor-Key': editorKey }
-      });
+  const url = new URL(window.location.href);
+  const postId = url.searchParams.get('postId');
+  const pageId = url.searchParams.get('pageId');
+  const templateId = url.searchParams.get('templateId');
 
-      console.log('Admin menu response:', response);
-      if (response.ok) {
-        const menuHTML = await response.text();
+  try {
+    const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
+      headers: { 'X-Editor-Key': editorKey }
+    });
+
+    if (response.ok) {
+      const menuHTML = await response.text(); // This line reads the stream
+      if (menuHTML) {
         document.getElementById('adminMenuContainer').innerHTML = menuHTML;
+      } else {
+        console.error('Admin menu HTML is empty');
       }
-    } catch (error) {
-      console.error('Failed to load admin menu:', error);
+    } else {
+      console.error('Failed to load admin menu:', response.status, response.statusText);
     }
+  } catch (error) {
+    console.error('Error loading admin menu:', error);
   }
+}
 
-  // Load the admin menu when the script runs
-  loadAdminMenu();
+// Load the admin menu when the script runs
+loadAdminMenu();
 </script>
