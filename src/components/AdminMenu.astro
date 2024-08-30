@@ -3,36 +3,51 @@ const { pageId, postId, templateId } = Astro.props;
 ---
 
 <div id="admin-menu" class="z-10 bg-gray-500 admin-menu" style="display:none;">
-    <ul id="menu-content" class="sticky top-0 left-0 right-0 flex pl-2 text-sm list-none">
-    </ul>
+  <ul
+    id="menu-content"
+    class="sticky top-0 left-0 right-0 flex pl-2 text-sm list-none"
+  >
+  </ul>
 </div>
 
 <script define:vars={{ pageId, postId, templateId }}>
-  async function loadAdminMenu() {
-  const editorKey = sessionStorage.getItem('isEditor');
-  if (!editorKey) return;
-
-  try {
-    const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
-      headers: { 'X-Editor-Key': editorKey }
-    });
-
-    if (response.ok) {
-      // display the menu
-      document.getElementById('admin-menu').style.display = 'block';
-      const menuHTML = await response.text(); // This line reads the stream
-      if (menuHTML) {
-        document.getElementById('menu-content').innerHTML = menuHTML;
-      } else {
-        console.error('Admin menu HTML is empty');
-      }
-    } else {
-      console.error('Failed to load admin menu:', response.status, response.statusText);
-    }
-  } catch (error) {
-    console.error('Error loading admin menu:', error);
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
   }
-}
+  async function loadAdminMenu() {
+    const editorKey = getCookie("isEditor");
+    if (!editorKey) return;
 
-loadAdminMenu();
+    try {
+      const response = await fetch(
+        `/admin-menu?postId=${postId || ""}&pageId=${pageId || ""}&templateId=${templateId || ""}`,
+        {
+          headers: { "X-Editor-Key": editorKey },
+        }
+      );
+
+      if (response.ok) {
+        // display the menu
+        document.getElementById("admin-menu").style.display = "block";
+        const menuHTML = await response.text(); // This line reads the stream
+        if (menuHTML) {
+          document.getElementById("menu-content").innerHTML = menuHTML;
+        } else {
+          console.error("Admin menu HTML is empty");
+        }
+      } else {
+        console.error(
+          "Failed to load admin menu:",
+          response.status,
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error loading admin menu:", error);
+    }
+  }
+
+  loadAdminMenu();
 </script>

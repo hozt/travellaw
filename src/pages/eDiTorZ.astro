@@ -10,11 +10,19 @@ const editorKey = import.meta.env.EDITOR_KEY;
   <title>Set Editor Key</title>
 </head>
 <body>
-  <p>Editor key set in session storage</p>
+  <p>Editor key set in cookie</p>
   <script define:vars={{ editorKey }}>
-    // The editorKey variable is now available in this script
-    sessionStorage.setItem('isEditor', editorKey);
-    console.log('Editor key set in session storage with value:', editorKey);
+    // Function to set a cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + date.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    // Set the editorKey as a cookie
+    setCookie('isEditor', editorKey, 7); // Cookie expires in 7 days
+    console.log('Editor key set in cookie with value:', editorKey);
     window.location.href = '/';
   </script>
 </body>
