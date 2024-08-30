@@ -2,7 +2,10 @@
 const { pageId, postId, templateId } = Astro.props;
 ---
 
-<div id="adminMenuContainer"></div>
+<div id="admin-menu" class="z-10 bg-gray-500 admin-menu" style="display:none;">
+    <ul id="menu-content" class="sticky top-0 left-0 right-0 flex pl-2 text-sm list-none">
+    </ul>
+</div>
 
 <script define:vars={{ pageId, postId, templateId }}>
   async function loadAdminMenu() {
@@ -20,9 +23,11 @@ const { pageId, postId, templateId } = Astro.props;
     });
 
     if (response.ok) {
+      // display the menu
+      document.getElementById('admin-menu').style.display = 'block';
       const menuHTML = await response.text(); // This line reads the stream
       if (menuHTML) {
-        document.getElementById('adminMenuContainer').innerHTML = menuHTML;
+        document.getElementById('menu-content').innerHTML = menuHTML;
       } else {
         console.error('Admin menu HTML is empty');
       }
