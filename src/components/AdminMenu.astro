@@ -1,18 +1,15 @@
 ---
 // Your existing Astro component code
+// get values from Astro.props
+const { pageId, postId, templateId } = Astro.props;
 ---
 
 <div id="adminMenuContainer"></div>
 
-<script>
+<script define:vars={{ pageId, postId, templateId }}>
   async function loadAdminMenu() {
     const editorKey = sessionStorage.getItem('isEditor');
     if (!editorKey) return;
-
-    const url = new URL(window.location.href);
-    const postId = url.searchParams.get('postId');
-    const pageId = url.searchParams.get('pageId');
-    const templateId = url.searchParams.get('templateId');
 
     try {
       const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {

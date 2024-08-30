@@ -2,8 +2,10 @@ export async function onRequest(context) {
     const { request, env } = context;
 
     const providedKey = request.headers.get('X-Editor-Key');
+    console.log(providedKey, env.EDITOR_KEY);
 
     if (providedKey === env.EDITOR_KEY) {
+      console.log('Authorized');
       const url = new URL(request.url);
       const postId = url.searchParams.get('postId');
       const pageId = url.searchParams.get('pageId');
