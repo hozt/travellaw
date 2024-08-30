@@ -13,9 +13,10 @@ export async function onRequestPost({ request, env }) {
         let emailText = 'Do not reply directly to this email.\n\n';
         let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
 
-        console.log('formData:', formData);
+        console.log('formData JSON:', JSON.stringify(formData));
 
         const turnstileToken = formData['cf-turnstile-response'];
+        console.log('Turnstile token:', turnstileToken);
 
         // Validate Turnstile token
         const isTurnstileValid = await validateTurnstileToken(turnstileToken, env.TURNSTILE_SECRET_KEY);
