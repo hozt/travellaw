@@ -46,6 +46,6 @@ package-lock.json
 *.local
 
 public/images/banners/*
-public/images/context/*
+public/images/content/*
 public/images/featured/*
 public/images/logos/*

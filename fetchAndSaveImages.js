@@ -171,7 +171,8 @@ async function downloadAllImages(imageUrls) {
   for (const [category, urls] of Object.entries(imageUrls)) {
     for (const url of urls) {
       const fileName = path.basename(new URL(url).pathname);
-      const outputPath = path.join(__dirname, 'public', category, fileName);
+      const outputPath = path.join(__dirname, 'public', 'images', category, fileName);
+      await fs.mkdir(path.join(__dirname, 'public', 'images'), { recursive: true });
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       downloadPromises.push(downloadImage(url, outputPath));
     }
@@ -189,7 +190,6 @@ async function downloadAllImages(imageUrls) {
       console.log('Content Images:', imageUrls.content.length);
       console.log('Logos:', imageUrls.logos.length);
       console.log('Gallery Images:', imageUrls.gallery.length);
-      console.log('Root Images:', imageUrls.root.length);
 
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
