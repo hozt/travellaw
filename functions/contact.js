@@ -1,68 +1,93 @@
 export async function onRequestPost({ request, env }) {
-    console.log("Cloudflare Function called");
+    let formData;
     try {
-        // Read the request body
-        const formData = await request.formData();
-
-        const mailjetApiKey = env.MAILJET_API_KEY;
-        const mailjetApiSecret = env.MAILJET_API_SECRET;
-        const fromEmail = 'cloud@hozt.com';
-        const toEmail = env.MAILJET_TO_EMAIL;
-        const emailSubject = 'New Contact Form Submission';
-
-        let emailText = 'Do not reply directly to this email.\n\n';
-        let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
-
-        for (const [key, value] of formData.entries()) {
-            if (key !== 'cf-turnstile-response') {
-                emailText += `${key}: ${value}\n`;
-                emailHtml += `<p>${key}: ${value}</p>`;
-            }
-        }
-
-        const emailData = {
-            Messages: [
-                {
-                    From: {
-                        Email: fromEmail,
-                        Name: 'Contact Form',
-                    },
-                    To: [
-                        {
-                            Email: toEmail,
-                            Name: 'Recipient',
-                        },
-                    ],
-                    Subject: emailSubject,
-                    TextPart: emailText,
-                    HTMLPart: emailHtml,
-                },
-            ],
-        };
-
-        console.log('Sending email:', emailData);
-
-        const emailResponse = await sendEmail(mailjetApiKey, mailjetApiSecret, emailData);
-
-        if (emailResponse.ok) {
-            return new Response(JSON.stringify({ success: true, message: 'Message received' }), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' }
-            });
-        } else {
-            const errorText = await emailResponse.text();
-            console.error('Email sending failed:', errorText);
-            return new Response(JSON.stringify({ success: false, error: 'Failed to send message' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
+        // Read the request body only once
+        formData = await request.json();
     } catch (error) {
-        console.error('Error in onRequestPost:', error);
-        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
+        console.error('Error parsing request body:', error);
+        return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
+    }
+
+    const turnstileToken = formData['cf-turnstile-response'];
+
+    // Validate Turnstile token
+    const isTurnstileValid = await validateTurnstileToken(turnstileToken, env.TURNSTILE_SECRET_KEY);
+    if (!isTurnstileValid) {
+        console.log('Invalid Turnstile token', turnstileToken, env.TURNSTILE_SECRET_KEY);
+        return new Response(JSON.stringify({ error: 'Invalid Turnstile token' }), { status: 400 });
+    }
+
+    const mailjetApiKey = env.MAILJET_API_KEY;
+    const mailjetApiSecret = env.MAILJET_API_SECRET;
+    const fromEmail = 'cloud@hozt.com';
+    const toEmail = env.MAILJET_TO_EMAIL;
+    const emailSubject = 'New Contact Form Submission';
+
+    let emailText = 'Do not reply directly to this email.\n\n';
+    let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
+
+    for (const [key, value] of Object.entries(formData)) {
+        if (key !== 'cf-turnstile-response') {
+            emailText += `${key}: ${value}\n`;
+            emailHtml += `<p>${key}: ${value}</p>`;
+        }
+    }
+
+    const emailData = {
+        Messages: [
+            {
+                From: {
+                    Email: fromEmail,
+                    Name: 'Contact Form',
+                },
+                To: [
+                    {
+                        Email: toEmail,
+                        Name: 'Recipient',
+                    },
+                ],
+                Subject: emailSubject,
+                TextPart: emailText,
+                HTMLPart: emailHtml,
+            },
+        ],
+    };
+
+    const emailResponse = await sendEmail(mailjetApiKey, mailjetApiSecret, emailData);
+
+    if (emailResponse.ok) {
+        return new Response(JSON.stringify({ message: 'Message received' }), { status: 200 });
+    } else {
+        const errorText = await emailResponse.text();
+        console.error('Email sending failed:', errorText);
+        return new Response(JSON.stringify({ error: 'Failed to send message' }), { status: 500 });
+    }
+}
+
+async function validateTurnstileToken(token, secretKey) {
+    try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                secret: secretKey,
+                response: token,
+            }),
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error validating Turnstile token:', errorText);
+            return false;
+        }
+
+        const data = await response.json();
+        return data.success;
+    } catch (error) {
+        console.error('Error in validateTurnstileToken:', error);
+        return false;
     }
 }
 
@@ -85,6 +110,6 @@ async function sendEmail(apiKey, apiSecret, emailData) {
         return response;
     } catch (error) {
         console.error('Error in sendEmail:', error);
-        throw error;
+        return new Response(JSON.stringify({ error: 'Failed to send email' }), { status: 500 });
     }
 }
