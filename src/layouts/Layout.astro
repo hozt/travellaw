@@ -8,35 +8,6 @@ import Headers from '../components/Headers.astro';
 import FooterSite from '../components/FooterSite.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
-const editorKey = import.meta.env.EDITOR_KEY;
-let isLoggedIn = false;
-// Check for the cookie
-/*
-if (Astro.cookies.has("isEditor")) {
-  const editorCookie = Astro.cookies.get("isEditor").value;
-  if (editorCookie === editorKey) {
-    isLoggedIn = true;
-  }
-}
-
-// Check URL params if not logged in via cookie
-if (!isLoggedIn) {
-  const search = Astro.url.searchParams.get('editor') || '';
-  console.log('search', search);
-
-
-  const passedEditorKey = Astro.url.searchParams.get('editor') || ''
-  console.log('key', passedEditorKey);
-  if (passedEditorKey === editorKey) {
-    isLoggedIn = true;
-    // Set the cookie on the server side
-    Astro.cookies.set("isEditor", passedEditorKey, {
-      path: "/",
-      maxAge: 60 * 60 * 24, // 1 day
-    });
-  }
-}
-*/
 const { pageId, postId, templateId } = Astro.props;
 
 ---
@@ -45,9 +16,7 @@ const { pageId, postId, templateId } = Astro.props;
   <html lang="en">
   <Seo title={title} description={description} />
   <body>
-    {isLoggedIn && (
     <AdminMenu pageId={pageId} postId={postId} templateId={templateId} />
-    )}
     <Headers />
     <main>
       <slot />

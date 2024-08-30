@@ -1,15 +1,21 @@
 ---
-export const prerender = false;
-
 const editorKey = import.meta.env.EDITOR_KEY;
-
-if (Astro.request.method === 'GET') {
-  const response = Astro.response;
-
-  // Set the cookie
-  response.headers.set('Set-Cookie', `isEditor=${editorKey}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`);
-
-  // Redirect to another page after setting the cookie
-  return Astro.redirect('/', 303);
-}
 ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Editor Key</title>
+</head>
+<body>
+  <p>Editor key set in session storage</p>
+  <script define:vars={{ editorKey }}>
+    // The editorKey variable is now available in this script
+    sessionStorage.setItem('isEditor', editorKey);
+    console.log('Editor key set in session storage with value:', editorKey);
+    window.location.href = '/';
+  </script>
+</body>
+</html>

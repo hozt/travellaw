@@ -1,0 +1,52 @@
+---
+import Search from "astro-pagefind/components/Search";
+import Layout from '../layouts/Layout.astro';
+import Seo from '../components/Seo.astro';
+import BannerTitle from '../components/BannerTitle.astro';
+import client from '../lib/apolloClient';
+import { GET_TEMPLATE } from '../lib/queries';
+
+const { data } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: 'search' },
+});
+
+const page = data?.templateBy;
+
+if (!page) {
+  throw new Error('Page not found');
+}
+
+const {
+  title,
+  subtitle,
+  content,
+  bannerImage,
+  metaDescription,
+  databaseId
+} = page;
+
+---
+
+<html>
+  <head>
+    <Seo title={title} description={metaDescription} />
+  </head>
+  <body class="front">
+    <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
+      <>
+        <BannerTitle
+          title={title}
+          subtitle={subtitle}
+          image={bannerImage?.sourceUrl}
+          width={bannerImage?.mediaDetails?.width}
+          height={bannerImage?.mediaDetails?.height}
+        />
+        <div class="main-body content">
+          <div set:html={content}></div>
+          <Search id="search" className="pagefind-ui" />
+        </div>
+      </>
+    </Layout>
+  </body>
+</html>
