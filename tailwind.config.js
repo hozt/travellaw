@@ -31,7 +31,7 @@ module.exports = {
       },
       fontSize: {
         mobile: "15px",
-        base: "15px", // Default base font size
+        base: "14px", // Default base font size
       },
     },
   },
