@@ -5,6 +5,14 @@ let isSubmitted = false;
 if (Astro.request.method === 'POST') {
   try {
     const formData = await Astro.request.formData();
+    const formDataJson = {};
+
+    formData.forEach((value, key) => {
+      formDataJson[key] = value;
+    });
+
+    console.log('formData JSON:', JSON.stringify(formDataJson));
+
     const turnstileResponse = formData.get('cf-turnstile-response');
 
     if (!turnstileResponse) {
@@ -117,6 +125,7 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     // Ensure Turnstile response is included
     const turnstileResponse = document.querySelector('input[name="cf-turnstile-response"]')?.value;
+    console.log('Turnstile token:', turnstileResponse); // Log the Turnstile token for debugging
     if (!turnstileResponse) {
       console.error('Turnstile verification failed. Please try again.');
       const errorElement = document.createElement('div');

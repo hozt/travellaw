@@ -4,6 +4,28 @@ export async function onRequestPost({ request, env }) {
         // Read the request body
         const formData = await request.formData();
 
+        const formDataJson = {};
+        formData.forEach((value, key) => {
+            formDataJson[key] = value;
+        });
+
+        console.log('formData JSON:', JSON.stringify(formDataJson));
+
+        const turnstileToken = formData.get('cf-turnstile-response');
+        console.log('Turnstile token:', turnstileToken);
+
+        if (!turnstileToken) {
+            console.error('Turnstile token is null or undefined');
+            return new Response(JSON.stringify({ error: 'Turnstile token is missing' }), { status: 400 });
+        }
+
+        // Validate Turnstile token
+        const isTurnstileValid = await validateTurnstileToken(turnstileToken, env.TURNSTILE_SECRET_KEY);
+        if (!isTurnstileValid) {
+            console.log('Invalid Turnstile token', turnstileToken, env.TURNSTILE_SECRET_KEY);
+            return new Response(JSON.stringify({ error: 'Invalid Turnstile token' }), { status: 400 });
+        }
+
         const mailjetApiKey = env.MAILJET_API_KEY;
         const mailjetApiSecret = env.MAILJET_API_SECRET;
         const fromEmail = 'cloud@hozt.com';
@@ -12,18 +34,6 @@ export async function onRequestPost({ request, env }) {
 
         let emailText = 'Do not reply directly to this email.\n\n';
         let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
-
-        console.log('formData JSON:', JSON.stringify(formData));
-
-        const turnstileToken = formData['cf-turnstile-response'];
-        console.log('Turnstile token:', turnstileToken);
-
-        // Validate Turnstile token
-        const isTurnstileValid = await validateTurnstileToken(turnstileToken, env.TURNSTILE_SECRET_KEY);
-        if (!isTurnstileValid) {
-            console.log('Invalid Turnstile token', turnstileToken, env.TURNSTILE_SECRET_KEY);
-            return new Response(JSON.stringify({ error: 'Invalid Turnstile token' }), { status: 400 });
-        }
 
         for (const [key, value] of formData.entries()) {
             if (key !== 'cf-turnstile-response') {
