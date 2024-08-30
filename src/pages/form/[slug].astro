@@ -1,9 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
-import ContactUs from "../../components/ContactUs.astro";
+import ContactUs from "../../components/ContactForm.astro";
 import client from "../../lib/apolloClient";
 import { GET_FORM, GET_ALL_FORMS } from "../../lib/queries";
+import ContactForm from "../../components/ContactForm.astro";
 
 export async function getStaticPaths() {
   const data = await client.query({
@@ -47,6 +48,6 @@ if (!page) {
   />
   <div class="main-body content">
     <div set:html={page?.content} />
-    <ContactUs />
+    <ContactForm />
   </div>
 </Layout>

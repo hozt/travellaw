@@ -9,7 +9,6 @@ dotenv.config();
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// const endpoint = 'https://travellaw.hozt.com/graphql';
 const endpoint = process.env.GRAPHQL_URL
 
 if (!endpoint) {
