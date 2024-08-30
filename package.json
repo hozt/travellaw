@@ -21,6 +21,7 @@
     "js-cookie": "^3.0.5",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
+    "node-mailjet": "^6.0.5",
     "serve": "^14.2.3",
     "wrangler": "^3.72.3"
   },

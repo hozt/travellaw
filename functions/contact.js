@@ -40,6 +40,8 @@ export async function onRequestPost({ request, env }) {
             ],
         };
 
+        console.log('Sending email:', emailData);
+
         const emailResponse = await sendEmail(mailjetApiKey, mailjetApiSecret, emailData);
 
         if (emailResponse.ok) {
