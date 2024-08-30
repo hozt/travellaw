@@ -22,7 +22,7 @@ function getClassNames(item) {
 
 <ul class="flex-wrap p-0 mx-auto list-none lg:flex main-menu md:justify-center">
   {menuItems.map(item => item.parentDatabaseId === 0 && (
-    <li class={getClassNames(item)} key={item.id}>
+    <li class={`menu-item ${getClassNames(item)}`} key={item.id}>
       <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
       {item.childItems?.nodes?.length > 0 && (
         <ul class="sub-menu">
@@ -36,26 +36,61 @@ function getClassNames(item) {
     </li>
   ))}
 </ul>
+
+<style>
+.menu-item {
+  position: relative;
+}
+
+.sub-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 999;
+}
+
+.menu-item:hover .sub-menu,
+.menu-item:focus-within .sub-menu,
+.menu-item.active .sub-menu {
+  display: block;
+}
+</style>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const menuItems = document.querySelectorAll('.menu-item');
 
     menuItems.forEach(item => {
       item.addEventListener('touchstart', function(e) {
+        const isOpen = this.classList.contains('active');
         const submenu = this.querySelector('.sub-menu');
-        if (submenu) {
+
+        // Close all open submenus first
+        document.querySelectorAll('.menu-item.active').forEach(openItem => {
+          openItem.classList.remove('active');
+          openItem.querySelector('.sub-menu').style.display = 'none';
+        });
+
+        // Toggle the current submenu
+        if (!isOpen && submenu) {
+          this.classList.add('active');
           submenu.style.display = 'block';
+          e.stopPropagation();
+        } else if (isOpen && submenu) {
+          this.classList.remove('active');
+          submenu.style.display = 'none';
           e.stopPropagation();
         }
       });
 
+      // Close submenu if clicked outside
       document.addEventListener('touchstart', function() {
-        const openSubMenus = document.querySelectorAll('.sub-menu[style="display: block;"]');
-        openSubMenus.forEach(submenu => {
-          submenu.style.display = 'none';
+        document.querySelectorAll('.menu-item.active').forEach(openItem => {
+          openItem.classList.remove('active');
+          openItem.querySelector('.sub-menu').style.display = 'none';
         });
       }, true);
     });
   });
-
 </script>
