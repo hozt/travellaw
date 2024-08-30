@@ -1,23 +1,23 @@
 import { defineConfig } from 'vite';
 import Compress from "astro-compress";
-import cloudflare from '@astrojs/cloudflare';
+// import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
 
 const site = process.env.SITE_URL || 'https://travellaw.com';
 
 export default defineConfig({
-  output: 'hybrid',
-  build: {
-    format: 'directory'
-  },
+  output: 'static',
+  // build: {
+  //   format: 'directory'
+  // },
   integrations: [
     Compress(),
     sitemap(),
     tailwind()
   ],
   site: site,
-  adapter: cloudflare(),
+  // adapter: cloudflare(),
   vite: {
     define: {
       'import.meta.env.SITE_URL': JSON.stringify(process.env.SITE_URL),

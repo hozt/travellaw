@@ -4,11 +4,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const endpoint = 'https://travellaw.hozt.com/graphql';
+// const endpoint = 'https://travellaw.hozt.com/graphql';
+const endpoint = process.env.GRAPHQL_URL
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
@@ -19,7 +21,6 @@ const query = gql`
   query GetImages($first: Int!) {
     pages(first: $first) {
       nodes {
-        title
         bannerImage {
           sourceUrl
         }
@@ -82,8 +83,30 @@ function extractImageUrlsFromContent(htmlContent) {
   if (!htmlContent) {
     return [];
   }
+
   const root = parse(htmlContent);
-  return root.querySelectorAll('img').map(img => img.getAttribute('src')).filter(Boolean);
+  const imageUrls = new Set();
+
+  root.querySelectorAll('img').forEach(img => {
+    // Extract src attribute
+    const src = img.getAttribute('src');
+    if (src) {
+      imageUrls.add(src);
+    }
+
+    // Extract srcset attribute
+    const srcset = img.getAttribute('srcset');
+    if (srcset) {
+      srcset.split(',').forEach(srcsetItem => {
+        const [url] = srcsetItem.trim().split(' ');
+        if (url) {
+          imageUrls.add(url);
+        }
+      });
+    }
+  });
+
+  return Array.from(imageUrls);
 }
 
 async function fetchImageUrls() {

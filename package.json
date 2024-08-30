@@ -15,6 +15,7 @@
     "@iconify/tailwind": "^1.1.2",
     "astro-compress": "^2.3.1",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
     "js-cookie": "^3.0.5",

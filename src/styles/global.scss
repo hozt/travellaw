@@ -88,6 +88,10 @@ hr {
   @apply max-w-screen-lg mx-4 md:mx-auto;
 }
 
+a.wp-block-file__button.wp-element-button {
+  @apply ml-3;
+}
+
 @tailwind utilities;
 
 @import './fonts.scss';

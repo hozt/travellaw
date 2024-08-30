@@ -9,30 +9,52 @@ import { parse } from 'node-html-parser';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 
+console.log(siteUrl, apiUrl);
+
 export async function replaceImageUrls(content, localImageDir = 'images/content') {
   const root = parse(content);
 
-  // replace remote links at siteUrl and apiUrl to local links
+  // Helper function to replace URLs
+  const replaceUrl = (url, domain, localImageDir) => {
+    const imgUrl = new URL(url);
+    if (imgUrl.hostname === domain) {
+      const filename = imgUrl.pathname.split('/').pop();
+      return `/${localImageDir}/${filename}`;
+    }
+    return url;
+  };
+
+  // Replace remote links at siteUrl and apiUrl to local links
   root.querySelectorAll('a').forEach(a => {
     const href = a.getAttribute('href');
-    if (href && href.startsWith(siteUrl)) {
-      a.setAttribute('href', href.replace(siteUrl, ''));
-    } else if (href && href.startsWith(apiUrl)) {
-      a.setAttribute('href', href.replace(apiUrl, ''));
+    if (href) {
+      if (href.startsWith(siteUrl)) {
+        a.setAttribute('href', href.replace(siteUrl, ''));
+      } else if (href.startsWith(apiUrl)) {
+        a.setAttribute('href', href.replace(apiUrl, ''));
+      }
     }
   });
 
-  const currentDomain = new URL(siteUrl).hostname;
+  const siteDomain = new URL(siteUrl).hostname;
+  const apiDomain = new URL(apiUrl).hostname;
 
   root.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src');
     if (src && src.startsWith('http')) {
-      const imgUrl = new URL(src);
-      if (imgUrl.hostname === currentDomain) {
-        const filename = src.split('/').pop();
-        const localPath = `/${localImageDir}/${filename}`;
-        img.setAttribute('src', localPath);
-      }
+      const newSrc = replaceUrl(src, siteDomain, localImageDir);
+      img.setAttribute('src', newSrc !== src ? newSrc : replaceUrl(src, apiDomain, localImageDir));
+    }
+
+    const srcset = img.getAttribute('srcset');
+    if (srcset) {
+      const newSrcset = srcset.split(',').map(srcsetItem => {
+        const [url, descriptor] = srcsetItem.trim().split(' ');
+        const newUrl = replaceUrl(url, siteDomain, localImageDir);
+        const finalUrl = newUrl !== url ? newUrl : replaceUrl(url, apiDomain, localImageDir);
+        return descriptor ? `${finalUrl} ${descriptor}` : finalUrl;
+      }).join(', ');
+      img.setAttribute('srcset', newSrcset);
     }
   });
 
