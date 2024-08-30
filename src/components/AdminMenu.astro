@@ -16,6 +16,7 @@ const { pageId, postId, templateId } = Astro.props;
         headers: { 'X-Editor-Key': editorKey }
       });
 
+      console.log('Admin menu response:', response);
       if (response.ok) {
         const menuHTML = await response.text();
         document.getElementById('adminMenuContainer').innerHTML = menuHTML;
