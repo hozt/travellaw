@@ -30,10 +30,9 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
       sizes={sizes}
       alt={alt}
       class="object-cover w-full h-full"
-      width={width} || 500,
+      width={width},
       decoding="async"
-      loading="lazy"
-      height={height} || 300
+      height={height}
     />
   )}
   <div class=`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`>

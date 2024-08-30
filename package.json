@@ -14,6 +14,7 @@
     "@iconify/tailwind": "^1.1.2",
     "astro-compress": "^2.3.1",
     "astro-pagefind": "^1.6.0",
+    "astro-robots-txt": "^1.0.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
