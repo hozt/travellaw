@@ -15,7 +15,7 @@
     const templateId = url.searchParams.get('templateId');
 
     try {
-      const response = await fetch(`/api/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
+      const response = await fetch(`/admin-menu?postId=${postId || ''}&pageId=${pageId || ''}&templateId=${templateId || ''}`, {
         headers: { 'X-Editor-Key': editorKey }
       });
 
