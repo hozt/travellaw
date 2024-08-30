@@ -65,24 +65,23 @@ if (Astro.request.method === 'POST') {
 
       try {
         const response = await fetch('/contact', {
-          method: 'POST',
-          body: formData
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
         });
-
         const result = await response.json();
-
         if (result.success) {
-          formContainer.innerHTML = '<p class="mb-4 text-green-600">Thank you! Your message has been sent successfully.</p>';
+            // Handle success
+            console.log(result.message);
         } else {
-          throw new Error(result.error || 'Failed to send email');
+            // Handle error
+            console.error(result.error);
         }
-      } catch (error) {
-        console.error('Error sending email:', error);
-        const errorMessage = document.createElement('p');
-        errorMessage.textContent = 'There was an error sending your message. Please try again later.';
-        errorMessage.className = 'mb-4 text-red-600';
-        form.prepend(errorMessage);
-      }
+    } catch (error) {
+        console.error('Error:', error);
+    }
     });
   });
 </script>
