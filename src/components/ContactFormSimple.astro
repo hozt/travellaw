@@ -55,33 +55,42 @@ if (Astro.request.method === 'POST') {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('contactForm');
-    const formContainer = document.getElementById('formContainer');
+  const form = document.getElementById('contactForm');
+  const formContainer = document.getElementById('formContainer');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const formData = new FormData(form);
+    const formData = new FormData(form);
 
-      try {
-        const response = await fetch('/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
-        const result = await response.json();
+    try {
+      const response = await fetch('/contact', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Log the full response
+      const responseText = await response.text();
+      console.log('Full response:', responseText);
+
+      // Try to parse JSON only if the content type is application/json
+      if (response.headers.get('content-type')?.includes('application/json')) {
+        const result = JSON.parse(responseText);
         if (result.success) {
-            // Handle success
-            console.log(result.message);
+          formContainer.innerHTML = '<p class="mb-4 text-green-600">Thank you! Your message has been sent successfully.</p>';
         } else {
-            // Handle error
-            console.error(result.error);
+          throw new Error(result.error || 'Failed to send email');
         }
+      } else {
+        throw new Error('Received non-JSON response from server');
+      }
     } catch (error) {
-        console.error('Error:', error);
+      console.error('Error sending email:', error);
+      const errorMessage = document.createElement('p');
+      errorMessage.textContent = `There was an error sending your message: ${error.message}. Please try again later.`;
+      errorMessage.className = 'mb-4 text-red-600';
+      form.prepend(errorMessage);
     }
-    });
   });
+});
 </script>

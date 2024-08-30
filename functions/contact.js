@@ -1,53 +1,44 @@
 export async function onRequestPost({ request, env }) {
-    let formData;
     try {
-        // Read the request body only once
-        formData = await request.json();
-    } catch (error) {
-        console.error('Error parsing request body:', error);
-        return new Response(JSON.stringify({ success: false, error: 'Invalid request body' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-        });
-    }
+        // Read the request body
+        const formData = await request.formData();
 
-    const mailjetApiKey = env.MAILJET_API_KEY;
-    const mailjetApiSecret = env.MAILJET_API_SECRET;
-    const fromEmail = 'cloud@hozt.com';
-    const toEmail = env.MAILJET_TO_EMAIL;
-    const emailSubject = 'New Contact Form Submission';
+        const mailjetApiKey = env.MAILJET_API_KEY;
+        const mailjetApiSecret = env.MAILJET_API_SECRET;
+        const fromEmail = 'cloud@hozt.com';
+        const toEmail = env.MAILJET_TO_EMAIL;
+        const emailSubject = 'New Contact Form Submission';
 
-    let emailText = 'Do not reply directly to this email.\n\n';
-    let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
+        let emailText = 'Do not reply directly to this email.\n\n';
+        let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
 
-    for (const [key, value] of Object.entries(formData)) {
-        if (key !== 'cf-turnstile-response') {
-            emailText += `${key}: ${value}\n`;
-            emailHtml += `<p>${key}: ${value}</p>`;
+        for (const [key, value] of formData.entries()) {
+            if (key !== 'cf-turnstile-response') {
+                emailText += `${key}: ${value}\n`;
+                emailHtml += `<p>${key}: ${value}</p>`;
+            }
         }
-    }
 
-    const emailData = {
-        Messages: [
-            {
-                From: {
-                    Email: fromEmail,
-                    Name: 'Contact Form',
-                },
-                To: [
-                    {
-                        Email: toEmail,
-                        Name: 'Recipient',
+        const emailData = {
+            Messages: [
+                {
+                    From: {
+                        Email: fromEmail,
+                        Name: 'Contact Form',
                     },
-                ],
-                Subject: emailSubject,
-                TextPart: emailText,
-                HTMLPart: emailHtml,
-            },
-        ],
-    };
+                    To: [
+                        {
+                            Email: toEmail,
+                            Name: 'Recipient',
+                        },
+                    ],
+                    Subject: emailSubject,
+                    TextPart: emailText,
+                    HTMLPart: emailHtml,
+                },
+            ],
+        };
 
-    try {
         const emailResponse = await sendEmail(mailjetApiKey, mailjetApiSecret, emailData);
 
         if (emailResponse.ok) {
@@ -64,7 +55,7 @@ export async function onRequestPost({ request, env }) {
             });
         }
     } catch (error) {
-        console.error('Error in email sending process:', error);
+        console.error('Error in onRequestPost:', error);
         return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
@@ -91,6 +82,6 @@ async function sendEmail(apiKey, apiSecret, emailData) {
         return response;
     } catch (error) {
         console.error('Error in sendEmail:', error);
-        throw error; // Propagate the error to be handled in the main function
+        throw error;
     }
 }
