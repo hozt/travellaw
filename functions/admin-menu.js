@@ -61,6 +61,12 @@ export async function onRequest(context) {
             <span class="hidden md:inline-block">Regenerate Site</span>
             </a>
         </li>
+        <li>
+            <a href="/logout" rel="noreferrer">
+            <i class="icon-[mdi--logout] text-lg mr-1" title="Logout"></i>
+            <span class="hidden md:inline-block">Logout</span>
+            </a>
+        </li>
       `;
 
       return new Response(menuHTML, {

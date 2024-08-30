@@ -17,5 +17,6 @@ icon-[mdi--post-it-note-edit]
 icon-[mdi--post-it-note-edit]
 icon-[mdi--menu-open]
 icon-[mdi--publish]
+icon-[mdi--logout]
 hidden
 md:inline-block
