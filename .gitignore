@@ -44,3 +44,8 @@ package-lock.json
 
 # Local configuration files
 *.local
+
+public/images/banners/*
+public/images/context/*
+public/images/featured/*
+public/images/logos/*

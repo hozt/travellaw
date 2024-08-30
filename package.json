@@ -18,6 +18,7 @@
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
     "js-cookie": "^3.0.5",
+    "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
     "serve": "^14.2.3",
     "wrangler": "^3.72.3"

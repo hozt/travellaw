@@ -495,3 +495,14 @@ export const GET_GALLERY = gql`
     }
   }
 `;
+
+export const GET_FAVICON = gql`
+  {
+    customSiteSettings {
+      faviconLogo {
+        sourceUrl
+        mimeType
+      }
+    }
+  }
+`;

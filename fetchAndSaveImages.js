@@ -1,7 +1,14 @@
 import { request, gql } from 'graphql-request';
 import { parse } from 'node-html-parser';
+import fs from 'fs/promises';
+import path from 'path';
+import fetch from 'node-fetch';
+import { fileURLToPath } from 'url';
 
-const endpoint = 'https://travellaw.hozt.com/graphql' //import.meta.env.GRAPHQL_URL;
+// Get the directory name of the current module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const endpoint = 'https://travellaw.hozt.com/graphql';
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
@@ -53,6 +60,9 @@ const query = gql`
       mobileLogo {
         sourceUrl
       }
+      faviconLogo {
+        sourceUrl
+      }
     }
     galleries {
       nodes {
@@ -85,18 +95,18 @@ async function fetchImageUrls() {
     }
 
     const imageUrls = {
-      bannerImages: [],
-      featuredImages: [],
-      contentImages: [],
+      banners: [],
+      featured: [],
+      content: [],
       logos: [],
-      galleryImages: []
+      gallery: []
     };
 
     // Collect banner images
     ['pages', 'posts', 'forms', 'templates'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.bannerImage?.sourceUrl) {
-          imageUrls.bannerImages.push(node.bannerImage.sourceUrl);
+          imageUrls.banners.push(node.bannerImage.sourceUrl);
         }
       });
     });
@@ -104,14 +114,14 @@ async function fetchImageUrls() {
     // Collect featured images
     data.posts?.nodes?.forEach(node => {
       if (node?.featuredImage?.node?.sourceUrl) {
-        imageUrls.featuredImages.push(node.featuredImage.node.sourceUrl);
+        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
       }
     });
 
     // Collect content images
     ['pages', 'posts'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
-        imageUrls.contentImages.push(...extractImageUrlsFromContent(node?.content));
+        imageUrls.content.push(...extractImageUrlsFromContent(node?.content));
       });
     });
 
@@ -122,12 +132,15 @@ async function fetchImageUrls() {
     if (data.customSiteSettings?.mobileLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.mobileLogo.sourceUrl);
     }
-
+    // save favicon to /public/favicon.svg  convert to svg
+    if (data.customSiteSettings?.faviconLogo?.sourceUrl) {
+      imageUrls.logos.push(data.customSiteSettings.faviconLogo.sourceUrl);
+    }
     // Collect gallery images
     data.galleries?.nodes?.forEach(gallery => {
       gallery.galleryImages?.forEach(image => {
         if (image.sourceUrl) {
-          imageUrls.galleryImages.push(image.sourceUrl);
+          imageUrls.gallery.push(image.sourceUrl);
         }
       });
     });
@@ -140,13 +153,49 @@ async function fetchImageUrls() {
   }
 }
 
-// Usage
-fetchImageUrls().then(imageUrls => {
-  if (imageUrls) {
-    console.log('Banner Images:', imageUrls.bannerImages.length);
-    console.log('Featured Images:', imageUrls.featuredImages.length);
-    console.log('Content Images:', imageUrls.contentImages.length);
-    console.log('Logos:', imageUrls.logos.length);
-    console.log('Gallery Images:', imageUrls.galleryImages.length);
+async function downloadImage(url, outputPath) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+    const buffer = await response.buffer();
+    await fs.writeFile(outputPath, buffer);
+    console.log(`Downloaded: ${url}`);
+    console.log(`Saved to: ${outputPath}`);
+  } catch (error) {
+    console.error(`Error downloading ${url}: ${error.message}`);
   }
-});
+}
+
+async function downloadAllImages(imageUrls) {
+  const downloadPromises = [];
+  for (const [category, urls] of Object.entries(imageUrls)) {
+    for (const url of urls) {
+      const fileName = path.basename(new URL(url).pathname);
+      const outputPath = path.join(__dirname, 'public', category, fileName);
+      await fs.mkdir(path.dirname(outputPath), { recursive: true });
+      downloadPromises.push(downloadImage(url, outputPath));
+    }
+  }
+  await Promise.all(downloadPromises);
+}
+
+// Main execution
+(async () => {
+  try {
+    const imageUrls = await fetchImageUrls();
+    if (imageUrls) {
+      console.log('Banner Images:', imageUrls.banners.length);
+      console.log('Featured Images:', imageUrls.featured.length);
+      console.log('Content Images:', imageUrls.content.length);
+      console.log('Logos:', imageUrls.logos.length);
+      console.log('Gallery Images:', imageUrls.gallery.length);
+      console.log('Root Images:', imageUrls.root.length);
+
+      console.log('Starting image downloads...');
+      await downloadAllImages(imageUrls);
+      console.log('All images downloaded successfully');
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+})();
