@@ -1,6 +1,4 @@
 ---
-// ContactForm.astro
-
 let serverError = '';
 let isSubmitted = false;
 
@@ -51,7 +49,7 @@ const turnstileSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY;
       <span class="block sm:inline"> Your message has been sent.</span>
     </div>
   ) : (
-    <form method="POST">
+    <form method="POST" action="/contact">
       <div class="mb-4">
         <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
           Name <span class="text-red-500">*</span>
