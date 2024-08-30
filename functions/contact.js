@@ -1,4 +1,5 @@
 export async function onRequestPost({ request, env }) {
+    console.log("Cloudflare Function called");
     try {
         // Read the request body
         const formData = await request.formData();

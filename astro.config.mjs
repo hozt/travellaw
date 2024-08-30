@@ -17,7 +17,9 @@ export default defineConfig({
     tailwind()
   ],
   site: site,
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    mode: 'directory'
+  }),
   vite: {
     define: {
       'import.meta.env.SITE_URL': JSON.stringify(process.env.SITE_URL),
