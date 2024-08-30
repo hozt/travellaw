@@ -15,15 +15,12 @@
     "@iconify/tailwind": "^1.1.2",
     "astro-compress": "^2.3.1",
     "dayjs": "^1.11.13",
-    "form-data": "^4.0.0",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
     "js-cookie": "^3.0.5",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
-    "node-mailjet": "^6.0.5",
-    "serve": "^14.2.3",
-    "wrangler": "^3.72.3"
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",
