@@ -1,18 +1,16 @@
 ---
-const { terms } = Astro.props;
+import CustomLink from "./CustomLink.astro";
+const { tags } = Astro.props;
+const allTags = tags?.nodes;
 
-if (!terms || !terms.nodes) return null;
+if (!allTags) return null;
 
-const tags = terms.nodes.filter(term => term.nodeType === "Tag");
-if (tags.length === 0) {
-  return null;
-}
 ---
 
 <div class="tags">
   <span class="mr-4 font-semibold">Tags:</span>
-  {tags.map(tag => (
-    <a href={tag.link} class="mr-4 tag-link" key={tag.slug}>
+  {allTags.map(tag => (
+    <a href={`/tags/${tag.slug}`} class="mr-4 tag-link" key={tag.slug}>
       {tag.name}
     </a>
   ))}

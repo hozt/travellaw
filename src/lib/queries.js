@@ -156,6 +156,12 @@ export const GET_POST = gql`
       metaDescription
       date
       content
+      tags {
+        nodes {
+          name
+          slug
+        }
+      }
       bannerImage {
         altText
         sourceUrl
@@ -240,6 +246,7 @@ export const GET_TAGS = gql`
         slug
         databaseId
         description
+        count
       }
     }
   }

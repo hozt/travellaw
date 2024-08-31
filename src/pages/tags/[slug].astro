@@ -39,7 +39,7 @@ const page = templateData.templateBy;
 const posts = data?.tag?.posts?.nodes;
 const tagName = data?.tag?.name;
 
-const title = page?.title || `Tag ${tagName}`;
+const title = page?.title || tagName;
 
 if (!posts) {
   return {
@@ -59,21 +59,21 @@ if (!posts) {
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
   />
-  <div class="container mx-auto">
+  <div class="container main-body">
     {page?.content && <div class="content" set:html={page?.content} />}
 
     <div class="category">
       {
         posts.map((post) => (
-          <div key={post.databaseId} class="pb-4 border-b-2 blog-post">
-            <h3 class="mb-2">
-              <a href={`/article/${post.slug}`} class="no-underline">
+          <div key={post.databaseId} class="mb-4 border-b-2 last:border-none blog-post">
+            <div class="mb-2">
+              <a href={`/articles/${post.slug}`} class="text-lg font-semibold no-underline">
                 {post.title}
               </a>
-            </h3>
+            </div>
             <div class="flex">
               {post.featuredImage && (
-                <a href={`/article/${post.slug}`}>
+                <a href={`/articles/${post.slug}`}>
                   <Image
                     src={post.featuredImage.node.sourceUrl}
                     width={150}
@@ -85,11 +85,6 @@ if (!posts) {
               )}
               <div class="">
                 <div class="flex-grow blog-excerpt" set:html={post.excerpt} />
-                <div class="mt-4 uppercase">
-                  <a href={`/article/${post.slug}`} class="no-underline">
-                    Read
-                  </a>
-                </div>
               </div>
             </div>
           </div>

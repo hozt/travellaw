@@ -44,7 +44,7 @@ const groupedFaqs = faqTopicIds.map(id => {
           <div class="mt-4">
             {group.faqs.map(faq => (
               <details key={faq.faqId} class="mb-4 faq-item">
-                <summary class="text-lg font-medium text-blue-600 cursor-pointer hover:text-blue-800">
+                <summary class="text-lg font-semibold cursor-pointer text-link hover:text-link-hover">
                   {faq.title}
                 </summary>
                 <div class="mt-2 text-gray-700 faq-content" set:html={faq.content}></div>

@@ -24,7 +24,7 @@ const title = template?.title || `Contact`;
     width={template?.bannerImage?.mediaDetails.width}
     height={template?.bannerImage?.mediaDetails.height}
   />
-  <div class="container mx-auto">
+  <div class="container main-body">
     {template?.content && (
       <div class="content" set:html={template?.content} />
     )}

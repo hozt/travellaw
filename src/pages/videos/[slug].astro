@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
 import VideoPlayer from "../../components/VideoPlayer.astro";
 import client from '../../lib/apolloClient';
+import Breadcrumb from "../../components/Breadcrumb.astro";
 import { GET_VIDEO_SLUGS, GET_VIDEO } from "../../lib/queries";
 
 
@@ -38,6 +39,7 @@ try {
 ---
 
 <Layout title={video?.title} postId={video?.databaseId} classes="video" description={video?.metaDescription}>
+  <Breadcrumb crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]} />
   <BannerTitle title={video?.title} subtitle={video?.subtitle} />
   <div class="">
     <VideoPlayer url={video?.videoUrl} title={video?.title} width="max-w-auto" />

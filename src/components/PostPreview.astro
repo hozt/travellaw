@@ -30,10 +30,10 @@ const imageHeight = featuredImage?.node?.mediaDetails?.height || 150;
     />
   )}
   <div>
-    <div class="post-title"><a href={`/article/${slug}`} class="no-link">{title}</a></div>
+    <div class="post-title"><a href={`/articles/${slug}`} class="no-link">{title}</a></div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
-      <a href={`/article/${slug}`} class="read-more">Read More</a>
+      <a href={`/articles/${slug}`} class="read-more">Read More</a>
     </div>
   </div>
 </article>

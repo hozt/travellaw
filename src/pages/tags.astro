@@ -33,20 +33,18 @@ const title = page?.title || `Tags`;
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
   />
-  <div class="container mx-auto">
+  <div class="container main-body">
     {page?.content && (
       <div class="content" set:html={page?.content} />
     )}
 
-    <div class="tag">
+    <ul class="tag">
       {tags.map((tag) => (
-        <div key={tag.databaseId} class="pb-4 border-b-2 blog-post">
-          <h3 class="mb-2">
-            <a href={`/tag/${tag.slug}`} class="no-underline">{tag.name}</a>
-          </h3>
+        <li key={tag.databaseId} class="pb-4 tags">
+          <a href={`/tags/${tag.slug}`} class="no-underline">{tag.name} ({tag.count})</a>
           <div>{tag.description}</div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   </div>
 </Layout>

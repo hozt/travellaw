@@ -4,6 +4,7 @@ import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
+import TagLinks from '../../components/TagLinks.astro';
 import { replaceImageUrls } from '../../lib/utils';
 
 export async function getStaticPaths() {
@@ -54,7 +55,7 @@ try {
 ---
 
 <Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="page">
-  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/1'}, { label: page?.title }]} />
+  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]} />
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}
@@ -72,5 +73,6 @@ try {
       />
     )}
     <div set:html={updatedContent} />
+    <TagLinks tags={page?.tags} />
   </div>
 </Layout>

@@ -26,7 +26,7 @@ const title = page?.title || `Video`;
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
   />
-  <div class="container mx-auto">
+  <div class="container main-body">
     {page?.content && (
       <div class="content" set:html={page?.content} />
     )}
@@ -34,12 +34,12 @@ const title = page?.title || `Video`;
     <div class="video">
       {videos.map((video) => (
         <div key={video.databaseId} class="pb-4 border-b-2 blog-post">
-          <h3 class="mb-2">
-            <a href={`/video/${video.slug}`} class="no-underline">{video.title}</a>
-          </h3>
+          <div class="mb-2">
+            <a href={`/videos/${video.slug}`} class="no-underline">{video.title}</a>
+          </div>
           <div class="flex">
             {video.featuredImage && (
-              <a href={`/video/${video.slug}`}>
+              <a href={`/videos/${video.slug}`}>
                 <Image
                   src={video.featuredImage.node.sourceUrl}
                   width={150}
@@ -49,12 +49,6 @@ const title = page?.title || `Video`;
                 />
               </a>
             )}
-            <div class="">
-              <div class="flex-grow blog-excerpt" set:html={video.excerpt} />
-              <div class="mt-4 uppercase">
-                <a href={`/video/${video.slug}`} class="no-underline">Watch Video</a>
-              </div>
-            </div>
           </div>
         </div>
       ))}

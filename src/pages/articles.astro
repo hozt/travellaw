@@ -46,7 +46,7 @@ const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE) + 1;
     width={template?.bannerImage?.mediaDetails.width}
     height={template?.bannerImage?.mediaDetails.height}
   />
-  <div class="container mx-auto">
+  <div class="container main-body">
     <ArticleList articles={articles} />
     <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>

@@ -7,6 +7,22 @@
 }
 
 @font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/Merriweather.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 600 700 800 900;
+    font-display: swap;
+    src: url('/fonts/Merriweather-Bold.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'OpenSans';
     font-style: normal;
     font-weight: 400;
