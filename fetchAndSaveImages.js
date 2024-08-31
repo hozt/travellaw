@@ -19,6 +19,11 @@ if (!endpoint) {
 const recordsToFetch = 500;
 const query = gql`
   query GetImages($first: Int!) {
+    redirects {
+      new_url
+      old_url
+      status_code
+    }
     pages(first: $first) {
       nodes {
         bannerImage {
@@ -247,6 +252,15 @@ async function downloadAllImages(imageUrls) {
   await Promise.all(downloadPromises);
 }
 
+async function saveRedirectsToFile() {
+  const data = await request(endpoint, query, { first: recordsToFetch });
+  const redirects = data.redirects;
+  const redirectsPath = path.join(__dirname, 'public', '_redirects');
+  const lines = redirects.map(({ old_url, new_url, status_code }) => `${old_url} ${new_url} ${status_code}`).join('\n');
+  await fs.writeFile(redirectsPath, lines);
+  console.log('Saved redirects to _redirects file');
+}
+
 // Main execution
 (async () => {
   try {
@@ -261,6 +275,7 @@ async function downloadAllImages(imageUrls) {
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
       await fetchAndSavePDFs();
+      await saveRedirectsToFile();
       console.log('All images downloaded successfully');
 
     }

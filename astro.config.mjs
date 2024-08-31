@@ -19,12 +19,5 @@ export default defineConfig({
     pagefind(),
     robotsTxt()
   ],
-  site: site,
-  vite: {
-    define: {
-      'import.meta.env.SITE_URL': JSON.stringify(process.env.SITE_URL),
-      'import.meta.env.API_URL': JSON.stringify(process.env.API_URL),
-      'import.meta.env.GRAPHQL_URL': JSON.stringify(process.env.GRAPHQL_URL),
-    },
-  },
+  site: site
 });

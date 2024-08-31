@@ -2,8 +2,8 @@
 import { gql } from '@apollo/client/core';
 
 export const GET_PAGE_DATA = gql`
-  query GetIndexPage {
-    pageBy(uri: "index") {
+  query($uri: String!) {
+    pageBy(uri: $uri) {
       databaseId
       content
       dateGmt
@@ -329,6 +329,7 @@ export const GET_VIDEOS = gql`
         title
         slug
         content
+        excerpt
         databaseId
         videoUrl
         featuredImage {
@@ -404,16 +405,6 @@ export const GET_FORM = gql`
           height
         }
       }
-    }
-  }
-`;
-
-export const GET_REDIRECTS = gql`
-  query {
-    redirects {
-      new_url
-      old_url
-      status_code
     }
   }
 `;

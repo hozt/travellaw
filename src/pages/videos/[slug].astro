@@ -41,7 +41,8 @@ try {
 <Layout title={video?.title} postId={video?.databaseId} classes="video" description={video?.metaDescription}>
   <Breadcrumb crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]} />
   <BannerTitle title={video?.title} subtitle={video?.subtitle} />
-  <div class="">
-    <VideoPlayer url={video?.videoUrl} title={video?.title} width="max-w-auto" />
+  <div class="container main-body">
+    <VideoPlayer url={video?.videoUrl} title={video?.title} />
+    {video?.content && <div class="max-w-lg mx-auto mt-4 video-content" set:html={video?.content} />}
   </div>
 </Layout>

@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import BannerTitle from "../components/BannerTitle.astro";
-// import Breadcrumb from "../components/Breadcrumb.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
 import client from '../lib/apolloClient';
 import { GET_VIDEOS, GET_TEMPLATE } from '../lib/queries';
 
@@ -19,6 +19,7 @@ const title = page?.title || `Video`;
 ---
 
 <Layout title={title} templateId={page?.templateId} description={page?.metaDescription}>
+  <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
@@ -34,22 +35,29 @@ const title = page?.title || `Video`;
     <div class="video">
       {videos.map((video) => (
         <div key={video.databaseId} class="pb-4 border-b-2 blog-post">
-          <div class="mb-2">
-            <a href={`/videos/${video.slug}`} class="no-underline">{video.title}</a>
-          </div>
           <div class="flex">
             {video.featuredImage && (
-              <a href={`/videos/${video.slug}`}>
-                <Image
-                  src={video.featuredImage.node.sourceUrl}
-                  width={150}
-                  height={150}
-                  alt={`Featured image for ${video.title}`}
-                  class="w-24 mr-4 lg:w-32"
-                />
-              </a>
+              <div>
+                <a href={`/videos/${video.slug}`}>
+                  <Image
+                    src={video.featuredImage.node.sourceUrl}
+                    width={150}
+                    height={150}
+                    alt={`Featured image for ${video.title}`}
+                    class="w-24 mr-4 lg:w-32"
+                  />
+                </a>
+              </div>
             )}
+            <div>
+              <div class="mb-2">
+                <a href={`/videos/${video.slug}`} class="no-underline">{video.title}</a>
+              </div>
+              <div set:html={video?.excerpt} />
+            </div>
           </div>
+
+
         </div>
       ))}
     </div>

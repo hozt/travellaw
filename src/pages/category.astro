@@ -44,7 +44,7 @@ const title = page?.title || `Categories`;
           <h3 class="mb-2">
             <a href={`/category/${category.slug}`} class="no-underline">{category.name}</a>
           </h3>
-          <div>{category.description}</div>
+          {category?.description && <div>{category?.description}</div>}
         </div>
       ))}
     </div>
