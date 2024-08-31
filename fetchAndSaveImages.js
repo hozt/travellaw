@@ -76,6 +76,11 @@ const query = gql`
         }
       }
     }
+    mediaItems(where: {mimeType: APPLICATION_PDF}) {
+      nodes {
+        mediaItemUrl
+      }
+    }
   }
 `;
 
@@ -192,6 +197,42 @@ async function downloadImage(url, outputPath) {
   }
 }
 
+async function downloadPdf(pdfUrl, outputPath) {
+  try {
+    const response = await fetch(pdfUrl);
+    if (!response.ok) throw new Error(`Failed to fetch PDF: ${pdfUrl}`);
+    const buffer = await response.buffer();
+    await fs.writeFile(outputPath, buffer);
+    console.log(`Downloaded PDF: ${outputPath}`);
+  } catch (error) {
+    console.error(`Error downloading PDF ${pdfUrl}: ${error.message}`);
+  }
+}
+
+async function fetchAndSavePDFs() {
+  try {
+    const data = await request(endpoint, query, { first: recordsToFetch });
+
+    const localPdfDir = 'public/pdfs';
+    await fs.mkdir(path.join(__dirname, localPdfDir), { recursive: true });
+
+    for (const node of data.mediaItems.nodes) {
+      try {
+        const pdfUrl = node.mediaItemUrl;
+        const pdfFilename = pdfUrl.split('/').pop();
+        const pdfPath = path.join(__dirname, localPdfDir, pdfFilename);
+        await downloadPdf(pdfUrl, pdfPath);
+      } catch (error) {
+        console.error(`Error fetching PDF: ${error.message}`);
+      }
+    }
+
+    console.log('PDFs fetched and saved successfully');
+  } catch (error) {
+    console.error('Error in fetchAndSavePDFs:', error.message);
+  }
+}
+
 async function downloadAllImages(imageUrls) {
   const downloadPromises = [];
   for (const [category, urls] of Object.entries(imageUrls)) {
@@ -219,7 +260,9 @@ async function downloadAllImages(imageUrls) {
 
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
+      await fetchAndSavePDFs();
       console.log('All images downloaded successfully');
+
     }
   } catch (error) {
     console.error('An error occurred:', error);

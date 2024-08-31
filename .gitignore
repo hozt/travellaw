@@ -32,9 +32,6 @@ coverage/
 # Astro cache
 astro/
 
-# Yarn or npm lock files
-yarn.lock
-package-lock.json
 
 # Build cache
 .cache/
@@ -49,3 +46,4 @@ public/images/banners/*
 public/images/content/*
 public/images/featured/*
 public/images/logos/*
+public/pdfs/*
