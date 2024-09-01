@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import BannerTitle from "../../components/BannerTitle.astro";
+import PostPreview from "../../components/PostPreview.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import client from "../../lib/apolloClient";
 import {
@@ -61,33 +62,10 @@ if (!posts) {
   />
   <div class="container main-body">
     {page?.content && <div class="content" set:html={page?.content} />}
-
     <div class="category">
       {
         posts.map((post) => (
-          <div key={post.databaseId} class="mb-4 border-b-2 last:border-none blog-post">
-            <div class="mb-2">
-              <a href={`/articles/${post.slug}`} class="text-lg font-semibold no-underline">
-                {post.title}
-              </a>
-            </div>
-            <div class="flex">
-              {post.featuredImage && (
-                <a href={`/articles/${post.slug}`}>
-                  <Image
-                    src={post.featuredImage.node.sourceUrl}
-                    width={150}
-                    height={150}
-                    alt={`Featured image for ${post.title}`}
-                    class="w-24 mr-4 lg:w-32"
-                  />
-                </a>
-              )}
-              <div class="">
-                <div class="flex-grow blog-excerpt" set:html={post.excerpt} />
-              </div>
-            </div>
-          </div>
+          <PostPreview key={post.databaseId} post={post} path="articles" />
         ))
       }
     </div>

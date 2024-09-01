@@ -1,7 +1,7 @@
 
 import { gql } from '@apollo/client/core';
 
-export const GET_PAGE_DATA = gql`
+export const GET_PAGE = gql`
   query($uri: String!) {
     pageBy(uri: $uri) {
       databaseId
@@ -175,7 +175,7 @@ export const GET_POST = gql`
 `;
 
 export const GET_POSTS_EXCERPTS = gql`
-  query GET_POSTS_EXCERPTS($first: Int!, $after: String) {
+  query($first: Int!, $after: String) {
     posts(first: $first, after: $after) {
       nodes {
         id
@@ -183,6 +183,11 @@ export const GET_POSTS_EXCERPTS = gql`
         excerpt
         slug
         databaseId
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
       }
       pageInfo {
         endCursor
@@ -217,7 +222,7 @@ export const GET_POSTS_BY_CATEGORY = gql`
 
 // get posts by tags
 export const GET_POSTS_BY_TAG = gql`
-  query GET_POSTS_BY_TAG($slug: ID!) {
+  query($slug: ID!) {
     tag(id: $slug, idType: SLUG) {
       name
       posts {
@@ -304,7 +309,7 @@ export const GET_FAQ_TOPICS = gql`
 `;
 
 export const GET_TEMPLATE = gql`
-  query GetTemplate($slug: String!) {
+  query($slug: String!) {
     templateBy(slug: $slug) {
       title
       databaseId
@@ -349,7 +354,7 @@ export const GET_VIDEOS = gql`
 `;
 
 export const GET_EVENTS = gql`
-  query GetEvents {
+  query {
     events(where: { status: PUBLISH }) {
       nodes {
         title
@@ -371,7 +376,7 @@ export const GET_EVENTS = gql`
 `;
 
 export const GET_ARTICLES_COUNT = gql`
-  query GetArticlesCount {
+  query {
     posts(first: 500) {
       nodes {
         id
@@ -381,7 +386,7 @@ export const GET_ARTICLES_COUNT = gql`
 `;
 
 export const GET_ALL_FORMS = gql`
-  query GetForms {
+  query {
     forms {
       nodes {
         slug
@@ -391,7 +396,7 @@ export const GET_ALL_FORMS = gql`
 `;
 
 export const GET_FORM = gql`
-  query GetForm($slug: String!) {
+  query($slug: String!) {
     formBy(slug: $slug) {
       title
       databaseId

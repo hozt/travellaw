@@ -1,7 +1,7 @@
 ---
 // /pages/[...slug].astro
 import client from '../lib/apolloClient';
-import { GET_PAGES, GET_PAGE_DATA } from '../lib/queries';
+import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import { replaceImageUrls } from '../lib/utils';
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 const { slug } = Astro.params; // This is a string in Astro
 
 const { data: pagesData } = await client.query({
-  query: GET_PAGE_DATA,
+  query: GET_PAGE,
   variables: { uri: slug },
 });
 

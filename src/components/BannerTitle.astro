@@ -1,19 +1,26 @@
 ---
 import { Image } from 'astro:assets';
-import { localImage } from '../lib/utils';
+import { localFileName } from '../lib/utils';
 
 const { title, subtitle, image, width, height } = Astro.props;
 
 let imageLocal = '';
 
 if (image) {
-  imageLocal = localImage(image, 'banners');
+  const images = import.meta.glob('../../assets/images/banners/*.{jpg,jpeg,png,webp,avif}');
+  const imageName = localFileName(image);
+  const imagePath = `../../assets/images/banners/${imageName}`;
+
+  if (images[imagePath]) {
+    const imageModule = await images[imagePath]();
+    imageLocal = imageModule.default;
+  }
 }
 
 const alt = title;
 
 // Define the widths for responsive images
-const widths = [320, 768, 1024, 1440, 2000];
+const widths = [768, 1024, 1440, 2000];
 
 // Define the formats to generate (e.g., webp, avif, jpg)
 const formats = ['avif', 'webp', 'jpg'];
@@ -27,17 +34,17 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
     <Image
       src={imageLocal}
       widths={widths}
+      formats={formats}
       sizes={sizes}
       alt={alt}
       class="object-cover w-full h-full"
-      width={width},
+      width={width}
       decoding="async"
       height={height}
     />
   )}
-  <div class=`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`>
+  <div class={`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`}>
     <h1 class="text-2xl text-center md:text-4xl">{title}</h1>
     {subtitle && <h2 class="text-lg text-center md:text-xl">{subtitle}</h2>}
   </div>
 </div>
-

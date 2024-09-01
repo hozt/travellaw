@@ -55,7 +55,6 @@ try {
 ---
 
 <Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="page">
-  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]} />
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}
@@ -63,6 +62,7 @@ try {
     width={page?.bannerImage?.mediaDetails?.width}
     height={page?.bannerImage?.mediaDetails?.height}
   />
+  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]} />
   <div class="main-body content">
     {page?.featuredImage?.sourceUrl && (
       <img

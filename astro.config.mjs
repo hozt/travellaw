@@ -5,7 +5,10 @@ import tailwind from "@astrojs/tailwind";
 import pagefind from "astro-pagefind";
 import robotsTxt from 'astro-robots-txt';
 
-const site = process.env.SITE_URL || 'https://travellaw.com';
+import sentry from "@sentry/astro";
+import spotlightjs from "@spotlightjs/astro";
+
+const site = process.env.SITE_URL;
 
 export default defineConfig({
   output: 'static',
@@ -17,7 +20,9 @@ export default defineConfig({
     sitemap(),
     tailwind(),
     pagefind(),
-    robotsTxt()
+    robotsTxt(),
+    sentry(),
+    spotlightjs()
   ],
   site: site
 });

@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import Layout from "../layouts/Layout.astro";
-import ArticleList from "../components/ArticleList.astro";
+import PostPreview from "../components/PostPreview.astro";
 import BannerTitle from "../components/BannerTitle.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 
@@ -47,7 +47,9 @@ const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE) + 1;
     height={template?.bannerImage?.mediaDetails.height}
   />
   <div class="container main-body">
-    <ArticleList articles={articles} />
+    {articles.map((article) => (
+      <PostPreview post={article} path="articles" />
+    ))}
     <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>
 </Layout>

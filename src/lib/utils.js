@@ -81,3 +81,10 @@ export function localImage(imageUrl, path) {
   }
   return '';
 }
+
+export function localFileName(imageUrl) {
+  if (imageUrl) {
+    return imageUrl.split('/').pop();
+  }
+  return '';
+}

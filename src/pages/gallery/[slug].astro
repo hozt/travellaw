@@ -30,13 +30,38 @@ try {
 
   gallery = data.galleryBy;
   template = data.templateBy;
-  console.log('template', template);
 } catch (e) {
   console.error('Error fetching gallery data:', e);
   error = e.message;
 }
 
 const title = gallery?.title || "Photo Gallery";
+
+const images = import.meta.glob('../../../assets/images/gallery/*.{jpg,jpeg,png,webp,avif}');
+
+async function getImageUrl(imagePath) {
+  const relativePath = `../../../assets/images/gallery/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule.default;
+  }
+  console.log('Image not found for path:', relativePath);
+  return null;
+}
+
+const galleryImages = await Promise.all(
+  (gallery?.galleryImages || []).map(async (image) => {
+    const sourceUrl = await getImageUrl(image.sourceUrl);
+    if (!sourceUrl) {
+      console.error('Failed to resolve image URL:', image.sourceUrl);
+    }
+    return {
+      ...image,
+      sourceUrl,
+    };
+  })
+);
+
 ---
 
 <Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId} description={template?.metaDescription}>
@@ -57,11 +82,11 @@ const title = gallery?.title || "Photo Gallery";
       )}
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {gallery?.galleryImages?.map((image, index) => (
+        {galleryImages.map((image, index) => (
           <div class="overflow-hidden transition-transform duration-300 rounded-lg shadow-md cursor-pointer hover:scale-105">
             <Image
-              src={image.sourceUrl}
-              alt={`Gallery image ${index + 1}`}
+              src={image.sourceUrl || 'fallback-image-path.jpg'}
+              alt={image.altText || `Gallery image ${index + 1}`}
               width={image.mediaDetails.width}
               height={image.mediaDetails.height}
               class="object-cover w-full h-auto"

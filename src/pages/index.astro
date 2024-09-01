@@ -4,11 +4,11 @@ import Seo from '../components/Seo.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls } from '../lib/utils';
-import { GET_PAGE_DATA } from '../lib/queries';
+import { GET_PAGE } from '../lib/queries';
 
 // Fetch data using Apollo Client
 const response = await client.query({
-  query: GET_PAGE_DATA,
+  query: GET_PAGE,
   variables: { uri: '/index/' },
 });
 

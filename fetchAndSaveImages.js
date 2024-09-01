@@ -243,8 +243,9 @@ async function downloadAllImages(imageUrls) {
   for (const [category, urls] of Object.entries(imageUrls)) {
     for (const url of urls) {
       const fileName = path.basename(new URL(url).pathname);
-      const outputPath = path.join(__dirname, 'public', 'images', category, fileName);
-      await fs.mkdir(path.join(__dirname, 'public', 'images'), { recursive: true });
+      const basePath = (category === 'banners' || category === 'logos' || category === 'gallery') ? 'assets' : 'public';
+      const outputPath = path.join(__dirname, basePath, 'images', category, fileName);
+      await fs.mkdir(path.join(__dirname, basePath, 'images'), { recursive: true });
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       downloadPromises.push(downloadImage(url, outputPath));
     }

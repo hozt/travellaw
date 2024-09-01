@@ -3,20 +3,39 @@ import client from '../lib/apolloClient';
 import { Image } from 'astro:assets';
 import { GET_SITE_SETTINGS } from '../lib/queries';
 import Navigation from './Navigation.astro';
-import { localImage } from '../lib/utils';
+
 const { data } = await client.query({
   query: GET_SITE_SETTINGS,
 });
 
 const siteSettings = data?.customSiteSettings;
 
-const logoUrl = siteSettings?.logo?.sourceUrl ? localImage(siteSettings?.logo?.sourceUrl, 'logos') : null;
+const images = import.meta.glob('../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}');
+
+async function getImageUrl(imagePath) {
+  if (images[imagePath]) {
+    const imageModule = await images[imagePath]();
+    return imageModule.default;
+  }
+  return null;
+}
+
+const logoUrl = siteSettings?.logo?.sourceUrl ? await getImageUrl(`../../assets/images/logos/${siteSettings.logo.sourceUrl.split('/').pop()}`) : null;
 const logoWidth = siteSettings?.logo?.mediaDetails?.width || 150;
 const logoHeight = siteSettings?.logo?.mediaDetails?.height || 150;
-const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl ? localImage(siteSettings?.mobileLogo?.sourceUrl, 'logos') : null;
+const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl ? await getImageUrl(`../../assets/images/logos/${siteSettings.mobileLogo.sourceUrl.split('/').pop()}`) : null;
 const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || 150;
 const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || 150;
-const siteTitle = siteSettings?.siteTitle || '';
+const siteTitle = siteSettings?.siteTitle || 'Logo';
+
+// Define the widths for responsive images
+const widths = [240, 320, 640, 768, 1024];
+
+// Define the formats to generate (e.g., webp, avif, jpg)
+const formats = ['avif', 'webp', 'jpg'];
+
+// Define the sizes attribute to make the image full width of the viewport
+const sizes = "100vw"; // This ensures the image takes up 100% of the viewport width
 ---
 
 <div class="mx-auto top-header">
@@ -28,28 +47,31 @@ const siteTitle = siteSettings?.siteTitle || '';
     >
       <span id="menu-icon" class="icon-[mdi--menu]"></span>
     </button>
-
     <a href="/">
-      {mobileLogoUrl && (
-        <Image
-          src={mobileLogoUrl}
-          alt={siteTitle}
-          class="w-full lg:hidden logo-mobile"
-          format="webp"
-          width={mobileLogoWidth}
-          height={mobileLogoHeight}
-        />
-      )}
-      {logoUrl && (
-        <Image
-          src={logoUrl}
-          alt={siteTitle}
-          class="hidden logo-desktop lg:block"
-          format="webp"
-          width={logoWidth}
-          height={logoHeight}
-        />
-      )}
+    {logoUrl && (
+      <Image
+        src={logoUrl}
+        alt={siteTitle}
+        width={logoWidth}
+        height={logoHeight}
+        sizes={sizes}
+        formats={formats}
+        widths={widths}
+        class="hidden logo-desktop lg:block"
+      />
+    )}
+    {mobileLogoUrl && (
+      <Image
+        src={mobileLogoUrl}
+        alt={siteTitle}
+        width={mobileLogoWidth}
+        height={mobileLogoHeight}
+        sizes={sizes}
+        formats={formats}
+        widths={widths}
+        class="w-full lg:hidden logo-mobile"
+      />
+    )}
     </a>
   </div>
   <nav id="main-nav" class="hidden lg:block">

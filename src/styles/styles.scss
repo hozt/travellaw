@@ -42,10 +42,12 @@ footer ul ul {
 }
 
 .banner-image {
-  @apply text-white drop-shadow-md mb-4 h-96 lg:h-auto;
-
+  @apply text-white drop-shadow-md mb-4 h-96 lg:h-auto bg-dark;
+  img {
+    @apply opacity-90;
+  }
   .banner-text {
-    @apply bg-black bg-opacity-30 inset-0 top-auto pb-8;
+    @apply inset-0 top-auto pb-8;
 
     h2 {
       @apply mt-0;

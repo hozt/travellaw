@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-const { post, isLast } = Astro.props;
+import { localImage } from '../lib/utils';
+const { post, isLast, path } = Astro.props;
 
 const {
   title,
@@ -12,28 +13,32 @@ const {
 const imageUrl = featuredImage?.node?.sourceUrl;
 let imageLocal = '';
 if (imageUrl) {
-    imageLocal = `/public/images/featured/` + imageUrl.split('/').pop();
+    imageLocal = localImage(imageUrl, 'featured');
 }
 const altText = featuredImage?.node?.altText || title;
 const imageWidth = featuredImage?.node?.mediaDetails?.width || 150;
 const imageHeight = featuredImage?.node?.mediaDetails?.height || 150;
 ---
 
-<article class={`flex post-preview ${isLast ? 'mb-0' : 'mb-6'}`}>
+<div key={post.databaseId} class="flex pb-4 mb-4 border-b-2 last:border-none blog-post">
   {imageUrl && (
-    <Image
-      src={imageLocal}
-      alt={altText}
-      width=120
-      height=120
-      format="webp"
-    />
+    <div>
+      <a href=`/${path}/${slug}`>
+        <Image
+          src={imageLocal}
+          alt={altText}
+          width=100
+          height=100
+          class="mr-6"
+        />
+      </a>
+    </div>
   )}
-  <div>
-    <div class="post-title"><a href={`/articles/${slug}`} class="no-link">{title}</a></div>
+  <div class="pt-3">
+    <div class="text-lg font-semibold post-title"><a href=`/${path}/${slug}` class="no-link">{title}</a></div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
-      <a href={`/articles/${slug}`} class="read-more">Read More</a>
+      <a href=`/${path}/${slug}` class="read-more">Read More</a>
     </div>
   </div>
-</article>
+</div>
