@@ -30,29 +30,38 @@ if (limit) {
 
 <div class="max-w-4xl p-4 mx-auto event-list">
   <h1 class="mb-6 text-3xl font-bold">{title}</h1>
-
-  {futureEvents.length === 0 ? (
-    <p class="text-lg text-gray-600">No upcoming events at this time.</p>
-  ) : (
-    <ul class="space-y-4">
-      {futureEvents.map((event) => (
-        <li key={event.id} class="p-4">
-            <div class="mb-2 font-semibold text-left view-event-details" data-event={JSON.stringify(event)}>{event.title}</div>
-            <div class="text-sm text-gray-600">
-                {dayjs(event.startDatetime).format('MMMM D, YYYY - h:mm A')}
-                {event.endDatetime && ` to ${dayjs(event.endDatetime).format('h:mm A')}`}
+  {futureEvents.map((event, index) => {
+    const eventDate = dayjs(event.startDatetime);
+    return (
+      <div class="flex flex-row p-4 mb-4 shadow-md event event-card" data-index={index} data-click-event="">
+        <div class="w-20 mb-4">
+          <div class="text-lg font-semibold event-weekday">{eventDate.format('ddd')}</div>
+          <div class="text-sm event-month">{eventDate.format('MMM')}</div>
+          <div class="text-2xl font-bold event-day">{eventDate.format('DD')}</div>
+        </div>
+        <div class="event-data">
+          <div class="mb-2 text-lg font-semibold event-title">{event.title}</div>
+          {event.content && (
+            <div class="event-content" set:html={event.content} />
+          )}
+          {event.location && (
+            <div class="text-sm event-location">
+              <i class="icon-[mdi--location] relative top-0.5 icon-location"></i> {event.location}
             </div>
-        </li>
-      ))}
-    </ul>
-  )}
+          )}
+            <div class="event-time">
+              {eventDate.format('h:mm A')}
+            </div>
+          </div>
+        </div>
+    );
+  })}
 </div>
 
 <div id="modalContainer"></div>
 
 <!-- Include dayjs library -->
 <script is:inline src="https://unpkg.com/dayjs@1.10.7/dayjs.min.js"></script>
-
 <script is:inline>
   function formatDate(date) {
     return dayjs(date).format('MMMM D, YYYY - h:mm A');
@@ -68,7 +77,7 @@ if (limit) {
             ${formatDate(event.startDatetime)}
             ${event.endDatetime ? ` to ${dayjs(event.endDatetime).format('h:mm A')}` : ''}
           </p>
-          ${event.content ? `<div class="mb-4 text-gray-700">${event.content}</div>` : ''}
+          ${event.content ? `<div class="event-content">${event.content}</div>` : ''}
           ${event.featuredImage ? `<img src="${event.featuredImage.node.sourceUrl}" alt="${event.title}" class="w-full h-auto mb-4">` : ''}
           <button id="closeModal" class="px-4 py-2 mt-4 text-white bg-red-500 rounded hover:bg-red-600">Close</button>
         </div>

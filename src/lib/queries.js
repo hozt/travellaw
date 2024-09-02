@@ -80,6 +80,7 @@ export const GET_SITE_SETTINGS = gql`
           width
           height
         }
+        id
       }
       mobileLogo {
         altText
@@ -88,6 +89,7 @@ export const GET_SITE_SETTINGS = gql`
           width
           height
         }
+        id
       }
       siteTitle
       tagLine
@@ -160,6 +162,16 @@ export const GET_POST = gql`
         nodes {
           name
           slug
+        }
+      }
+      featuredImage {
+        node {
+          altText
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
         }
       }
       bannerImage {
@@ -361,6 +373,7 @@ export const GET_EVENTS = gql`
         startDatetime
         endDatetime
         content
+        location
         featuredImage {
           node {
             sourceUrl
@@ -505,6 +518,7 @@ export const GET_FAVICON = gql`
       faviconLogo {
         sourceUrl
         mimeType
+        id
       }
     }
   }

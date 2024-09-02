@@ -39,21 +39,17 @@ function getClassNames(item) {
 
 <style>
 .menu-item {
-  position: relative;
+  @apply relative;
 }
 
 .sub-menu {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  z-index: 999;
+  @apply md:hidden md:absolute md:left-0 md:top-full md:z-50;
 }
 
 .menu-item:hover .sub-menu,
 .menu-item:focus-within .sub-menu,
 .menu-item.active .sub-menu {
-  display: block;
+  @apply block;
 }
 </style>
 

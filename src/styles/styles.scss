@@ -196,3 +196,18 @@ ul.sub-menu {
     @apply flex items-center justify-center w-16 h-16 mx-auto mb-3 text-5xl text-gray-700 border-2 border-gray-700 rounded-full hover:bg-dark hover:text-white;
   }
 }
+
+.post-image {
+  @apply max-w-80 max-h-80 w-auto h-auto float-end ml-4 mb-4;
+}
+.post-content.has-image {
+  @apply pt-3;
+}
+
+.post-preview-image {
+  @apply max-w-36 max-h-36 w-auto h-auto mr-6;
+}
+
+.event-content p {
+  @apply mb-2;
+}

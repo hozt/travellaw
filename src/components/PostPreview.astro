@@ -16,29 +16,44 @@ if (imageUrl) {
     imageLocal = localImage(imageUrl, 'featured');
 }
 const altText = featuredImage?.node?.altText || title;
-const imageWidth = featuredImage?.node?.mediaDetails?.width || 150;
-const imageHeight = featuredImage?.node?.mediaDetails?.height || 150;
+const imageWidth = featuredImage?.node?.mediaDetails?.width;
+const imageHeight = featuredImage?.node?.mediaDetails?.height;
+
+const images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+
+async function getImageModule(imagePath) {
+  if (!imagePath) return null;
+  const relativePath = `../../assets/images/featured/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+  return null;
+}
+
+const featuredImageModule = await getImageModule(imageUrl);
 ---
 
-<div key={post.databaseId} class="flex pb-4 mb-4 border-b-2 last:border-none blog-post">
-  {imageUrl && (
+<div key={post.databaseId} class="flex pb-4 mb-4 border-b-2 post-preview last:border-none blog-post">
+  {featuredImageModule && (
     <div>
-      <a href=`/${path}/${slug}`>
+      <a href={`/${path}/${slug}`}>
         <Image
-          src={imageLocal}
+          src={featuredImageModule.default}
           alt={altText}
-          width=100
-          height=100
-          class="mr-6"
+          width={imageWidth}
+          height={imageHeight}
+          class="post-preview-image"
         />
       </a>
     </div>
   )}
-  <div class="pt-3">
-    <div class="text-lg font-semibold post-title"><a href=`/${path}/${slug}` class="no-link">{title}</a></div>
+
+  <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
+    <div class="text-lg font-semibold post-title"><a href={`/${path}/${slug}`} class="no-link">{title}</a></div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
-      <a href=`/${path}/${slug}` class="read-more">Read More</a>
+      <a href={`/${path}/${slug}`} class="read-more">Read More</a>
     </div>
   </div>
 </div>

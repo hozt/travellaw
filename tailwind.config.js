@@ -3,7 +3,7 @@ const { addDynamicIconSelectors } = require('@iconify/tailwind');
 
 module.exports = {
   content: [
-    './src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}',
+    './src/**/*.{astro,html,js,jsx,ts,tsx}',
     './public/**/*.html',
     './safelist.txt'
   ],
@@ -31,7 +31,7 @@ module.exports = {
       },
       fontSize: {
         mobile: "15px",
-        base: "15px", // Default base font size
+        base: "15px",
       },
     },
   },

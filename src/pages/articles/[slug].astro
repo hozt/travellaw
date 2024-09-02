@@ -6,6 +6,7 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import TagLinks from '../../components/TagLinks.astro';
 import { replaceImageUrls } from '../../lib/utils';
+import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   try {
@@ -38,8 +39,8 @@ const { data } = await client.query({
     variables: { slug },
   });
 
-
 const page = data.postBy;
+const featuredImage = page?.featuredImage?.node;
 
 if (!page) {
   throw new Error(`Post not found for slug: ${slug}`);
@@ -52,9 +53,28 @@ try {
   console.error('Error replacing image URLs:', error);
 }
 
+const images = import.meta.glob('../../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+
+async function getImageModule(imagePath) {
+  if (!imagePath) return null;
+  const relativePath = `../../../assets/images/featured/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+  console.log('Image not found for path:', relativePath);
+  return null;
+}
+
+const featuredImageSourceUrl = featuredImage?.sourceUrl;
+const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
+
+const srcset = featuredImageModule
+  ? `${featuredImageModule.default.src} 1x, ${featuredImageModule.default.src.replace(/(\.\w+)$/, '@2x$1')} 2x`
+  : '';
 ---
 
-<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="page">
+<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="article">
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}
@@ -64,12 +84,15 @@ try {
   />
   <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]} />
   <div class="main-body content">
-    {page?.featuredImage?.sourceUrl && (
-      <img
-        src={page?.featuredImage.sourceUrl}
+    {featuredImageModule && (
+      <Image
+        src={featuredImageModule.default}
+        srcset={srcset}
         alt={`Featured image for ${page?.title}`}
         class="mb-4 ml-4 float-end"
-        width="400"
+        width={featuredImageModule.default.width}
+        height={featuredImageModule.default.height}
+        loading="eager"
       />
     )}
     <div set:html={updatedContent} />

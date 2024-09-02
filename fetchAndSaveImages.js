@@ -243,7 +243,7 @@ async function downloadAllImages(imageUrls) {
   for (const [category, urls] of Object.entries(imageUrls)) {
     for (const url of urls) {
       const fileName = path.basename(new URL(url).pathname);
-      const basePath = (category === 'banners' || category === 'logos' || category === 'gallery') ? 'assets' : 'public';
+      const basePath = (category === 'content') ? 'public' : 'assets';
       const outputPath = path.join(__dirname, basePath, 'images', category, fileName);
       await fs.mkdir(path.join(__dirname, basePath, 'images'), { recursive: true });
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
