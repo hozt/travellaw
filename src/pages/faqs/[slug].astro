@@ -18,23 +18,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-console.log('slug:', slug);
+const { data } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug },
+});
 
-let page;
-
-try {
-  const { data } = await client.query({
-    query: GET_TEMPLATE,
-    variables: { slug },
-  });
-  page = data?.templateBy;
-} catch (e) {
-  console.error('Error fetching page data:', e);
-}
-
-if (!page) {
-  // return Astro.redirect('/404');
-}
+const page = data?.templateBy;
 
 let cleanContent = '';
 let faqTopicIds = [];

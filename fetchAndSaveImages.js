@@ -10,7 +10,7 @@ dotenv.config();
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const endpoint = process.env.GRAPHQL_URL;
+const endpoint = process.env.API_URL + '/graphql';
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
@@ -262,6 +262,22 @@ async function saveRedirectsToFile() {
   console.log('Saved redirects to _redirects file');
 }
 
+// All posts and content to a single file for tailwind styles
+async function saveAllContentToFile() {
+  const data = await request(endpoint, query, { first: recordsToFetch });
+  const allContentPath = path.join(__dirname, 'assets', 'all-content.html');
+  const lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  await fs
+    .writeFile(allContentPath, lines)
+    .then(() => console.log('Saved all posts to all-content.html file'));
+
+  const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
+  const postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  await fs
+    .writeFile(allPostsPath, postLines)
+    .then(() => console.log('Saved all posts to all-posts.html file'));
+}
+
 // Main execution
 (async () => {
   try {
@@ -277,6 +293,7 @@ async function saveRedirectsToFile() {
       await downloadAllImages(imageUrls);
       await fetchAndSavePDFs();
       await saveRedirectsToFile();
+      await saveAllContentToFile();
       console.log('All images downloaded successfully');
 
     }

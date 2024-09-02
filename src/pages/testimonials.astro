@@ -2,29 +2,26 @@
 import client from '../lib/apolloClient';
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import { GET_TESTIMONIALS_AND_TEMPLATE } from "../lib/queries";
+import { GET_TESTIMONIALS, GET_TEMPLATE } from "../lib/queries";
 
-let testimonials = [];
-let page = null;
-let error = null;
+const { data: template } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: 'testimonials' },
+});
 
-try {
-  // Fetch data using the Apollo Client
-  const { data } = await client.query({
-    query: GET_TESTIMONIALS_AND_TEMPLATE,
-    fetchPolicy: 'cache-first', // Use cache if available
-  });
+const page = template?.templateBy;
 
-  testimonials = data.testimonials.edges;
-  page = data.templateBy;
-} catch (e) {
-  console.error('Error fetching data:', e);
-  error = e.message;
-}
+const { data: testimonialData } = await client.query({
+  query: GET_TESTIMONIALS
+});
 
 if (!page) {
   Astro.redirect('/404');
 }
+
+const testimonials = testimonialData?.testimonials?.nodes || [];
+// console log each row testimonial
+testimonials.map(({ testimonial }) => console.log(testimonial));
 
 const title = page?.title || "Testimonials";
 ---
@@ -38,11 +35,11 @@ const title = page?.title || "Testimonials";
     height={page?.bannerImage?.mediaDetails?.height}
   />
   <div class="main-body testimonials-wrapper">
-    {testimonials.map(({ node }) => (
-      <div key={node.databaseId} class="pt-4 border-b-2 testimonial last:border-none">
-        <div class="testimonial-title">{node.title}</div>
-        <div class="testimonial-content" set:html={node.content} />
-        <p class="testimonial-source">{node.source}</p>
+    {testimonials.map((testimonial) => (
+      <div key={testimonial.databaseId} class="pt-4 border-b-2 testimonial last:border-none">
+        <div class="testimonial-title">{testimonial.title}</div>
+        <div class="testimonial-content" set:html={testimonial.content} />
+        <p class="testimonial-source">{testimonial.source}</p>
       </div>
     ))}
   </div>

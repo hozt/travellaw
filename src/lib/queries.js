@@ -427,34 +427,21 @@ export const GET_FORM = gql`
   }
 `;
 
-export const GET_TESTIMONIALS_AND_TEMPLATE = gql`
+export const GET_TESTIMONIALS = gql`
   query {
     testimonials(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
-      edges {
-        node {
-          databaseId
-          title
-          content
-          source
-        }
-      }
-    }
-    templateBy(templateId: 10, slug: "testimontials") {
-      title
-      subtitle
-      bannerImage {
-        sourceUrl
-        mediaDetails {
-          width
-          height
-        }
+      nodes {
+        databaseId
+        title
+        content
+        source
       }
     }
   }
 `;
 
 export const GET_VIDEO_SLUGS = gql`
-  query VideoSlugs {
+  query {
     videos {
       nodes {
         slug
@@ -464,7 +451,7 @@ export const GET_VIDEO_SLUGS = gql`
 `;
 
 export const GET_VIDEO = gql`
-  query GetVideo($slug: String!) {
+  query($slug: String!) {
     videoBy(slug: $slug) {
       title
       content
@@ -474,7 +461,7 @@ export const GET_VIDEO = gql`
 `;
 
 export const GET_GALLERY_SLUGS = gql`
-  query GetGallerySlugs {
+  query {
     galleries {
       nodes {
         slug

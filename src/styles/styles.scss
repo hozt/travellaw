@@ -34,7 +34,7 @@ footer ul ul {
 
 
 .logo-desktop {
-  @apply mx-auto max-w-[450px] my-8;
+  @apply mx-auto max-w-[450px] max-h-36 h-auto w-auto my-8;
 }
 
 .logo-mobile {
@@ -42,9 +42,9 @@ footer ul ul {
 }
 
 .banner-image {
-  @apply text-white drop-shadow-md mb-4 h-96 lg:h-auto bg-dark;
+  @apply text-white drop-shadow-md mb-4 lg:h-auto bg-dark;
   img {
-    @apply opacity-90;
+    @apply opacity-70 max-h-[350px];
   }
   .banner-text {
     @apply inset-0 top-auto pb-8;
@@ -210,4 +210,12 @@ ul.sub-menu {
 
 .event-content p {
   @apply mb-2;
+}
+
+/* testimonials */
+.testimonial-title {
+  @apply font-semibold text-lg;
+}
+.testimonial-content {
+  @apply italic;
 }

@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client/core';
 
-const graphQL = import.meta.env.GRAPHQL_URL;
+const graphQL = import.meta.env.API_URL + '/graphql';
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
