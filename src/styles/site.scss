@@ -1,0 +1,11 @@
+.main-menu {
+    @apply text-lg bg-gray-200 md:bg-secondary;
+}
+
+.copyright {
+    @apply py-4 text-sm text-center bg-gray-500 text-white;
+}
+
+footer {
+    @apply text-white bg-secondary text-base;
+}

@@ -95,18 +95,12 @@ footer {
   }
 }
 
-
-.copyright {
-  @apply py-4 text-sm text-center bg-gray-500 text-white;
-}
-
-
 ul.sub-menu {
   @apply ml-0 z-20 text-lg shadow lg:hidden lg:group-hover:block lg:bg-neutral-100 lg:absolute lg:mt-3 lg:w-56;
 }
 
 .main-menu {
-  @apply ml-0 mb-0 text-lg bg-gray-200 md:bg-secondary;
+  @apply ml-0 mb-0;
 
   display: flex;
   flex-direction: column;
