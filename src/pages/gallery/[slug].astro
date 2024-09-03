@@ -64,7 +64,7 @@ const galleryImages = await Promise.all(
 
 ---
 
-<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId} description={template?.metaDescription}>
+<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId} description={template?.metaDescription} classes="gallery">
   <Breadcrumb crumbs={[{ label: "Gallery", path: "/gallery" }, { label: title }]} />
     <BannerTitle
       title={title}

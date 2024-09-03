@@ -42,7 +42,7 @@ if (page && page.content) {
 }
 ---
 
-<Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription}>
+<Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription} classes="faq">
   <BannerTitle title={page ? page.title : 'FAQ Page'} />
   <div class="main-body content">
     {page && (

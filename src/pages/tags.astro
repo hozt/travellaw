@@ -24,7 +24,7 @@ if (!tags) {
 const title = page?.title || `Tags`;
 ---
 
-<Layout title={title} pageId="{page?.databaseId}" description={page?.metaDescription}>
+<Layout title={title} pageId="{page?.databaseId}" description={page?.metaDescription} templateId={page?.templateId} classes="tag-list">
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}

@@ -3,6 +3,8 @@ import client from '../lib/apolloClient';
 import CustomLink from './CustomLink.astro';
 import { GET_FOOTER_MENU_ITEMS } from '../lib/queries';
 
+const { classes } = Astro.props;
+
 // Fetch the menu items from the GraphQL endpoint
 const { data } = await client.query({
   query: GET_FOOTER_MENU_ITEMS,
@@ -17,7 +19,7 @@ function getClassNames(item) {
 }
 ---
 <nav class="footer-menu">
-  <ul class="mt-4 md:flex md:flex-wrap md:mt-0">
+  <ul class={classes}>
     {menuItems.map(item => !item.parentDatabaseId && (
       <li class={getClassNames(item)} key={item.id}>
         <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />

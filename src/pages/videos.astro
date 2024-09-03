@@ -18,7 +18,7 @@ const videos = videosData.videos.nodes;
 const title = page?.title || `Video`;
 ---
 
-<Layout title={title} templateId={page?.templateId} description={page?.metaDescription}>
+<Layout title={title} templateId={page?.templateId} description={page?.metaDescription} templateId={page?.databaseId} classes="videos">
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}

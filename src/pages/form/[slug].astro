@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
-import ContactUs from "../../components/ContactForm.astro";
 import client from "../../lib/apolloClient";
 import { GET_FORM, GET_ALL_FORMS } from "../../lib/queries";
 import ContactForm from "../../components/ContactForm.astro";
@@ -38,7 +37,7 @@ if (!page) {
 
 ---
 
-<Layout title={page?.title} templateId={page?.databaseId} description={page?.metaDescription}>
+<Layout title={page?.title} templateId={page?.databaseId} description={page?.metaDescription} classes="form">
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}

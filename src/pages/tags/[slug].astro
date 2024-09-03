@@ -39,7 +39,7 @@ const page = templateData.templateBy;
 
 const posts = data?.tag?.posts?.nodes;
 const tagName = data?.tag?.name;
-
+const classList = 'tag tag-' + tagName.toLowerCase().replace(" ", "-");
 const title = page?.title || tagName;
 
 if (!posts) {
@@ -51,7 +51,7 @@ if (!posts) {
 
 ---
 
-<Layout title={title} description={page?.metaDescription}>
+<Layout title={title} description={page?.metaDescription} classes={classList} >
   <Breadcrumb crumbs={[{ label: "Tag", path: "/tag" }, { label: title }]} />
   <BannerTitle
     title={title}

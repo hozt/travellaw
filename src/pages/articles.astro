@@ -37,7 +37,7 @@ const articles = articlesData.posts.nodes;
 const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE) + 1;
 ---
 
-<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription}>
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}

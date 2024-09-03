@@ -38,11 +38,11 @@ const { data } = await client.query({
 const page = templateData?.templateBy;
 const posts = data?.category?.posts?.nodes;
 const categoryName = data?.category?.name;
-
+const classes = `category category-${categoryName.toLowerCase().replace(" ", "-")}`;
 const title = page?.title || `${categoryName}`;
 ---
 
-<Layout title={title} templateId={page?.databaseId}>
+<Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} classes={classes}>
   <Breadcrumb crumbs={[{ label: "Category", path: "/category" }, { label: title }]} />
   <BannerTitle
     title={title}

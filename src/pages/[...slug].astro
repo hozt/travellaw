@@ -15,7 +15,7 @@ export async function getStaticPaths() {
   return data.pages.nodes.map(page => {
     const slugArray = page.uri.split('/').filter(Boolean);
     return {
-      params: { slug: slugArray.join('/') }, // Join the slug array into a single string
+      params: { slug: slugArray.join('/') },
       props: { page },
     };
   });

@@ -53,7 +53,7 @@ const totalPages =
 
 ---
 
-<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription}>
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="page" templateId={template?.databaseId}>
   <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
