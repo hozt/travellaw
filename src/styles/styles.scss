@@ -25,13 +25,8 @@
 
 
 footer ul.sub-menu {
-  @apply pl-0 m-0 bg-transparent lg:block;
+  @apply pl-0 m-0 lg:block;
 }
-
-footer ul ul {
-  @apply mb-0;
-}
-
 
 .logo-desktop {
   @apply mx-auto max-w-[450px] max-h-36 h-auto w-auto my-8;
@@ -42,7 +37,7 @@ footer ul ul {
 }
 
 .banner-image {
-  @apply text-white drop-shadow-md mb-4 lg:h-auto bg-dark;
+  @apply text-white drop-shadow-md mb-4 md:h-auto bg-dark h-72;
   img {
     @apply opacity-70 max-h-[350px];
   }
@@ -84,7 +79,7 @@ footer {
   @apply text-white bg-secondary text-base;
 }
 
-.footer-menu>ul {
+.footer-menu > ul {
   @apply gap-16 ml-0 md:columns-2 mb-0;
 }
 
@@ -104,10 +99,6 @@ footer {
 .copyright {
   @apply py-4 text-sm text-center bg-gray-500 text-white;
 }
-
-
-
-
 
 
 ul.sub-menu {
@@ -219,3 +210,9 @@ ul.sub-menu {
 .testimonial-content {
   @apply italic;
 }
+
+/* 404 */
+.icon-error {
+  @apply icon-[mdi--error-outline] text-8xl text-gray-700;
+}
+

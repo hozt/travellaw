@@ -105,8 +105,19 @@ export const GET_SITE_TITLE = gql`
   }
 `;
 
+export const GET_HOME_PAGE = gql`
+  query($first: Int!) {
+    pages(first: $first, where: { status: PUBLISH }) {
+      nodes {
+        isFrontPage
+        uri
+      }
+    }
+  }
+`;
+
 export const GET_PAGES = gql`
-  query GetPages($first: Int!) {
+  query($first: Int!) {
     pages(first: $first, where: { status: PUBLISH }) {
       nodes {
         uri

@@ -23,9 +23,14 @@ async function getImageUrl(imagePath) {
 const logoUrl = siteSettings?.logo?.sourceUrl ? await getImageUrl(`../../assets/images/logos/${siteSettings.logo.sourceUrl.split('/').pop()}`) : null;
 const logoWidth = siteSettings?.logo?.mediaDetails?.width || 150;
 const logoHeight = siteSettings?.logo?.mediaDetails?.height || 150;
-const mobileLogoUrl = siteSettings?.mobileLogo?.sourceUrl ? await getImageUrl(`../../assets/images/logos/${siteSettings.mobileLogo.sourceUrl.split('/').pop()}`) : null;
-const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || 150;
-const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || 150;
+let mobileLogoUrl = null;
+if (!siteSettings?.mobileLogo?.sourceUrl) {
+  mobileLogoUrl = logoUrl;
+} else {
+  mobileLogoUrl = await getImageUrl(`../../assets/images/logos/${siteSettings.mobileLogo.sourceUrl.split('/').pop()}`);
+}
+const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || logoWidth;
+const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || logoHeight;
 const siteTitle = siteSettings?.siteTitle || 'Logo';
 
 // Define the widths for responsive images

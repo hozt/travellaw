@@ -17,10 +17,10 @@ const title = template?.title || "Page Not Found";
 const description = template?.content || `<div>The page you are looking for does not exist.</div><div class="mt-6 mb-6 text-center"><a href="/">Go back to the homepage</a></div>`;
 ---
 
-<Layout title={title} description={description} classes="page">
+<Layout title={title} description={description} classes="page-404">
     <BannerTitle title={title} />
   <div class="main-body content">
-    <div class="mb-10 text-center"><i class="icon-[mdi--error-outline] text-8xl text-red-500"></i></div>
+    <div class="mb-10 text-center"><i class="icon-error"></i></div>
     <div class="mt-6 text-center" set:html={description} />
     <div class="max-w-md mx-auto mt-6">
         <Search id="search" class="pagefind-ui" />
