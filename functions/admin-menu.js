@@ -22,14 +22,14 @@ export async function onRequest(context) {
         <li>
             <a href="${editorUrl}" target="_blank" rel="noreferrer">
             <i class="icon-[mdi--view-dashboard] text-lg mr-1" title="Dashboard"></i>
-            <span class="hidden md:inline-block">Dashboard</span>
+            <span>Dashboard</span>
             </a>
         </li>
         ${editPostUrl ? `
             <li>
             <a href="${editPostUrl}" target="_blank" rel="noreferrer">
                 <i class="icon-[mdi--post-it-note-edit] text-lg mr-1" title="Edit Post"></i>
-                <span class="hidden md:inline-block">Edit Post</span>
+                <span>Edit Post</span>
             </a>
             </li>
         ` : ''}
@@ -37,7 +37,7 @@ export async function onRequest(context) {
             <li>
             <a href="${editPageUrl}" target="_blank" rel="noreferrer">
                 <i class="icon-[mdi--post-it-note-edit] text-lg mr-1" title="Edit Page"></i>
-                <span class="hidden md:inline-block">Edit Page</span>
+                <span>Edit Page</span>
             </a>
             </li>
         ` : ''}
@@ -45,26 +45,26 @@ export async function onRequest(context) {
             <li>
             <a href="${editTemplateUrl}" target="_blank" rel="noreferrer">
                 <i class="icon-[mdi--post-it-note-edit] text-lg mr-1" title="Edit Template"></i>
-                <span class="hidden md:inline-block">Edit Template</span>
+                <span>Edit Template</span>
             </a>
             </li>
         ` : ''}
         <li>
             <a href="${editMenuUrl}" target="_blank" rel="noreferrer">
             <i class="icon-[mdi--menu-open] text-lg mr-1" title="Edit Menu"></i>
-            <span class="hidden md:inline-block">Edit Menus</span>
+            <span>Edit Menus</span>
             </a>
         </li>
         <li>
             <a href="${regenerateUrl}" target="_blank" rel="noreferrer">
             <i class="icon-[mdi--publish] text-lg mr-1" title="Regenerate Site"></i>
-            <span class="hidden md:inline-block">Regenerate Site</span>
+            <span>Regenerate Site</span>
             </a>
         </li>
         <li>
             <a href="/logout" rel="noreferrer">
             <i class="icon-[mdi--logout] text-lg mr-1" title="Logout"></i>
-            <span class="hidden md:inline-block">Logout</span>
+            <span>Logout</span>
             </a>
         </li>
       `;
