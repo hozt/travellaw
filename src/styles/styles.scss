@@ -28,14 +28,6 @@ footer ul.sub-menu {
   @apply pl-0 m-0 lg:block;
 }
 
-.logo-desktop {
-  @apply mx-auto max-w-[450px] max-h-36 h-auto w-auto my-8;
-}
-
-.logo-mobile {
-  @apply my-8 ml-2 mr-10 w-[250px];
-}
-
 .banner-image {
   @apply text-white drop-shadow-md mb-4 md:h-auto bg-dark h-72;
   img {
@@ -75,10 +67,6 @@ footer ul.sub-menu {
 }
 
 
-footer {
-  @apply text-white bg-secondary text-base;
-}
-
 .footer-menu > ul {
   @apply gap-16 ml-0 md:columns-2 mb-0;
 }
@@ -100,10 +88,7 @@ ul.sub-menu {
 }
 
 .main-menu {
-  @apply ml-0 mb-0;
-
-  display: flex;
-  flex-direction: column;
+  @apply ml-0 mb-0 flex flex-col;
 
   @media (min-width: 768px) {
     flex-direction: row;
@@ -118,25 +103,6 @@ ul.sub-menu {
 
   .indicator {
     @apply icon-[mdi--menu-down] text-xl relative top-0.5 hidden lg:inline-block;
-  }
-
-  span.no-link,
-  a {
-    @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
-  }
-
-  .sub-menu {
-    .no-link {
-      @apply hover:bg-none text-dark hover:text-dark;
-    }
-
-    li {
-      @apply pb-1 mx-0 text-base leading-tight;
-    }
-
-    a {
-      @apply py-1.5 text-dark hover:bg-black hover:text-white;
-    }
   }
 
   ul.sub-menu {
@@ -184,13 +150,6 @@ ul.sub-menu {
 
 .post-image {
   @apply max-w-80 max-h-80 w-auto h-auto float-end ml-4 mb-4;
-}
-.post-content.has-image {
-  @apply pt-3;
-}
-
-.post-preview-image {
-  @apply max-w-36 max-h-36 w-auto h-auto mr-6;
 }
 
 .event-content p {

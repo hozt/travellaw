@@ -186,6 +186,22 @@ async function fetchImageUrls() {
   }
 }
 
+async function downloadImageThumbnail(url, outputPath) {
+  try {
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+    const buffer = await response.buffer();
+    // convert image webP that is 300px wide thumbnail
+    // change outputPath to .webp
+    const outputPathWebp = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    await sharp(buffer).resize({ width: 300 }).webp().toFile(outputPathWebp);
+    console.log(`Downloaded thumbnail: ${outputPath}`);
+  } catch (error) {
+    console.error(`Error downloading thumbnail ${url}: ${error.message}`);
+  }
+}
+
 async function downloadImage(url, outputPath) {
   try {
     const response = await fetch(url);
@@ -248,6 +264,11 @@ async function downloadAllImages(imageUrls) {
       await fs.mkdir(path.join(__dirname, basePath, 'images'), { recursive: true });
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       downloadPromises.push(downloadImage(url, outputPath));
+      if (category === 'gallery') {
+        const outputPathThumbnail = path.join(__dirname, basePath, 'images', 'gallery-thumbnails', fileName);
+        await fs.mkdir(path.join(__dirname, basePath, 'images', 'gallery-thumbnails'), { recursive: true });
+        downloadPromises.push(downloadImageThumbnail(url, outputPathThumbnail));
+      }
     }
   }
   await Promise.all(downloadPromises);

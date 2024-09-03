@@ -7,158 +7,166 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import { GET_GALLERY_SLUGS, GET_GALLERY } from '../../lib/queries';
 
 export async function getStaticPaths() {
-  const { data } = await client.query({
-    query: GET_GALLERY_SLUGS,
-  });
-
-  return data.galleries.nodes.map((gallery) => ({
-    params: { slug: gallery.slug },
-  }));
+    const { data } = await client.query({
+        query: GET_GALLERY_SLUGS,
+    });
+    return data.galleries.nodes.map((gallery) => ({
+        params: { slug: gallery.slug },
+    }));
 }
 
 const { slug } = Astro.params;
-
 let gallery = null;
 let error = null;
 let template = null;
 
 try {
-  const { data } = await client.query({
-    query: GET_GALLERY,
-    variables: { slug }
-  });
-
-  gallery = data.galleryBy;
-  template = data.templateBy;
+    const { data } = await client.query({
+        query: GET_GALLERY,
+        variables: { slug }
+    });
+    gallery = data.galleryBy;
+    template = data.templateBy;
 } catch (e) {
-  console.error('Error fetching gallery data:', e);
-  error = e.message;
+    error = e.message;
 }
 
 const title = gallery?.title || "Photo Gallery";
 
-const images = import.meta.glob('../../../assets/images/gallery/*.{jpg,jpeg,png,webp,avif}');
+// Use eager loading to ensure images are available at build time
+const fullSizeImages = import.meta.glob('../../../assets/images/gallery/*.webp', { eager: true });
+const thumbnailImages = import.meta.glob('../../../assets/images/gallery-thumbnails/*.webp', { eager: true });
 
-async function getImageUrl(imagePath) {
-  const relativePath = `../../../assets/images/gallery/${imagePath.split('/').pop()}`;
-  if (images[relativePath]) {
-    const imageModule = await images[relativePath]();
-    return imageModule.default;
-  }
-  console.log('Image not found for path:', relativePath);
-  return null;
+function getImageUrl(imagePath, isThumbnail = false) {
+    const fileName = imagePath.split('/').pop().replace(/\.[^.]+$/, '.webp');
+    const images = isThumbnail ? thumbnailImages : fullSizeImages;
+    const relativePath = `../../../assets/images/${isThumbnail ? 'gallery-thumbnails' : 'gallery'}/${fileName}`;
+
+    if (images[relativePath]) {
+        return images[relativePath].default; // Directly access the default export
+    }
+
+    console.log('Image not found for path:', relativePath);
+    return null;
 }
 
 const galleryImages = await Promise.all(
-  (gallery?.galleryImages || []).map(async (image) => {
-    const sourceUrl = await getImageUrl(image.sourceUrl);
-    if (!sourceUrl) {
-      console.error('Failed to resolve image URL:', image.sourceUrl);
-    }
-    return {
-      ...image,
-      sourceUrl,
-    };
-  })
+    (gallery?.galleryImages || []).map(async (image) => {
+        const sourceUrl = await getImageUrl(image.sourceUrl);
+        const thumbnailUrl = await getImageUrl(image.sourceUrl, true);
+
+        if (!sourceUrl) {
+            console.error('Failed to resolve image URL:', image.sourceUrl);
+        }
+
+        return {
+            ...image,
+            sourceUrl,
+            thumbnailUrl,
+        };
+    })
 );
 
 ---
 
-<Layout title={title} postId={gallery?.databaseId} templateId={template?.databaseId} description={template?.metaDescription} classes="gallery">
-  <Breadcrumb crumbs={[{ label: "Gallery", path: "/gallery" }, { label: title }]} />
-    <BannerTitle
-      title={title}
-      subtitle={template?.subtitle}
-      image={template?.bannerImage?.sourceUrl}
-      width={template?.bannerImage?.mediaDetails?.width}
-      height={template?.bannerImage?.mediaDetails?.height}
-    />
-  {error ? (
-    <p class="mt-8 text-xl text-center text-red-500">{error}</p>
-  ) : (
-    <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      {gallery?.content && (
-        <div class="mb-8 prose max-w-none" set:html={gallery.content} />
-      )}
+<Layout title={title}>
+    <Breadcrumb crumbs={[{ label: title }]} />
+    <BannerTitle title={title} />
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {galleryImages.map((image, index) => (
-          <div class="overflow-hidden transition-transform duration-300 rounded-lg shadow-md cursor-pointer hover:scale-105">
-            <Image
-              src={image.sourceUrl || 'fallback-image-path.jpg'}
-              alt={image.altText || `Gallery image ${index + 1}`}
-              width={image.mediaDetails.width}
-              height={image.mediaDetails.height}
-              class="object-cover w-full h-auto"
-              loading={index < 4 ? "eager" : "lazy"}
-              data-index={index}
-            />
-          </div>
-        ))}
-      </div>
+    <div class="container px-4 py-8 mx-auto">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="gallery">
+            {galleryImages.map((image, index) => (
+                <div class="relative cursor-pointer group" data-index={index}>
+                    <Image
+                        src={image.thumbnailUrl || image.sourceUrl}
+                        alt={image.altText || "Gallery Image"}
+                        width={300}
+                        height={200}
+                        class="object-cover w-full h-auto transition-transform duration-300 border group-hover:scale-105"
+                    />
+                    {image.caption && (
+                        <div class="absolute bottom-0 left-0 right-0 p-2 text-white transition-opacity duration-300 bg-black bg-opacity-50 rounded-b-lg opacity-0 group-hover:opacity-100">
+                            <p class="text-sm">{image.caption}</p>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
     </div>
-  )}
+
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden transition-opacity duration-300 ease-in-out bg-black bg-opacity-90">
+        <button id="close-lightbox" class="absolute text-2xl text-white transition-transform duration-300 ease-in-out top-4 right-4 hover:scale-110">&times;</button>
+        <button id="prev" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 left-4 top-1/2 hover:scale-110">&lt;</button>
+        <button id="next" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 right-4 top-1/2 hover:scale-110">&gt;</button>
+        <div id="lightbox-content" class="flex flex-col items-center justify-center h-full">
+            <img id="lightbox-image" src="" alt="Full size image" class="max-h-[80vh] max-w-[90vw] object-contain transition-transform duration-300 ease-in-out" />
+            <div id="thumbnails" class="flex justify-center max-w-full mt-4 space-x-2 overflow-x-auto"></div>
+        </div>
+    </div>
+
+    <script define:vars={{ galleryImages }}>
+      document.addEventListener('DOMContentLoaded', () => {
+          const gallery = document.getElementById('gallery');
+          const lightbox = document.getElementById('lightbox');
+          const lightboxImage = document.getElementById('lightbox-image');
+          const closeButton = document.getElementById('close-lightbox');
+          const prevButton = document.getElementById('prev');
+          const nextButton = document.getElementById('next');
+          const thumbnailsContainer = document.getElementById('thumbnails');
+          let currentIndex = 0;
+
+          function showImage(index) {
+              currentIndex = index;
+              const image = galleryImages[index];
+              lightboxImage.src = image.sourceUrl.src;
+              lightboxImage.alt = image.altText || "Gallery Image";
+              updateThumbnails();
+          }
+
+          function updateThumbnails() {
+              thumbnailsContainer.innerHTML = '';
+              galleryImages.forEach((image, index) => {
+                  const thumb = document.createElement('img');
+                  thumb.src = image.thumbnailUrl.src || image.sourceUrl.src;
+                  thumb.alt = image.altText || "Thumbnail";
+                  thumb.className = `w-24 h-24 object-cover cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 ${index === currentIndex ? 'border-2 border-white' : ''}`;
+                  thumb.onclick = () => showImage(index);
+                  thumbnailsContainer.appendChild(thumb);
+              });
+          }
+
+          gallery.addEventListener('click', (e) => {
+              const clickedElement = e.target.closest('[data-index]');
+              if (clickedElement) {
+                  const index = parseInt(clickedElement.dataset.index, 10);
+                  showImage(index);
+                  lightbox.classList.remove('hidden');
+              }
+          });
+
+          closeButton.addEventListener('click', () => {
+              lightbox.classList.add('hidden');
+          });
+
+          prevButton.addEventListener('click', () => {
+              showImage((currentIndex - 1 + galleryImages.length) % galleryImages.length);
+          });
+
+          nextButton.addEventListener('click', () => {
+              showImage((currentIndex + 1) % galleryImages.length);
+          });
+
+          document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape') {
+                  lightbox.classList.add('hidden');
+              } else if (e.key === 'ArrowLeft') {
+                  prevButton.click();
+              } else if (e.key === 'ArrowRight') {
+                  nextButton.click();
+              }
+          });
+      });
+  </script>
 </Layout>
-
-<div id="lightbox" class="fixed inset-0 z-50 items-center justify-center hidden bg-black bg-opacity-90">
-  <button id="prevButton" class="absolute text-4xl text-white transform -translate-y-1/2 left-4 top-1/2">&lt;</button>
-  <img id="lightboxImage" src="" alt="Lightbox image" class="max-h-[90vh] max-w-[90vw] object-contain" />
-  <button id="nextButton" class="absolute text-4xl text-white transform -translate-y-1/2 right-4 top-1/2">&gt;</button>
-  <button id="closeButton" class="absolute text-4xl text-white top-4 right-4">&times;</button>
-</div>
-
-<script>
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = document.getElementById('lightboxImage');
-  const prevButton = document.getElementById('prevButton');
-  const nextButton = document.getElementById('nextButton');
-  const closeButton = document.getElementById('closeButton');
-  const galleryImages = document.querySelectorAll('.grid img');
-  let currentIndex = 0;
-
-  function openLightbox(index) {
-    currentIndex = index;
-    const image = galleryImages[index];
-    lightboxImage.src = image.src;
-    lightboxImage.alt = image.alt;
-    lightbox.classList.remove('hidden');
-    lightbox.classList.add('flex');
-  }
-
-  function closeLightbox() {
-    lightbox.classList.add('hidden');
-    lightbox.classList.remove('flex');
-  }
-
-  function showNextImage() {
-    currentIndex = (currentIndex + 1) % galleryImages.length;
-    openLightbox(currentIndex);
-  }
-
-  function showPrevImage() {
-    currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-    openLightbox(currentIndex);
-  }
-
-  galleryImages.forEach((img, index) => {
-    img.addEventListener('click', () => openLightbox(index));
-  });
-
-  closeButton.addEventListener('click', closeLightbox);
-  nextButton.addEventListener('click', showNextImage);
-  prevButton.addEventListener('click', showPrevImage);
-
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      closeLightbox();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('hidden')) {
-      if (e.key === 'ArrowRight') showNextImage();
-      if (e.key === 'ArrowLeft') showPrevImage();
-      if (e.key === 'Escape') closeLightbox();
-    }
-  });
-</script>

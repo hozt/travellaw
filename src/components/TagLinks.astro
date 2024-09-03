@@ -3,7 +3,7 @@ import CustomLink from "./CustomLink.astro";
 const { tags } = Astro.props;
 const allTags = tags?.nodes;
 
-if (!allTags) return null;
+if (!allTags?.length) return '';
 
 ---
 

@@ -55,10 +55,15 @@ a {
 .size-medium {
   @apply h-auto max-w-[400px] mb-6;
 }
+.size-full {
+  @apply h-auto w-auto mb-6;
+}
 
 .is-style-rounded img {
   @apply rounded-full;
 }
+
+
 
 figcaption {
   @apply mt-1 text-sm text-center text-gray-600;

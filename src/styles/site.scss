@@ -1,11 +1,46 @@
-.main-menu {
-    @apply text-lg bg-gray-200 md:bg-secondary;
+.logo-desktop {
+    @apply mx-auto max-w-[450px] max-h-36 h-auto w-auto my-8;
 }
 
+.logo-mobile {
+    @apply my-8 ml-2 mr-10 w-[250px];
+}
+
+.main-menu {
+    @apply text-lg bg-gray-200 md:bg-secondary;
+
+    span.no-link,
+    a {
+        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
+    }
+
+    .sub-menu {
+        .no-link {
+            @apply hover:bg-none text-dark hover:text-dark;
+        }
+
+        li {
+            @apply pb-1 mx-0 text-base leading-tight;
+        }
+
+        a {
+            @apply py-1.5 text-dark hover:bg-black hover:text-white;
+        }
+    }
+}
 .copyright {
     @apply py-4 text-sm text-center bg-gray-500 text-white;
 }
 
 footer {
     @apply mt-6 text-white bg-secondary text-base;
+}
+.post {
+    .featured-image {
+        @apply mb-4 ml-4 float-end max-w-80;
+    }
+}
+
+.post-preview-image {
+    @apply max-w-36 max-h-36 object-cover mr-6;
 }

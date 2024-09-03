@@ -1,5 +1,9 @@
 ---
-const { currentPage, totalPages } = Astro.props;
+const { currentPage, totalPages, path } = Astro.props;
+
+if (totalPages === 1) {
+  return '';
+}
 
 const isFirst = currentPage === 1;
 const isLast = currentPage === totalPages;
@@ -11,7 +15,7 @@ const nextPage = currentPage + 1;
   <div class="flex items-center space-x-1">
     {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
       <a
-        href={num === 1 ? '/articles/' : `/articles/${num}`}
+        href={num === 1 ? path : `/${path}/${num}`}
         aria-current={currentPage === num ? 'page' : undefined}
         class={`flex items-center ${currentPage === num ? 'pagination-active' : 'pagination-non-active'}`}
       >
