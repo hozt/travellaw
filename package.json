@@ -34,9 +34,10 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run fetch-images && astro build",
+    "build": "npm run set-editor && npm run fetch-images && astro build",
     "serve": "serve ./dist",
     "fetch-images": "node fetchAndSaveImages.js",
+    "set-editor": "node set-editor.js",
     "clean": "rm -rf dist .astro node_modules/.vite"
   }
 }
