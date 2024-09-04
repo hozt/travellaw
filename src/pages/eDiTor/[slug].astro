@@ -1,0 +1,59 @@
+---
+import client from "../../lib/apolloClient";
+import { GET_EDITOR_KEY } from "../../lib/queries";
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_EDITOR_KEY,
+  });
+
+  const editorKey = data.customSiteSettings.editorKey;
+
+  return [
+    { params: { slug: editorKey } }
+  ];
+}
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+  query: GET_EDITOR_KEY,
+  variables: { slug },
+});
+
+const editorKey = data?.customSiteSettings?.editorKey;
+if (editorKey !== slug) {
+  return {
+    status: 404,
+    error: new Error('Page not found'),
+  };
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Set Editor Key</title>
+</head>
+<body>
+    <script define:vars={{ editorKey }}>
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        // Set the editorKey as a cookie
+        if (editorKey) {
+            setCookie('isEditor', editorKey, 7); // Cookie expires in 7 days
+            console.log('Editor key set in cookie with value:', editorKey);
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

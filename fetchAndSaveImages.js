@@ -10,11 +10,13 @@ dotenv.config();
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const endpoint = process.env.API_URL + '/graphql';
+let endpoint = process.env.API_URL;
 
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
 }
+
+endpoint = `${endpoint}/graphql`;
 
 const recordsToFetch = 500;
 const query = gql`

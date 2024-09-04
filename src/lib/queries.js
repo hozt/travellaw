@@ -521,3 +521,11 @@ export const GET_FAVICON = gql`
     }
   }
 `;
+
+export const GET_EDITOR_KEY = gql`
+  {
+    customSiteSettings {
+      editorKey
+    }
+  }
+`;

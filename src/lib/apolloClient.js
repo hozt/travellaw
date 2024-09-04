@@ -1,6 +1,11 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client/core';
 
-const graphQL = import.meta.env.API_URL + '/graphql';
+let endpoint = import.meta.env.API_URL;
+if (!endpoint) {
+  throw new Error('GRAPHQL_URL environment variable is not set');
+}
+endpoint = `${endpoint}/graphql`;
+
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -15,12 +20,9 @@ const cache = new InMemoryCache({
   },
 });
 
-if (!graphQL) {
-  throw new Error('GRAPHQL_URL environment variable is not set');
-}
 
 const client = new ApolloClient({
-  uri: graphQL,
+  uri: endpoint,
   cache
 });
 

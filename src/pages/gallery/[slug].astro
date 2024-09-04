@@ -16,20 +16,14 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-let gallery = null;
-let error = null;
-let template = null;
 
-try {
-    const { data } = await client.query({
-        query: GET_GALLERY,
-        variables: { slug }
-    });
-    gallery = data.galleryBy;
-    template = data.templateBy;
-} catch (e) {
-    error = e.message;
-}
+const { data } = await client.query({
+    query: GET_GALLERY,
+    variables: { slug }
+});
+
+const gallery = data.galleryBy;
+const template = data.templateBy;
 
 const title = gallery?.title || "Photo Gallery";
 
@@ -69,7 +63,7 @@ const galleryImages = await Promise.all(
 
 ---
 
-<Layout title={title}>
+<Layout title={title} galleryId={gallery?.databaseId} templateId={template?.databaseId}>
     <Breadcrumb crumbs={[{ label: title }]} />
     <BannerTitle title={title} />
 
@@ -85,7 +79,7 @@ const galleryImages = await Promise.all(
                         class="object-cover w-full h-auto transition-transform duration-300 border group-hover:scale-105"
                     />
                     {image.caption && (
-                        <div class="absolute bottom-0 left-0 right-0 p-2 text-white transition-opacity duration-300 bg-black bg-opacity-50 rounded-b-lg opacity-0 group-hover:opacity-100">
+                        <div class="absolute bottom-0 left-0 right-0 p-2 text-white transition-opacity duration-300 group-hover:opacity-100">
                             <p class="text-sm">{image.caption}</p>
                         </div>
                     )}
@@ -96,10 +90,16 @@ const galleryImages = await Promise.all(
 
 
     <!-- Lightbox -->
-    <div id="lightbox" class="fixed inset-0 z-50 hidden transition-opacity duration-300 ease-in-out bg-black bg-opacity-90">
-        <button id="close-lightbox" class="absolute text-2xl text-white transition-transform duration-300 ease-in-out top-4 right-4 hover:scale-110">&times;</button>
-        <button id="prev" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 left-4 top-1/2 hover:scale-110">&lt;</button>
-        <button id="next" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 right-4 top-1/2 hover:scale-110">&gt;</button>
+    <div id="lightbox" class="fixed inset-0 z-50 hidden transition-opacity duration-300 ease-in-out bg-black">
+        <button id="close-lightbox" class="absolute text-2xl text-white transition-transform duration-300 ease-in-out top-4 right-4 hover:scale-110">
+            <i class="icon-[mdi--close] text-3xl p-4"></i>
+        </button>
+        <button id="prev" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 left-4 top-1/2 hover:scale-110">
+            <i class="icon-[mdi--navigate-before] text-7xl p-4"></i>
+        </button>
+        <button id="next" class="absolute text-4xl text-white transition-transform duration-300 ease-in-out transform -translate-y-1/2 right-4 top-1/2 hover:scale-110">
+            <i class="icon-[mdi--navigate-next] text-7xl p-4"></i>
+        </button>
         <div id="lightbox-content" class="flex flex-col items-center justify-center h-full">
             <img id="lightbox-image" src="" alt="Full size image" class="max-h-[80vh] max-w-[90vw] object-contain transition-transform duration-300 ease-in-out" />
             <div id="thumbnails" class="flex justify-center max-w-full mt-4 space-x-2 overflow-x-auto"></div>

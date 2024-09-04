@@ -10,10 +10,12 @@ export async function onRequest(context) {
       const postId = url.searchParams.get('postId');
       const pageId = url.searchParams.get('pageId');
       const templateId = url.searchParams.get('templateId');
+      const galleryId = url.searchParams.get('galleryId');
 
       const editorUrl = env.API_URL + '/wp-admin/';
       const editPostUrl = postId ? `${editorUrl}post.php?post=${postId}&action=edit` : null;
       const editPageUrl = pageId ? `${editorUrl}post.php?post=${pageId}&action=edit` : null;
+      const editorGallery = galleryId ? `${editorUrl}post.php?post=${galleryId}&action=edit` : null;
       const editTemplateUrl = templateId ? `${editorUrl}post.php?post=${templateId}&action=edit` : null;
       const editMenuUrl = `${editorUrl}nav-menus.php`;
       const regenerateUrl = `${editorUrl}admin.php?page=custom_webhook`;
@@ -38,6 +40,14 @@ export async function onRequest(context) {
             <a href="${editPageUrl}" target="_blank" rel="noreferrer">
                 <i class="icon-[mdi--post-it-note-edit] text-lg mr-1" title="Edit Page"></i>
                 <span>Edit Page</span>
+            </a>
+            </li>
+        ` : ''}
+        ${editorGallery ? `
+            <li>
+            <a href="${editorGallery}" target="_blank" rel="noreferrer">
+                <i class="icon-[mdi--post-it-note-edit] text-lg mr-1" title="Edit Gallery"></i>
+                <span>Edit Gallery</span>
             </a>
             </li>
         ` : ''}

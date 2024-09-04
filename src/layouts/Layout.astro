@@ -7,8 +7,7 @@ import Headers from '../components/Headers.astro';
 import FooterSite from '../components/FooterSite.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
-const { pageId, postId, templateId, classes, title, description } = Astro.props;
-
+const { pageId, postId, galleryId, templateId, classes, title, description } = Astro.props;
 const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (postId ? ` post-${postId}` : '') + (templateId ? ` template-${templateId}` : '');
 
 ---
@@ -17,7 +16,7 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
   <html lang="en">
   <Seo title={title} description={description} />
   <body>
-    <AdminMenu pageId={pageId} postId={postId} templateId={templateId} />
+    <AdminMenu pageId={pageId} postId={postId} templateId={templateId} galleryId={galleryId} />
     <Headers />
     <main class={classList.trim()}>
       <slot />
