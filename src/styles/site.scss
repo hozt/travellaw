@@ -6,6 +6,10 @@
     @apply my-8 ml-2 mr-10 w-[250px];
 }
 
+.main-body {
+    @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
+}
+
 .main-menu {
     @apply text-lg bg-gray-200 md:bg-secondary;
 

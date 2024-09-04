@@ -26,7 +26,9 @@ h3 {
 h4 {
   @apply text-lg;
 }
-
+img {
+  @apply max-w-full max-h-full;
+}
 a {
   @apply underline text-link hover:text-link-hover;
 }
@@ -55,15 +57,16 @@ a {
 .size-medium {
   @apply h-auto max-w-[400px] mb-6;
 }
-.size-full {
-  @apply h-auto w-auto mb-6;
-}
 
+.size-full {
+  @apply max-w-full max-h-full mb-6;
+}
 .is-style-rounded img {
   @apply rounded-full;
 }
-
-
+figure.text-center img {
+  @apply mx-auto;
+}
 
 figcaption {
   @apply mt-1 text-sm text-center text-gray-600;
