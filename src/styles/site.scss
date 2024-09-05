@@ -1,9 +1,18 @@
-.logo-desktop {
-    @apply mx-auto max-w-[450px] max-h-36 h-auto w-auto my-8;
-}
+.logo-wrapper {
+    @apply flex items-center justify-center;
+    .logo-desktop {
+        @apply w-full max-w-[450px] my-8;
+    }
 
-.logo-mobile {
-    @apply my-8 ml-2 mr-10 w-[250px];
+    .logo-mobile {
+        @apply my-4 flex md:hidden justify-center items-center w-full;
+        img {
+            @apply w-[250px] h-auto;
+        }
+    }
+    .mobile-toggle {
+        @apply w-12 left-4;
+    }
 }
 
 .main-body {

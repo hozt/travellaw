@@ -44,8 +44,8 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
 ---
 
 <div class="mx-auto top-header">
-  <div class="flex items-center">
-    <div class="block md:hidden">
+  <div class="logo-wrapper">
+    <div class="absolute md:hidden mobile-toggle">
       <button
         id="menu-toggle"
         class="w-10 py-2 ml-2 text-4xl icon-[mdi--menu]"
@@ -85,7 +85,7 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
         </a>
       </div>
   </div>
-  <nav id="main-nav" class="hidden lg:block">
+  <nav id="main-nav" class="hidden md:block">
     <Navigation class="flex-wrap p-0 mx-auto list-none lg:flex main-menu md:justify-center" />
   </nav>
 </div>

@@ -11,8 +11,12 @@ const { data: templateData } = await client.query({
 });
 const { data: videosData } = await client.query({ query: GET_VIDEOS });
 
-const page = templateData.templateBy;
-const videos = videosData.videos.nodes;
+const page = templateData?.templateBy;
+const videos = videosData?.videos?.nodes;
+
+if (!videos || videos.length === 0) {
+  return Astro.redirect('/404', 404);
+}
 
 const title = page?.title || `Video`;
 ---

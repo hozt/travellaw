@@ -13,11 +13,8 @@ const { data: categoryData } = await client.query({ query: GET_CATEGORIES });
 const page = templateData.templateBy;
 const categories = categoryData?.categories?.nodes;
 
-if (!categories) {
-  return {
-    status: 404,
-    error: new Error(`No categories found`),
-  };
+if (!categories || categories.length === 0) {
+  return Astro.redirect('/404', '404');
 }
 
 const title = page?.title || `Categories`;

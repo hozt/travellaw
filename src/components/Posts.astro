@@ -30,9 +30,14 @@ const { data: articlesData } = await client.query({
   },
 });
 
-const articles = articlesData.posts.nodes;
+const articles = articlesData?.posts?.nodes;
 const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
 const crumbs = [{'label': title}];
+
+if (!articles || articles.length === 0) {
+  return Astro.redirect('/404', '404');
+}
+
 ---
 
 <Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">

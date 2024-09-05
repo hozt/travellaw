@@ -15,12 +15,13 @@ const { data: testimonialData } = await client.query({
   query: GET_TESTIMONIALS
 });
 
-if (!page) {
-  Astro.redirect('/404');
+const testimonials = testimonialData?.testimonials?.nodes;
+
+if (!testimonials || testimonials.length === 0) {
+  return Astro.redirect('/404', '404');
 }
 
-const testimonials = testimonialData?.testimonials?.nodes || [];
-// console log each row testimonial
+
 testimonials.map(({ testimonial }) => console.log(testimonial));
 
 const title = page?.title || "Testimonials";

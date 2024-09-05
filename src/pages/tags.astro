@@ -13,11 +13,8 @@ const { data: tagData } = await client.query({ query: GET_TAGS });
 const page = templateData.templateBy;
 const tags = tagData?.tags?.nodes;
 
-if (!tags) {
-  return {
-    status: 404,
-    error: new Error(`No tags found`),
-  };
+if (!tags || tags.length === 0) {
+  return Astro.redirect('/404', 404);
 }
 
 const title = page?.title || `Tags`;
