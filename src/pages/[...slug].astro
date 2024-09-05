@@ -57,6 +57,7 @@ const updatedContent = await replaceImageUrls(content);
     image={bannerImage?.sourceUrl}
     width={bannerImage?.mediaDetails?.width}
     height={bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: title }]}
   />
   <div class="main-body content">
     {featuredImage?.node?.sourceUrl && (

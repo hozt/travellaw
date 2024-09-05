@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
 import client from '../lib/apolloClient';
 import { GET_TAGS, GET_TEMPLATE } from '../lib/queries';
 
@@ -25,13 +24,13 @@ const title = page?.title || `Tags`;
 ---
 
 <Layout title={title} pageId="{page?.databaseId}" description={page?.metaDescription} templateId={page?.templateId} classes="tag-list">
-  <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: title }]}
   />
   <div class="container main-body">
     {page?.content && (

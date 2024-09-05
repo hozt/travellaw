@@ -1,8 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { Image } from "astro:assets";
 import BannerTitle from "../../components/BannerTitle.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import PostPreview from "../../components/PostPreview.astro";
 import client from "../../lib/apolloClient";
 import {
@@ -43,13 +41,13 @@ const title = page?.title || `${categoryName}`;
 ---
 
 <Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} classes={classes}>
-  <Breadcrumb crumbs={[{ label: "Category", path: "/category" }, { label: title }]} />
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: "Category", path: "/category" }, { label: title }]}
   />
   <div class="container main-body">
     {page?.content && <div class="content" set:html={page?.content} />}

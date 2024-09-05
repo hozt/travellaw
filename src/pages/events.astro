@@ -18,7 +18,10 @@ const title = page?.title || "Event Calendar";
 
 <Layout title={title} description={page?.metaDescription} templateId={page?.templateId} classes="events">
   <Seo title={title} />
-  <BannerTitle title={title} />
+  <BannerTitle
+    title={title}
+    crumbs={[{ label: title }]}
+  />
   <EventCalendar />
   <div class="mt-4 text-lg text-center">
     <a href="/events-list/">List View</a>

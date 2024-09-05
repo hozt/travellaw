@@ -3,8 +3,6 @@
 import Layout from "../../layouts/Layout.astro";
 import ArticleList from "../../components/ArticleList.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-
 import { GET_ARTICLES_COUNT, GET_TEMPLATE } from "../../lib/queries";
 import Pagination from "../../components/Pagination.astro";
 import { fetchArticles } from "../../lib/api";
@@ -54,13 +52,13 @@ const totalPages =
 ---
 
 <Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="page" templateId={template?.databaseId}>
-  <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
     subtitle={template?.subtitle}
     image={template?.bannerImage?.sourceUrl}
     width={template?.bannerImage?.mediaDetails.width}
     height={template?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: title }]}
   />
   <div class="container main-body">
     <ArticleList articles={articles} />

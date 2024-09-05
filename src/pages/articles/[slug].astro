@@ -2,7 +2,6 @@
 import client from '../../lib/apolloClient';
 import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import TagLinks from '../../components/TagLinks.astro';
 import { replaceImageUrls } from '../../lib/utils';
@@ -81,8 +80,8 @@ const srcset = featuredImageModule
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails?.width}
     height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
   />
-  <Breadcrumb crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]} />
   <div class="main-body content">
     {featuredImageModule && (
       <Image

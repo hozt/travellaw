@@ -33,6 +33,7 @@ const title = page?.title || "Testimonials";
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails?.width}
     height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: title }]}
   />
   <div class="main-body testimonials-wrapper">
     {testimonials.map((testimonial) => (

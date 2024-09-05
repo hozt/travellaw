@@ -1,8 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import { localFileName } from '../lib/utils';
+import Breadcrumb from './Breadcrumb.astro';
 
-const { title, subtitle, image, width, height } = Astro.props;
+const { title, subtitle, image, width, height, crumbs=[] } = Astro.props;
 
 let imageLocal = '';
 
@@ -17,6 +18,8 @@ if (image) {
   }
 }
 
+const showBottom = Boolean(imageLocal);
+
 const alt = title;
 
 // Define the widths for responsive images
@@ -29,6 +32,7 @@ const formats = ['avif', 'webp', 'jpg'];
 const sizes = "100vw"; // This ensures the image takes up 100% of the viewport width
 ---
 
+{!showBottom && <Breadcrumb crumbs={crumbs} />}
 <div class={`banner relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
   {imageLocal && (
     <Image
@@ -49,3 +53,4 @@ const sizes = "100vw"; // This ensures the image takes up 100% of the viewport w
     {subtitle && <h2 class="text-lg text-center md:text-xl">{subtitle}</h2>}
   </div>
 </div>
+{showBottom && <Breadcrumb crumbs={crumbs} />}

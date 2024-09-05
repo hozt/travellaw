@@ -1,9 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { Image } from "astro:assets";
 import BannerTitle from "../../components/BannerTitle.astro";
 import PostPreview from "../../components/PostPreview.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import client from "../../lib/apolloClient";
 import {
   GET_POSTS_BY_TAG,
@@ -52,13 +50,13 @@ if (!posts) {
 ---
 
 <Layout title={title} description={page?.metaDescription} classes={classList} >
-  <Breadcrumb crumbs={[{ label: "Tag", path: "/tag" }, { label: title }]} />
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: "Tag", path: "/tag" }, { label: title }]}
   />
   <div class="container main-body">
     {page?.content && <div class="content" set:html={page?.content} />}

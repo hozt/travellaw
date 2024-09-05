@@ -44,6 +44,7 @@ if (!page) {
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails?.width}
     height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: page?.title }]}
   />
   <div class="main-body content">
     <div set:html={page?.content} />

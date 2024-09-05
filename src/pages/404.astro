@@ -18,7 +18,10 @@ const description = template?.content || `<div>The page you are looking for does
 ---
 
 <Layout title={title} description={description} classes="page-404">
-    <BannerTitle title={title} />
+    <BannerTitle
+      title={title}
+      crumbs={[{ label: title }]}
+    />
   <div class="main-body content">
     <div class="mb-10 text-center"><i class="icon-error"></i></div>
     <div class="mt-6 text-center" set:html={description} />

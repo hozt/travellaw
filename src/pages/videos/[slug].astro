@@ -3,9 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
 import VideoPlayer from "../../components/VideoPlayer.astro";
 import client from '../../lib/apolloClient';
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import { GET_VIDEO_SLUGS, GET_VIDEO } from "../../lib/queries";
-
 
 export async function getStaticPaths() {
   const { data } = await client.query({
@@ -39,8 +37,11 @@ try {
 ---
 
 <Layout title={video?.title} postId={video?.databaseId} classes="video" description={video?.metaDescription} classes="video">
-  <Breadcrumb crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]} />
-  <BannerTitle title={video?.title} subtitle={video?.subtitle} />
+  <BannerTitle
+    title={video?.title}
+    subtitle={video?.subtitle}
+    crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]}
+  />
   <div class="container main-body">
     <VideoPlayer url={video?.videoUrl} title={video?.title} />
     {video?.content && <div class="max-w-lg mx-auto mt-4 video-content" set:html={video?.content} />}

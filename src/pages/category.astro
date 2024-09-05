@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
 import client from '../lib/apolloClient';
 import { GET_CATEGORIES, GET_TEMPLATE } from '../lib/queries';
 
@@ -22,16 +21,17 @@ if (!categories) {
 }
 
 const title = page?.title || `Categories`;
+
 ---
 
 <Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} classes="category-list">
-  <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: title }]}
   />
   <div class="container main-body">
     {page?.content && (

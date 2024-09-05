@@ -3,7 +3,6 @@ import Layout from "../../layouts/Layout.astro";
 import { Image } from 'astro:assets';
 import client from '../../lib/apolloClient';
 import BannerTitle from "../../components/BannerTitle.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import { GET_GALLERY_SLUGS, GET_GALLERY } from '../../lib/queries';
 
 export async function getStaticPaths() {
@@ -64,8 +63,10 @@ const galleryImages = await Promise.all(
 ---
 
 <Layout title={title} galleryId={gallery?.databaseId} templateId={template?.databaseId}>
-    <Breadcrumb crumbs={[{ label: title }]} />
-    <BannerTitle title={title} />
+    <BannerTitle
+        title={title}
+        crumbs={[{ label: title }]}
+    />
 
     <div class="container px-4 py-8 mx-auto">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="gallery">

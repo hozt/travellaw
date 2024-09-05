@@ -40,10 +40,15 @@ if (page && page.content) {
 
   cleanContent = page.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
 }
+
+const title = page ? page.title : 'FAQ Page'
 ---
 
 <Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription} classes="faq">
-  <BannerTitle title={page ? page.title : 'FAQ Page'} />
+  <BannerTitle
+    title={title}
+    crumbs={[{ label: title }]}
+  />
   <div class="main-body content">
     {page && (
       <>

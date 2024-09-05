@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import PostPreview from "../components/PostPreview.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
 import { GET_ARTICLES_COUNT, GET_TEMPLATE, GET_POSTS_EXCERPTS } from "../lib/queries";
 import Pagination from "../components/Pagination.astro";
 import client from "../lib/apolloClient";
@@ -33,16 +32,17 @@ const { data: articlesData } = await client.query({
 
 const articles = articlesData.posts.nodes;
 const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
+const crumbs = [{'label': title}];
 ---
 
 <Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">
-  <Breadcrumb crumbs={[{ label: title }]} />
   <BannerTitle
     title={title}
     subtitle={template?.subtitle}
     image={template?.bannerImage?.sourceUrl}
     width={template?.bannerImage?.mediaDetails.width}
     height={template?.bannerImage?.mediaDetails.height}
+    crumbs={crumbs}
   />
   <div class="container main-body">
     {articles.map((article) => (

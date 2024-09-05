@@ -50,7 +50,7 @@ const featuredImageModule = await getImageModule(imageUrl);
   )}
 
   <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
-    <div class="text-lg font-semibold post-title"><a href={`/${path}/${slug}`} class="no-link">{title}</a></div>
+    <div class="post-title"><a href={`/${path}/${slug}`} class="no-link">{title}</a></div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
       <a href={`/${path}/${slug}`} class="read-more">Read More</a>
