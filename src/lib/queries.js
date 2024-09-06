@@ -518,6 +518,9 @@ export const GET_FAVICON = gql`
         mimeType
         id
       }
+      logo {
+       sourceUrl
+      }
     }
   }
 `;

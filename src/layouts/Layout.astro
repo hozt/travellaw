@@ -5,6 +5,7 @@ import Seo from '../components/Seo.astro';
 import AdminMenu from '../components/AdminMenu.astro';
 import Headers from '../components/Headers.astro';
 import FooterSite from '../components/FooterSite.astro';
+import Analytics from '../components/Analytics.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
 const { pageId, postId, galleryId, templateId, classes, title, description } = Astro.props;
@@ -27,5 +28,6 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
         Copyright &copy; {new Date().getFullYear()} <SiteTitle /> all rights reserved
       </div>
     </footer>
+    <Analytics />
   </body>
 </html>

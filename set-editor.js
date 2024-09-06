@@ -43,8 +43,6 @@ fileContent = fileContent.replace(
   `const editorKey = '${editorKey}';`
 );
 
-console.log(fileContent);
-
 fs.writeFileSync(filePath, fileContent);
 
 console.log(`Updated editorKey to: ${editorKey}`);

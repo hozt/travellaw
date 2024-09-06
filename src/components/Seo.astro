@@ -6,17 +6,31 @@ const { data:favIcon } = await client.query({
   query: GET_FAVICON,
 });
 
+let canonicalUrl = '';
+const is404 = Astro.url.pathname === '/404';
+const { pathname } = Astro.url;
+const siteUrl = import.meta.env.SITE_URL;
+if (pathname) {
+  canonicalUrl = pathname === '/' ? `${siteUrl}` : `${siteUrl}${pathname}`;
+}
 const faviconUrl = favIcon.customSiteSettings.faviconLogo.sourceUrl;
 const faviconType = favIcon.customSiteSettings.faviconLogo.mimeType;
-
+const logo = favIcon.customSiteSettings.logo.sourceUrl;
+const logoUrl = `${siteUrl}/images/logos/${logo.split('/').pop()}`;
 const { title, description } = Astro.props;
 
 ---
 
 <head>
   <title>{title}</title>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={logoUrl}>
+  <meta property="og:url" content={siteUrl}>
+  <meta property="og:type" content="website">
   {description && <meta name="description" content={description} />}
   <link rel="icon" href={faviconUrl} type={faviconType} />
+  {canonicalUrl && !is404 && <link rel="canonical" href={canonicalUrl} />}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
