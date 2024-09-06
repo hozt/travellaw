@@ -1,0 +1,48 @@
+---
+import client from '../lib/apolloClient';
+import Layout from "../layouts/Layout.astro";
+import BannerTitle from "../components/BannerTitle.astro";
+import { GET_TESTIMONIALS, GET_TEMPLATE } from "../lib/queries";
+
+const { data: template } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: 'testimonials' },
+});
+
+const page = template?.templateBy;
+
+const { data: testimonialData } = await client.query({
+  query: GET_TESTIMONIALS
+});
+
+const testimonials = testimonialData?.testimonials?.nodes;
+
+if (!testimonials || testimonials.length === 0) {
+  return Astro.redirect('/404', '404');
+}
+
+
+testimonials.map(({ testimonial }) => console.log(testimonial));
+
+const title = page?.title || "Testimonials";
+---
+
+<Layout title={title} templateId={page?.databaseId} class="testimonials" description={page?.metaDescription}>
+  <BannerTitle
+    title={title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: title }]}
+  />
+  <div class="main-body testimonials-wrapper">
+    {testimonials.map((testimonial) => (
+      <div key={testimonial.databaseId} class="pt-4 border-b-2 testimonial last:border-none">
+        <div class="testimonial-title">{testimonial.title}</div>
+        <div class="testimonial-content" set:html={testimonial.content} />
+        <p class="testimonial-source">{testimonial.source}</p>
+      </div>
+    ))}
+  </div>
+</Layout>

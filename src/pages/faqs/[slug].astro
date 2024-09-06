@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import FaqDisplay from '../../components/FaqDisplay.astro';
+import BannerTitle from '../../components/BannerTitle.astro';
+import client from '../../lib/apolloClient';
+import { GET_TEMPLATE, GET_FAQ_TOPICS } from '../../lib/queries';
+
+export async function getStaticPaths() {
+  const data = await client.query({
+    query: GET_FAQ_TOPICS,
+  });
+  const topics = data.data.faqTopics.nodes.filter(topic => topic.parentId === null);
+  return topics.map(topic => ({
+    params: { slug: topic.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug },
+});
+
+const page = data?.templateBy;
+
+let cleanContent = '';
+let faqTopicIds = [];
+
+if (page && page.content) {
+  // Extract FAQ topic IDs from content
+  const shortcodeRegex = /<p>\[faq-term=(\d+)\]<\/p>/g;
+  faqTopicIds = [];
+
+  let match;
+  while ((match = shortcodeRegex.exec(page.content)) !== null) {
+    faqTopicIds.push(parseInt(match[1]));
+  }
+
+  cleanContent = page.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
+}
+
+const title = page ? page.title : 'FAQ Page'
+---
+
+<Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription} classes="faq">
+  <BannerTitle
+    title={title}
+    crumbs={[{ label: title }]}
+  />
+  <div class="main-body content">
+    {page && (
+      <>
+        {page.bannerImage && (
+          <Image
+            src={page.bannerImage.sourceUrl}
+            width={page.bannerImage.mediaDetails.width}
+            height={page.bannerImage.mediaDetails.height}
+            alt={page.title}
+            class="w-full h-auto mb-8 rounded-lg shadow-md"
+          />
+        )}
+        <div class="mb-8" set:html={cleanContent}></div>
+        {faqTopicIds.length > 0 && (
+          <FaqDisplay faqTopicIds={faqTopicIds} />
+        )}
+      </>
+    )}
+  </div>
+</Layout>

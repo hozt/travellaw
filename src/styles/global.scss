@@ -1,0 +1,107 @@
+/* src/styles/tailwind.css */
+@tailwind base;
+@tailwind components;
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply mb-4 font-semibold;
+}
+
+h1 {
+  @apply text-3xl;
+}
+
+h2 {
+  @apply text-3xl;
+}
+
+h3 {
+  @apply text-xl;
+}
+
+h4 {
+  @apply text-lg;
+}
+img {
+  @apply max-w-full max-h-full;
+}
+a {
+  @apply underline text-link hover:text-link-hover;
+}
+
+.footer-menu ul,
+.main-menu ul {
+  @apply list-none;
+}
+
+.main-menu ul li a {
+  @apply no-underline border-none;
+}
+.has-text-align-center,
+.aligncenter {
+  @apply mx-auto mb-4 text-center;
+}
+
+.alignright {
+  @apply mx-auto mb-4 text-center md:float-right md:ml-4;
+}
+
+.alignleft {
+  @apply md:float-right md:mr-4;
+}
+
+.size-medium {
+  @apply h-auto max-w-[400px] mb-6;
+}
+
+.size-full {
+  @apply max-w-full max-h-full mb-6;
+}
+.is-style-rounded img {
+  @apply rounded-full;
+}
+figure.text-center img {
+  @apply mx-auto;
+}
+
+figcaption {
+  @apply mt-1 text-sm text-center text-gray-600;
+}
+
+ul {
+  @apply mb-5 ml-4 list-disc;
+}
+
+blockquote {
+  @apply relative pl-4 italic text-gray-600 border-l-4 border-gray-300;
+}
+
+ol {
+  @apply ml-4 list-decimal;
+}
+
+p {
+  @apply mb-5;
+}
+
+hr {
+  @apply my-5 border-t-2 border-gray-300;
+}
+
+.container {
+  @apply max-w-screen-lg mx-4 md:mx-auto;
+}
+
+a.wp-block-file__button.wp-element-button {
+  @apply ml-3;
+}
+
+@tailwind utilities;
+
+@import './fonts.scss';
+@import './styles.scss';
+@import './site.scss';

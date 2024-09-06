@@ -1,0 +1,181 @@
+---
+let serverError = '';
+let isSubmitted = false;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const formDataJson = {};
+
+    formData.forEach((value, key) => {
+      formDataJson[key] = value;
+    });
+
+    const turnstileResponse = formData.get('cf-turnstile-response');
+
+    if (!turnstileResponse) {
+      throw new Error('Turnstile verification failed. Please try again.');
+    }
+
+    const response = await fetch('/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        message: formData.get('message'),
+        'cf-turnstile-response': turnstileResponse,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error('Failed to send email');
+    }
+
+    const result = await response.json();
+    if (result.error) {
+      throw new Error(result.error);
+    }
+
+    isSubmitted = true;
+  } catch (error) {
+    console.error('Error:', error);
+    serverError = error.message;
+  }
+}
+
+const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
+
+---
+
+<div class="max-w-lg p-6 mx-auto">
+  {isSubmitted ? (
+    <div class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
+      <strong class="font-bold">Success!</strong>
+      <span class="block sm:inline"> Your message has been sent.</span>
+    </div>
+  ) : (
+    <form method="POST" action="/contact" class={isSubmitted ? 'hidden' : ''}>
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" for="name">
+          Name <span class="text-red-500">*</span>
+        </label>
+        <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+          Email <span class="text-red-500">*</span>
+        </label>
+        <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" for="phone">
+          Phone
+        </label>
+        <input type="tel" name="phone" id="phone" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" for="message">
+          Your Message <span class="text-red-500">*</span>
+        </label>
+        <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+      </div>
+
+      <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>
+
+      <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
+        Send
+      </button>
+    </form>
+  )}
+
+  {serverError && (
+    <div class="relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline"> {serverError}</span>
+    </div>
+  )}
+</div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  let isSubmitting = false;
+
+  document.querySelector('form')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (isSubmitting) return;
+
+    const submitButton = document.getElementById('submitButton');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
+    isSubmitting = true;
+
+    const formData = new FormData(event.target);
+
+    // Ensure Turnstile response is included
+    const turnstileResponse = document.querySelector('input[name="cf-turnstile-response"]')?.value;
+    if (!turnstileResponse) {
+      console.error('Turnstile verification failed. Please try again.');
+      const errorElement = document.createElement('div');
+      errorElement.className = 'relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded';
+      errorElement.setAttribute('role', 'alert');
+      errorElement.innerHTML = `<strong class="font-bold">Error:</strong> <span class="block sm:inline">Turnstile verification failed. Please try again.</span>`;
+      event.target.parentNode.appendChild(errorElement);
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send';
+      isSubmitting = false;
+      return;
+    }
+
+    formData.append('cf-turnstile-response', turnstileResponse);
+
+    try {
+      const response = await fetch(event.target.action, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error('Failed to send email');
+      }
+
+      const result = await response.json();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Hide the form and show the success message
+      document.querySelector('form').classList.add('hidden');
+      const successElement = document.createElement('div');
+      successElement.className = 'relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded';
+      successElement.setAttribute('role', 'alert');
+      successElement.innerHTML = `<strong class="font-bold">Success!</strong> <span class="block sm:inline"> Your message has been sent.</span>`;
+      event.target.parentNode.appendChild(successElement);
+    } catch (error) {
+      console.error('Error:', error);
+      const errorElement = document.createElement('div');
+      errorElement.className = 'relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded';
+      errorElement.setAttribute('role', 'alert');
+      errorElement.innerHTML = `<strong class="font-bold">Error:</strong> <span class="block sm:inline">${error.message}</span>`;
+      event.target.parentNode.appendChild(errorElement);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send';
+      isSubmitting = false;
+      // Reset Turnstile widget
+      turnstile.reset();
+    }
+  });
+</script>

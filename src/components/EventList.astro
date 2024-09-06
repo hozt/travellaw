@@ -1,0 +1,119 @@
+---
+import dayjs from 'dayjs';
+import { GET_EVENTS } from '../lib/queries';
+import client from '../lib/apolloClient';
+
+export interface Props {
+  title?: string;
+  limit?: number;
+}
+
+const { title = "Upcoming Events", limit } = Astro.props;
+
+const { data } = await client.query({
+  query: GET_EVENTS,
+});
+
+const allEvents = data.events.nodes;
+const now = dayjs();
+
+// Filter and sort future events
+let futureEvents = allEvents
+  .filter(event => dayjs(event.startDatetime).isAfter(now))
+  .sort((a, b) => dayjs(a.startDatetime).diff(dayjs(b.startDatetime)));
+
+// Apply limit if provided
+if (limit) {
+  futureEvents = futureEvents.slice(0, limit);
+}
+---
+
+<div class="max-w-4xl p-4 mx-auto event-list">
+  <h1 class="mb-6 text-3xl font-bold">{title}</h1>
+  {futureEvents.map((event, index) => {
+    const eventDate = dayjs(event.startDatetime);
+    return (
+      <div class="flex flex-row p-4 mb-4 shadow-md event event-card" data-index={index} data-click-event="">
+        <div class="w-20 mb-4">
+          <div class="text-lg font-semibold event-weekday">{eventDate.format('ddd')}</div>
+          <div class="text-sm event-month">{eventDate.format('MMM')}</div>
+          <div class="text-2xl font-bold event-day">{eventDate.format('DD')}</div>
+        </div>
+        <div class="event-data">
+          <div class="mb-2 text-lg font-semibold event-title">{event.title}</div>
+          {event.content && (
+            <div class="event-content" set:html={event.content} />
+          )}
+          {event.location && (
+            <div class="text-sm event-location">
+              <i class="icon-[mdi--location] relative top-0.5 icon-location"></i> {event.location}
+            </div>
+          )}
+            <div class="event-time">
+              {eventDate.format('h:mm A')}
+            </div>
+          </div>
+        </div>
+    );
+  })}
+</div>
+
+<div id="modalContainer"></div>
+
+<!-- Include dayjs library -->
+<script is:inline src="https://unpkg.com/dayjs@1.10.7/dayjs.min.js"></script>
+<script is:inline>
+  function formatDate(date) {
+    return dayjs(date).format('MMMM D, YYYY - h:mm A');
+  }
+
+  function openModal(event) {
+    const modalContainer = document.getElementById('modalContainer');
+    modalContainer.innerHTML = `
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="w-full max-w-lg p-6 m-4 bg-white rounded-lg">
+          <h2 class="mb-4 text-2xl font-bold">${event.title}</h2>
+          <p class="mb-4 text-gray-600">
+            ${formatDate(event.startDatetime)}
+            ${event.endDatetime ? ` to ${dayjs(event.endDatetime).format('h:mm A')}` : ''}
+          </p>
+          ${event.content ? `<div class="event-content">${event.content}</div>` : ''}
+          ${event.featuredImage ? `<img src="${event.featuredImage.node.sourceUrl}" alt="${event.title}" class="w-full h-auto mb-4">` : ''}
+          <button id="closeModal" class="px-4 py-2 mt-4 text-white bg-red-500 rounded hover:bg-red-600">Close</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modalContainer.querySelector('.fixed').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  }
+
+  function closeModal() {
+    const modalContainer = document.getElementById('modalContainer');
+    modalContainer.innerHTML = '';
+  }
+
+  // Add click event listeners to all event titles
+  document.querySelectorAll('.view-event-details').forEach(button => {
+    button.addEventListener('click', () => {
+      const event = JSON.parse(button.getAttribute('data-event'));
+      openModal(event);
+    });
+  });
+
+  // Check for event in URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventParam = urlParams.get('event');
+  if (eventParam) {
+    try {
+      const event = JSON.parse(decodeURIComponent(eventParam));
+      openModal(event);
+    } catch (error) {
+      console.error('Error parsing event from URL:', error);
+    }
+  }
+</script>

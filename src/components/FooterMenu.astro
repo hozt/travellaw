@@ -1,0 +1,49 @@
+---
+import client from '../lib/apolloClient';
+import CustomLink from './CustomLink.astro';
+import { GET_FOOTER_MENU_ITEMS } from '../lib/queries';
+
+const { classes } = Astro.props;
+
+// Fetch the menu items from the GraphQL endpoint
+const { data } = await client.query({
+  query: GET_FOOTER_MENU_ITEMS,
+});
+
+const menuItems = data?.menuItems?.nodes || [];
+
+// Helper function to determine classes
+function getClassNames(item) {
+  const menuClass = `menu-${item.label.replace(/ /g, '-').toLowerCase()}`;
+  return `${item.cssClasses?.join(' ') || ''} ${item.childItems?.nodes?.length > 0 ? 'group ' : ''}${menuClass}`;
+}
+---
+<nav class="footer-menu">
+  <ul class={classes}>
+    {menuItems.map(item => !item.parentDatabaseId && (
+      <li class={getClassNames(item)} key={item.id}>
+        <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
+        {item.childItems?.nodes?.length > 0 && (
+          <ul class="ml-0">
+            {item.childItems.nodes.map(child => (
+              <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+                <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))}
+  </ul>
+</nav>
+<style>
+  .footer-menu {
+    ul {
+      @apply mb-0;
+    }
+    li {
+      @apply py-1;
+    }
+  }
+
+</style>

@@ -1,0 +1,43 @@
+{
+  "name": "Apollo",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@apollo/client": "^3.11.5",
+    "@astro-community/astro-embed-vimeo": "^0.3.7",
+    "@astro-community/astro-embed-youtube": "^0.5.3",
+    "@astrojs/sitemap": "^3.1.6",
+    "@astrojs/tailwind": "^5.1.0",
+    "@iconify-json/map": "^1.1.10",
+    "@iconify-json/mdi": "^1.1.68",
+    "@iconify/tailwind": "^1.1.2",
+    "astro-compress": "^2.3.1",
+    "astro-pagefind": "^1.6.0",
+    "astro-robots-txt": "^1.0.0",
+    "cssnano": "^7.0.5",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
+    "graphql": "^16.9.0",
+    "graphql-request": "^7.1.0",
+    "js-cookie": "^3.0.5",
+    "node-fetch": "^3.3.2",
+    "node-html-parser": "^6.1.13",
+    "serve": "^14.2.3",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.25.3",
+    "astro": "^4.13.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "sass": "^1.77.8"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "npm run set-editor && npm run fetch-images && astro build",
+    "serve": "serve ./dist",
+    "fetch-images": "node fetchAndSaveImages.js",
+    "set-editor": "node set-editor.js",
+    "clean": "rm -rf dist .astro node_modules/.vite"
+  }
+}

@@ -1,0 +1,31 @@
+---
+// /pages/404.astro
+import Layout from '../layouts/Layout.astro';
+import BannerTitle from '../components/BannerTitle.astro';
+import Search from "astro-pagefind/components/Search";
+import { GET_TEMPLATE } from '../lib/queries';
+import client from '../lib/apolloClient';
+
+const { data } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: '404' },
+});
+
+const template = data?.templateBy;
+
+const title = template?.title || "Page Not Found";
+const description = template?.content || `<div>The page you are looking for does not exist.</div><div class="mt-6 mb-6 text-center"><a href="/">Go back to the homepage</a></div>`;
+---
+
+<Layout title={title} description={description} classes="page-404">
+    <BannerTitle
+      title={title}
+    />
+  <div class="main-body content">
+    <div class="mb-10 text-center"><i class="icon-error"></i></div>
+    <div class="mt-6 text-center" set:html={description} />
+    <div class="max-w-md mx-auto mt-6">
+        <Search id="search" class="pagefind-ui" />
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,11 @@
+---
+import Posts from "../components/Posts.astro";
+const postAlias = import.meta.env.POST_ALIAS;
+---
+
+<script define:vars={{ postAlias }}>
+  if (postAlias === "blog") {
+    window.location.href = "/blog";
+  }
+</script>
+<Posts title="Articles" />

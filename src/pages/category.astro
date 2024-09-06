@@ -1,0 +1,49 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BannerTitle from "../components/BannerTitle.astro";
+import client from '../lib/apolloClient';
+import { GET_CATEGORIES, GET_TEMPLATE } from '../lib/queries';
+
+const { data: templateData } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: 'category' }
+});
+const { data: categoryData } = await client.query({ query: GET_CATEGORIES });
+
+const page = templateData.templateBy;
+const categories = categoryData?.categories?.nodes;
+
+if (!categories || categories.length === 0) {
+  return Astro.redirect('/404', '404');
+}
+
+const title = page?.title || `Categories`;
+
+---
+
+<Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} classes="category-list">
+  <BannerTitle
+    title={title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails.width}
+    height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: title }]}
+  />
+  <div class="container main-body">
+    {page?.content && (
+      <div class="content" set:html={page?.content} />
+    )}
+
+    <div class="category">
+      {categories.map((category) => (
+        <div key={category.databaseId} class="pb-4 border-b-2 blog-post">
+          <h3 class="mb-2">
+            <a href={`/category/${category.slug}`} class="no-underline">{category.name}</a>
+          </h3>
+          {category?.description && <div>{category?.description}</div>}
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PostPreview from "../components/PostPreview.astro";
+import BannerTitle from "../components/BannerTitle.astro";
+import { GET_ARTICLES_COUNT, GET_TEMPLATE, GET_POSTS_EXCERPTS } from "../lib/queries";
+import Pagination from "../components/Pagination.astro";
+import client from "../lib/apolloClient";
+const postAlias = import.meta.env.POST_ALIAS;
+
+const ITEMS_PER_PAGE = 10;
+
+const currentPage = 1;
+
+const { data: templateData } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: postAlias },
+});
+
+const template = templateData.templateBy;
+const title = template?.title || postAlias.charAt(0).toUpperCase() + postAlias.slice(1);
+
+const { data: articleCount } = await client.query({ query: GET_ARTICLES_COUNT });
+const totalArticles = articleCount.posts.nodes.length;
+
+const { data: articlesData } = await client.query({
+  query: GET_POSTS_EXCERPTS,
+  variables: {
+    first: 10,
+    after: null,
+  },
+});
+
+const articles = articlesData?.posts?.nodes;
+const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
+const crumbs = [{'label': title}];
+
+if (!articles || articles.length === 0) {
+  return Astro.redirect('/404', '404');
+}
+
+---
+
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">
+  <BannerTitle
+    title={title}
+    subtitle={template?.subtitle}
+    image={template?.bannerImage?.sourceUrl}
+    width={template?.bannerImage?.mediaDetails.width}
+    height={template?.bannerImage?.mediaDetails.height}
+    crumbs={crumbs}
+  />
+  <div class="container main-body">
+    {articles.map((article) => (
+      <PostPreview post={article} path="articles" />
+    ))}
+    <Pagination currentPage={currentPage} totalPages={totalPages} path={postAlias} />
+  </div>
+</Layout>

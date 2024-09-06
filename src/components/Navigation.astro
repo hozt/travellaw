@@ -1,0 +1,92 @@
+---
+import client from '../lib/apolloClient';
+import { GET_MENU_ITEMS } from '../lib/queries';
+import CustomLink from './CustomLink.astro';
+
+const { data } = await client.query({
+  query: GET_MENU_ITEMS,
+  variables: { first: 200 },
+});
+
+const menuItems = data?.menuItems?.nodes;
+
+if (!menuItems) {
+  throw new Error('No menu items found.');
+}
+
+function getClassNames(item) {
+  const menuClass = `menu-${item.label.replace(/ /g, '-').toLowerCase()}`;
+  return `${item.cssClasses?.join(' ') || ''} ${item.childItems?.nodes?.length > 0 ? 'group ' : ''}${menuClass}`;
+}
+---
+
+<ul class="flex-wrap p-0 mx-auto list-none lg:flex main-menu md:justify-center">
+  {menuItems.map(item => item.parentDatabaseId === 0 && (
+    <li class={`menu-item ${getClassNames(item)}`} key={item.id}>
+      <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
+      {item.childItems?.nodes?.length > 0 && (
+        <ul class="sub-menu">
+          {item.childItems.nodes.map(child => (
+            <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+              <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+.menu-item {
+  @apply relative;
+}
+
+.sub-menu {
+  @apply md:hidden md:absolute md:left-0 md:top-full md:z-50;
+}
+
+.menu-item:hover .sub-menu,
+.menu-item:focus-within .sub-menu,
+.menu-item.active .sub-menu {
+  @apply block;
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    menuItems.forEach(item => {
+      item.addEventListener('touchstart', function(e) {
+        const isOpen = this.classList.contains('active');
+        const submenu = this.querySelector('.sub-menu');
+
+        // Close all open submenus first
+        document.querySelectorAll('.menu-item.active').forEach(openItem => {
+          openItem.classList.remove('active');
+          openItem.querySelector('.sub-menu').style.display = 'none';
+        });
+
+        // Toggle the current submenu
+        if (!isOpen && submenu) {
+          this.classList.add('active');
+          submenu.style.display = 'block';
+          e.stopPropagation();
+        } else if (isOpen && submenu) {
+          this.classList.remove('active');
+          submenu.style.display = 'none';
+          e.stopPropagation();
+        }
+      });
+
+      // Close submenu if clicked outside
+      document.addEventListener('touchstart', function() {
+        document.querySelectorAll('.menu-item.active').forEach(openItem => {
+          openItem.classList.remove('active');
+          openItem.querySelector('.sub-menu').style.display = 'none';
+        });
+      }, true);
+    });
+  });
+</script>

@@ -1,0 +1,73 @@
+---
+// /pages/[...slug].astro
+import client from '../lib/apolloClient';
+import { GET_PAGES, GET_PAGE } from '../lib/queries';
+import Layout from '../layouts/Layout.astro';
+import BannerTitle from '../components/BannerTitle.astro';
+import { replaceImageUrls } from '../lib/utils';
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_PAGES,
+    variables: { first: 200 },
+  });
+
+  return data.pages.nodes.map(page => {
+    const slugArray = page.uri.split('/').filter(Boolean);
+    return {
+      params: { slug: slugArray.join('/') },
+      props: { page },
+    };
+  });
+}
+
+const { slug } = Astro.params; // This is a string in Astro
+
+const { data: pagesData } = await client.query({
+  query: GET_PAGE,
+  variables: { uri: slug },
+});
+
+const page = pagesData?.pageBy;
+
+if (!page) {
+  return {
+    status: 404,
+    error: new Error(`Page not found for slug: ${slug}`),
+  };
+}
+
+const {
+  title,
+  subtitle,
+  content,
+  bannerImage,
+  featuredImage,
+  metaDescription,
+  databaseId
+} = page;
+
+const updatedContent = await replaceImageUrls(content);
+---
+
+<Layout pageId={databaseId} title={title} description={metaDescription} classes="page">
+  <BannerTitle
+    title={title}
+    subtitle={subtitle}
+    image={bannerImage?.sourceUrl}
+    width={bannerImage?.mediaDetails?.width}
+    height={bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: title }]}
+  />
+  <div class="main-body content">
+    {featuredImage?.node?.sourceUrl && (
+      <img
+        src={featuredImage.node.sourceUrl}
+        alt={`Featured image for ${title}`}
+        class="mb-4 ml-4 float-end"
+        width="400"
+      />
+    )}
+    <div set:html={updatedContent} />
+  </div>
+</Layout>

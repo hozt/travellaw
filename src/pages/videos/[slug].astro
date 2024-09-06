@@ -1,0 +1,49 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BannerTitle from "../../components/BannerTitle.astro";
+import VideoPlayer from "../../components/VideoPlayer.astro";
+import client from '../../lib/apolloClient';
+import { GET_VIDEO_SLUGS, GET_VIDEO } from "../../lib/queries";
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_VIDEO_SLUGS,
+  });
+
+  return data.videos.nodes.map((video) => ({
+    params: { slug: video.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+
+let video = null;
+let error = null;
+
+try {
+  const { data } = await client.query({
+    query: GET_VIDEO,
+    variables: { slug },
+    fetchPolicy: 'cache-first',
+  });
+
+  video = data.videoBy;
+} catch (e) {
+  console.error('Error fetching video data:', e);
+  error = e.message;
+}
+
+---
+
+<Layout title={video?.title} postId={video?.databaseId} classes="video" description={video?.metaDescription} classes="video">
+  <BannerTitle
+    title={video?.title}
+    subtitle={video?.subtitle}
+    crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]}
+  />
+  <div class="container main-body">
+    <VideoPlayer url={video?.videoUrl} title={video?.title} />
+    {video?.content && <div class="max-w-lg mx-auto mt-4 video-content" set:html={video?.content} />}
+  </div>
+</Layout>

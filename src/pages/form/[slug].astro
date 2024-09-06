@@ -1,0 +1,53 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BannerTitle from "../../components/BannerTitle.astro";
+import client from "../../lib/apolloClient";
+import { GET_FORM, GET_ALL_FORMS } from "../../lib/queries";
+import ContactForm from "../../components/ContactForm.astro";
+
+export async function getStaticPaths() {
+  const data = await client.query({
+    query: GET_ALL_FORMS,
+  });
+  const forms = data.data.forms.nodes;
+  return forms.map((form) => ({
+    params: { slug: form.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+console.log("slug:", slug);
+
+let page;
+
+try {
+  const { data } = await client.query({
+    query: GET_FORM,
+    variables: { slug },
+  });
+  page = data?.formBy;
+} catch (e) {
+  console.error("Error fetching page data:", e);
+}
+
+if (!page) {
+  return Astro.redirect('/404', 404);
+}
+
+---
+
+<Layout title={page?.title} templateId={page?.databaseId} description={page?.metaDescription} classes="form">
+  <BannerTitle
+    title={page?.title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: page?.title }]}
+  />
+  <div class="main-body content">
+    <div set:html={page?.content} />
+    <ContactForm />
+  </div>
+</Layout>

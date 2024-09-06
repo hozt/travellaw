@@ -1,0 +1,99 @@
+---
+import client from '../../lib/apolloClient';
+import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
+import Layout from '../../layouts/Layout.astro';
+import BannerTitle from '../../components/BannerTitle.astro';
+import TagLinks from '../../components/TagLinks.astro';
+import { replaceImageUrls } from '../../lib/utils';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_POSTS,
+      variables: { first: 500 },
+    });
+
+    // Handle the case where no data is returned
+    if (!data || !data.posts) {
+      console.error('No posts data found');
+      return [];
+    }
+
+    return data.posts.nodes.map(page => ({
+      params: { slug: page?.slug },
+      props: { page },
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+    query: GET_POST,
+    variables: { slug },
+  });
+
+const page = data.postBy;
+const featuredImage = page?.featuredImage?.node;
+
+if (!page) {
+  throw new Error(`Post not found for slug: ${slug}`);
+}
+
+let updatedContent = '';
+try {
+  updatedContent = await replaceImageUrls(page?.content);
+} catch (error) {
+  console.error('Error replacing image URLs:', error);
+}
+
+const images = import.meta.glob('../../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+
+async function getImageModule(imagePath) {
+  if (!imagePath) return null;
+  const relativePath = `../../../assets/images/featured/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+  console.log('Image not found for path:', relativePath);
+  return null;
+}
+
+const featuredImageSourceUrl = featuredImage?.sourceUrl;
+const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
+
+const srcset = featuredImageModule
+  ? `${featuredImageModule.default.src} 1x, ${featuredImageModule.default.src.replace(/(\.\w+)$/, '@2x$1')} 2x`
+  : '';
+---
+
+<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="post">
+  <BannerTitle
+    title={page?.title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
+  />
+  <div class="main-body content">
+    {featuredImageModule && (
+      <Image
+        src={featuredImageModule.default}
+        srcset={srcset}
+        alt={`Featured image for ${page?.title}`}
+        class="featured-image"
+        width={featuredImageModule.default.width}
+        height={featuredImageModule.default.height}
+        loading="eager"
+      />
+    )}
+    <div set:html={updatedContent} />
+    <TagLinks tags={page?.tags} />
+  </div>
+</Layout>
