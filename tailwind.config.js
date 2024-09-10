@@ -33,7 +33,7 @@ module.exports = {
       },
       fontSize: {
         mobile: "15px",
-        base: "17px",
+        base: "15px",
       },
     },
   },

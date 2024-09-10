@@ -24,16 +24,17 @@
 
     span.no-link,
     a {
-        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
+        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-white hover:text-black;
     }
 
     .sub-menu {
+        @apply m-0;
         .no-link {
             @apply hover:bg-none text-dark hover:text-dark;
         }
 
         li {
-            @apply pb-1 mx-0 text-base leading-tight;
+            @apply p-0 pb-1 mx-0 text-base leading-tight;
         }
 
         a {
