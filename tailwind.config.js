@@ -5,6 +5,7 @@ module.exports = {
   content: [
     './src/**/*.{astro,html,js,jsx,ts,tsx}',
     './public/**/*.html',
+    './src/styles/**/*.scss',
     './assets/*.html',
     './safelist.txt'
   ],
@@ -32,7 +33,7 @@ module.exports = {
       },
       fontSize: {
         mobile: "15px",
-        base: "16px",
+        base: "17px",
       },
     },
   },
