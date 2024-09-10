@@ -53,10 +53,10 @@ const title = page?.title || `Video`;
               </div>
             )}
             <div>
-              <div class="mb-2">
+              <div class="mb-2 video-title">
                 <a href={`/videos/${video.slug}`} class="no-underline">{video.title}</a>
               </div>
-              <div set:html={video?.excerpt} />
+              <div class="video-excerpt" set:html={video?.excerpt} />
             </div>
           </div>
 

@@ -5,13 +5,16 @@ if (!ga) {
   return '';
 }
 ---
-
-<script define:vars={ga} async src={`https://www.googletagmanager.com/gtag/js?id=${ga}`}></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-  gtag('config', `${ga}`);
-</script>
+{ga && (
+  <>
+  <script define:vars={ga} async src={`https://www.googletagmanager.com/gtag/js?id=${ga}`}></script>
+  <script define:vars={ga}>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', `${ga}`);
+  </script>
+  </>
+)}

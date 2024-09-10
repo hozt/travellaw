@@ -88,3 +88,13 @@ export function localFileName(imageUrl) {
   }
   return '';
 }
+
+export async function getImageLogoUrl(imagePath) {
+  // remove the file name from imagePath
+  const images = import.meta.glob(`../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}`);
+  if (images[imagePath]) {
+    const imageModule = await images[imagePath]();
+    return imageModule.default;
+  }
+  return null;
+}
