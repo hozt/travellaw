@@ -31,6 +31,11 @@ const query = gql`
         bannerImage {
           sourceUrl
         }
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
         content
       }
     }
@@ -147,10 +152,12 @@ async function fetchImageUrls() {
     });
 
     // Collect featured images
-    data.posts?.nodes?.forEach(node => {
-      if (node?.featuredImage?.node?.sourceUrl) {
-        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
-      }
+    ['pages', 'posts', 'forms', 'templates'].forEach(type => {
+      data.posts?.nodes?.forEach(node => {
+        if (node?.featuredImage?.node?.sourceUrl) {
+          imageUrls.featured.push(node.featuredImage.node.sourceUrl);
+        }
+      });
     });
 
     // Collect content images
