@@ -14,7 +14,7 @@ export default defineConfig({
   },
   integrations: [
     Compress({
-      fileExtensions: ['.html', '.js', '.json', '.xml', '.txt', '.md', '.webmanifest', '.jsx', '.tsx', '.ts', '.ttf']
+      fileExtensions: ['.html', '.js', '.json', '.xml', '.txt', '.md', '.webmanifest', '.jsx', '.tsx', '.ts']
     }),
     sitemap(),
     tailwind(),
