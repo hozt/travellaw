@@ -68,7 +68,7 @@ const featuredImageSourceUrl = featuredImage?.sourceUrl;
 const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
 
 const srcset = featuredImageModule
-  ? `${featuredImageModule.default.src} 1x, ${featuredImageModule.default.src.replace(/(\.\w+)$/, '@2x$1')} 2x`
+  ? `${featuredImageModule.default.src} 1x`
   : '';
 ---
 
