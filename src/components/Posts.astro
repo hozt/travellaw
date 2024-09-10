@@ -53,6 +53,6 @@ if (!articles || articles.length === 0) {
     {articles.map((article) => (
       <PostPreview post={article} path="articles" />
     ))}
-    <Pagination currentPage={currentPage} totalPages={totalPages} path={postAlias} />
+    <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>
 </Layout>
