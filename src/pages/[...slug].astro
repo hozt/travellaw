@@ -5,6 +5,8 @@ import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import { replaceImageUrls } from '../lib/utils';
+import { localImage } from '../lib/utils';
+import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   const { data } = await client.query({
@@ -42,10 +44,31 @@ const {
   subtitle,
   content,
   bannerImage,
-  featuredImage,
   metaDescription,
   databaseId
 } = page;
+
+const images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+const featuredImage = page?.featuredImage?.node;
+
+async function getImageModule(imagePath) {
+  if (!imagePath) return null;
+  const relativePath = `../../assets/images/featured/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+  console.log('Image not found for path:', relativePath);
+  return null;
+}
+
+const featuredImageSourceUrl = featuredImage?.sourceUrl;
+const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
+
+const srcset = featuredImageModule
+  ? `${featuredImageModule.default.src} 1x, ${featuredImageModule.default.src.replace(/(\.\w+)$/, '@2x$1')} 2x`
+  : '';
+
 
 const updatedContent = await replaceImageUrls(content);
 ---
@@ -60,12 +83,14 @@ const updatedContent = await replaceImageUrls(content);
     crumbs={[{ label: title }]}
   />
   <div class="main-body content">
-    {featuredImage?.node?.sourceUrl && (
-      <img
-        src={featuredImage.node.sourceUrl}
-        alt={`Featured image for ${title}`}
-        class="mb-4 ml-4 float-end"
-        width="400"
+    {featuredImageModule && (
+      <Image
+        src={featuredImageModule.default}
+        alt={featuredImage?.altText || title}
+        width={featuredImage?.mediaDetails?.width}
+        height={featuredImage?.mediaDetails?.height}
+        srcset={srcset}
+        class="featured-image"
       />
     )}
     <div set:html={updatedContent} />
