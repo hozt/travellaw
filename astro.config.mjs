@@ -10,7 +10,12 @@ const site = process.env.SITE_URL;
 export default defineConfig({
   output: 'static',
   build: {
-    format: "file",
+    format: "file"
+  },
+  vite: {
+    resolve: {
+      preserveSymlinks: true
+    }
   },
   integrations: [
     Compress({
