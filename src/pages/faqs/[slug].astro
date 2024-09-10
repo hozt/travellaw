@@ -47,20 +47,15 @@ const title = page ? page.title : 'FAQ Page'
 <Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription} classes="faq">
   <BannerTitle
     title={title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
     crumbs={[{ label: title }]}
   />
   <div class="main-body content">
     {page && (
       <>
-        {page.bannerImage && (
-          <Image
-            src={page.bannerImage.sourceUrl}
-            width={page.bannerImage.mediaDetails.width}
-            height={page.bannerImage.mediaDetails.height}
-            alt={page.title}
-            class="w-full h-auto mb-8 rounded-lg shadow-md"
-          />
-        )}
         <div class="mb-8" set:html={cleanContent}></div>
         {faqTopicIds.length > 0 && (
           <FaqDisplay faqTopicIds={faqTopicIds} />

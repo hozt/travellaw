@@ -43,7 +43,7 @@ function getClassNames(item) {
 }
 
 .sub-menu {
-  @apply md:hidden md:absolute md:left-0 md:top-full md:z-50;
+  @apply hidden md:absolute md:left-0 md:top-full md:z-50 md:bg-white md:shadow-md md:rounded-md md:p-2;
 }
 
 .menu-item:hover .sub-menu,
@@ -51,42 +51,56 @@ function getClassNames(item) {
 .menu-item.active .sub-menu {
   @apply block;
 }
+
+@media (max-width: 767px) {
+  .sub-menu {
+    @apply static bg-transparent shadow-none p-0;
+  }
+}
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const menuItems = document.querySelectorAll('.menu-item');
+    const isMobile = window.innerWidth <= 767;
 
     menuItems.forEach(item => {
-      item.addEventListener('touchstart', function(e) {
-        const isOpen = this.classList.contains('active');
-        const submenu = this.querySelector('.sub-menu');
+      const link = item.querySelector('a');
+      const submenu = item.querySelector('.sub-menu');
 
-        // Close all open submenus first
-        document.querySelectorAll('.menu-item.active').forEach(openItem => {
-          openItem.classList.remove('active');
-          openItem.querySelector('.sub-menu').style.display = 'none';
-        });
-
-        // Toggle the current submenu
-        if (!isOpen && submenu) {
-          this.classList.add('active');
-          submenu.style.display = 'block';
-          e.stopPropagation();
-        } else if (isOpen && submenu) {
-          this.classList.remove('active');
-          submenu.style.display = 'none';
-          e.stopPropagation();
+      if (submenu) {
+        if (isMobile) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            item.classList.toggle('active');
+            submenu.style.display = item.classList.contains('active') ? 'block' : 'none';
+          });
+        } else {
+          item.addEventListener('touchstart', function(e) {
+            if (!item.classList.contains('active')) {
+              e.preventDefault();
+              menuItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                  otherItem.classList.remove('active');
+                  otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
+                }
+              });
+              item.classList.add('active');
+              submenu.style.display = 'block';
+            }
+          });
         }
-      });
-
-      // Close submenu if clicked outside
-      document.addEventListener('touchstart', function() {
-        document.querySelectorAll('.menu-item.active').forEach(openItem => {
-          openItem.classList.remove('active');
-          openItem.querySelector('.sub-menu').style.display = 'none';
-        });
-      }, true);
+      }
     });
+
+    // Close submenu if clicked outside
+    document.addEventListener('touchstart', function(e) {
+      if (!e.target.closest('.menu-item')) {
+        menuItems.forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.sub-menu')?.style.removeProperty('display');
+        });
+      }
+    }, { passive: true });
   });
 </script>

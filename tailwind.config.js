@@ -20,7 +20,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Helvetica", "Arial", "sans-serif"],
-        serif: ["Merriweather", "serif"],
+        serif: ["Roboto", "serif"],
       },
       screens: {
         xs: "480px",

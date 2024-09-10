@@ -27,31 +27,6 @@ ul.sub-menu {
   @apply ml-0 z-20 text-lg shadow lg:hidden lg:group-hover:block lg:bg-neutral-100 lg:absolute lg:mt-3 lg:w-56;
 }
 
-.main-menu {
-  @apply ml-0 mb-0 flex flex-col;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: center;
-  }
-
-  li {
-    @apply ml-0 mb-2 md:mb-0;
-    @apply md:mx-4;
-    /* Adds margin between menu items on md+ screens */
-  }
-
-  .indicator {
-    @apply icon-[mdi--menu-down] text-xl relative top-0.5 hidden lg:inline-block;
-  }
-
-  ul.sub-menu {
-    @apply mt-0;
-  }
-
-}
-
-
 /* these lines break the menu into columns */
 .break-column {
   break-before: column;

@@ -1,30 +1,42 @@
-.logo-wrapper {
-    @apply flex items-center justify-center;
-    .logo-desktop {
-        @apply w-full max-w-[450px] my-8;
-    }
 
-    .logo-mobile {
-        @apply my-4 flex md:hidden justify-center items-center w-full;
+.top-header {
+    @apply bg-primary;
+}
+
+.logo-menu {
+    @apply md:flex container md:items-center;
+
+    .logo-desktop {
         img {
-            @apply w-[250px] h-auto;
+            @apply max-w-[112px] mr-4 ml-4;
+        }
+    }
+    .logo-mobile {
+        @apply flex md:hidden items-center justify-center w-full;
+        img {
+            @apply max-w-[120px] h-auto py-2;
         }
     }
     .mobile-toggle {
-        @apply w-12 left-4;
+        @apply w-12 left-4 text-white;
     }
 }
 
 .main-body {
-    @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
+    @apply lg:min-h-[400px] max-w-screen-lg py-6 mx-5 lg:py-8 lg:mx-auto overflow-hidden;
 }
 
+// .main-menu-wrapper {
+//     @apply flex-wrap hidden mx-auto md:flex;
+// }
+
 .main-menu {
-    @apply text-lg bg-gray-200 md:bg-secondary;
+    /* @apply text-lg bg-gray-200 md:bg-secondary; */
+    @apply text-xl text-white;
 
     span.no-link,
     a {
-        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
+        @apply block px-4 py-5 no-underline text-dark md:text-white hover:bg-dark hover:text-white;
     }
 
     .sub-menu {
@@ -33,18 +45,41 @@
         }
 
         li {
-            @apply pb-1 mx-0 text-base leading-tight;
+            @apply pb-1 mx-0 text-xl leading-tight;
         }
 
         a {
-            @apply py-1.5 text-dark hover:bg-black hover:text-white;
+            @apply text-dark hover:bg-black hover:text-white py-3;
         }
     }
 }
 
 
+.main-menu {
+    @apply ml-0 mb-0 flex flex-col;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    li {
+        @apply ml-0 md:mb-0;
+    }
+
+    .indicator {
+        @apply icon-[mdi--menu-down] text-xl relative top-0.5 hidden lg:inline-block;
+    }
+
+    ul.sub-menu {
+        @apply mt-0;
+    }
+}
+
+
+
 .banner-image {
-    @apply text-white drop-shadow-md mb-4 md:h-auto bg-dark h-72;
+    @apply text-white drop-shadow-md mb-4 bg-dark;
 
     img {
         @apply opacity-70 max-h-[350px];
@@ -88,15 +123,15 @@
     @apply font-sans text-base;
 
     a {
-      @apply text-white no-underline hover:text-neutral-300;
+        @apply text-white no-underline hover:text-neutral-300;
     }
 
     span.no-link {
-      @apply text-lg font-semibold;
+        @apply text-lg font-semibold;
     }
-  }
+}
 
-.footer-menu > ul {
+.footer-menu>ul {
     @apply gap-16 ml-0 md:columns-2 mb-0;
 }
 
@@ -114,12 +149,20 @@
 
 
 .copyright {
-    @apply py-4 text-sm text-center bg-gray-500 text-white;
+    @apply text-sm my-4;
 }
 
 footer {
-    @apply mt-6 text-white bg-secondary text-base;
+    @apply text-dark text-base text-center;
 }
+
+.footer-menu-wrapper {
+    @apply max-w-screen-lg px-4 mx-auto;
+}
+.footer-menu {
+    @apply mt-4 md:flex md:flex-wrap md:mt-0;
+}
+
 
 .blog-post {
     .post-title {

@@ -3,8 +3,8 @@ import '../styles/global.scss';
 
 import Seo from '../components/Seo.astro';
 import AdminMenu from '../components/AdminMenu.astro';
-import Headers from '../components/Headers.astro';
-import FooterSite from '../components/FooterSite.astro';
+import HeaderSite from '../componentsSite/HeaderSite.astro';
+import FooterSite from '../componentsSite/FooterSite.astro';
 import Analytics from '../components/Analytics.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
@@ -14,11 +14,13 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
 ---
 
 <!DOCTYPE html>
-  <html lang="en">
-  <Seo title={title} description={description} />
+<html lang="en">
+  <head>
+    <Seo title={title} description={description} />
+  </head>
   <body>
     <AdminMenu pageId={pageId} postId={postId} templateId={templateId} galleryId={galleryId} />
-    <Headers />
+    <HeaderSite />
     <main class={classList.trim()}>
       <slot />
     </main>

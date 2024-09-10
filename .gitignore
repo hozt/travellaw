@@ -1,4 +1,9 @@
 .astro
+.gitiignore
+src/styles/site.scss
+src/componentsSite/*
+
+
 
 # Node modules
 node_modules/

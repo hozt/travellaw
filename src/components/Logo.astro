@@ -1,0 +1,71 @@
+---
+import { getImageLogoUrl } from '../lib/utils';
+import { Image } from 'astro:assets';
+import client from '../lib/apolloClient';
+import { GET_SITE_SETTINGS } from '../lib/queries';
+
+const { data } = await client.query({
+  query: GET_SITE_SETTINGS,
+});
+
+const siteSettings = data?.customSiteSettings;
+const logoSourceUrl = siteSettings?.logo?.sourceUrl;
+const logoWidth = siteSettings?.logo?.mediaDetails?.width;
+const logoHeight = siteSettings?.logo?.mediaDetails?.height;
+let mobileLogoSourceUrl = null;
+if (siteSettings?.mobileLogo?.sourceUrl) {
+    mobileLogoSourceUrl = siteSettings.mobileLogo.sourceUrl;
+} else {
+    mobileLogoSourceUrl = logoSourceUrl;
+}
+const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || logoWidth;
+const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || logoHeight;
+const siteTitle = siteSettings?.siteTitle || 'Logo';
+
+
+const logoUrl = logoSourceUrl ? await getImageLogoUrl(`../../assets/images/logos/${logoSourceUrl.split('/').pop()}`) : null;
+let mobileLogoUrl = null;
+if (!mobileLogoSourceUrl) {
+  mobileLogoUrl = logoUrl;
+} else {
+  mobileLogoUrl = await getImageLogoUrl(`../../assets/images/logos/${mobileLogoSourceUrl.split('/').pop()}`);
+}
+
+const widths = [240, 320, 640, 768, 1024];
+const formats = ['avif', 'webp', 'jpg'];
+const sizes = "100vw";
+
+---
+<div class="hidden logo-desktop md:block">
+    <a href="/">
+      {logoUrl && (
+        <Image
+          src={logoUrl}
+          alt={siteTitle}
+          width={logoWidth}
+          height={logoHeight}
+          sizes={sizes}
+          formats={formats}
+          widths={widths}
+          loading="eager"
+        />
+      )}
+    </a>
+  </div>
+  <div class="block md:hidden logo-mobile">
+    <a href="/" >
+      {mobileLogoUrl && (
+        <Image
+          src={mobileLogoUrl}
+          alt={siteTitle}
+          width={mobileLogoWidth}
+          height={mobileLogoHeight}
+          sizes={sizes}
+          formats={formats}
+          widths={widths}
+          loading="eager"
+        />
+      )}
+      </a>
+    </div>
+</div>
