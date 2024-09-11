@@ -68,7 +68,7 @@ const featuredImageSourceUrl = featuredImage?.sourceUrl;
 const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
 
 const srcset = featuredImageModule
-  ? `${featuredImageModule.default.src} 1x, ${featuredImageModule.default.src.replace(/(\.\w+)$/, '@2x$1')} 2x`
+  ? `${featuredImageModule.default.src} 1x`
   : '';
 ---
 
@@ -81,7 +81,7 @@ const srcset = featuredImageModule
     height={page?.bannerImage?.mediaDetails?.height}
     crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
   />
-  <div class="main-body content">
+  <div class="main-body">
     {featuredImageModule && (
       <Image
         src={featuredImageModule.default}

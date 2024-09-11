@@ -58,7 +58,7 @@ if (!posts) {
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Tag", path: "/tag" }, { label: title }]}
   />
-  <div class="container main-body">
+  <div class="main-body">
     {page?.content && <div class="content" set:html={page?.content} />}
     <div class="category">
       {

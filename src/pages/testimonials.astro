@@ -36,7 +36,7 @@ const title = page?.title || "Testimonials";
     height={page?.bannerImage?.mediaDetails?.height}
     crumbs={[{ label: title }]}
   />
-  <div class="main-body testimonials-wrapper">
+  <div class="main-body">
     {testimonials.map((testimonial) => (
       <div key={testimonial.databaseId} class="pt-4 border-b-2 testimonial last:border-none">
         <div class="testimonial-title">{testimonial.title}</div>

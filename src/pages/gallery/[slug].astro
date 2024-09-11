@@ -68,7 +68,7 @@ const galleryImages = await Promise.all(
         crumbs={[{ label: title }]}
     />
 
-    <div class="container px-4 py-8 mx-auto">
+    <div class="main-body">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="gallery">
             {galleryImages.map((image, index) => (
                 <div class="relative cursor-pointer group" data-index={index}>

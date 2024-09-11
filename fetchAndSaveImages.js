@@ -31,6 +31,11 @@ const query = gql`
         bannerImage {
           sourceUrl
         }
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
         content
       }
     }
@@ -51,6 +56,11 @@ const query = gql`
       nodes {
         bannerImage {
           sourceUrl
+        }
+        featuredImage {
+          node {
+            sourceUrl
+          }
         }
       }
     }
@@ -147,10 +157,12 @@ async function fetchImageUrls() {
     });
 
     // Collect featured images
-    data.posts?.nodes?.forEach(node => {
-      if (node?.featuredImage?.node?.sourceUrl) {
-        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
-      }
+    ['pages', 'posts', 'forms', 'templates'].forEach(type => {
+      data[type]?.nodes?.forEach(node => {
+        if (node?.featuredImage?.node?.sourceUrl) {
+          imageUrls.featured.push(node.featuredImage.node.sourceUrl);
+        }
+      });
     });
 
     // Collect content images
@@ -190,7 +202,6 @@ async function fetchImageUrls() {
 
 async function downloadImageThumbnail(url, outputPath) {
   try {
-
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
     const buffer = await response.buffer();

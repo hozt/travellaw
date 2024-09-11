@@ -53,7 +53,7 @@ const title = page ? page.title : 'FAQ Page'
     height={page?.bannerImage?.mediaDetails?.height}
     crumbs={[{ label: title }]}
   />
-  <div class="main-body content">
+  <div class="main-body">
     {page && (
       <>
         <div class="mb-8" set:html={cleanContent}></div>

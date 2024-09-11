@@ -30,7 +30,7 @@ const title = page?.title || `Video`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: title }]}
   />
-  <div class="container main-body">
+  <div class="main-body">
     {page?.content && (
       <div class="content" set:html={page?.content} />
     )}

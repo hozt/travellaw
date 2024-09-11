@@ -18,6 +18,16 @@ export const GET_PAGE = gql`
           height
         }
       }
+      featuredImage {
+        node {
+          altText
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
     }
   }
 `;

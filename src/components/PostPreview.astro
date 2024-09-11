@@ -1,7 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import { localImage } from '../lib/utils';
-const { post, isLast, path } = Astro.props;
+const { post } = Astro.props;
+const postAlias = import.meta.env.POST_ALIAS;
 
 const {
   title,
@@ -34,26 +35,28 @@ async function getImageModule(imagePath) {
 const featuredImageModule = await getImageModule(imageUrl);
 ---
 
-<div key={post.databaseId} class="flex pb-4 mb-4 border-b-2 post-preview last:border-none blog-post">
+<div key={post.databaseId} class="post-preview">
   {featuredImageModule && (
     <div>
-      <a href={`/${path}/${slug}`}>
+      <a href={`/${postAlias}/${slug}`}>
         <Image
           src={featuredImageModule.default}
           alt={altText}
           width={imageWidth}
           height={imageHeight}
-          class="post-preview-image"
+          class="featured-image"
         />
       </a>
     </div>
   )}
 
   <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
-    <div class="post-title"><a href={`/${path}/${slug}`} class="no-link">{title}</a></div>
+    <div class="post-title">
+      <a href={`/${postAlias}/${slug}`} class="no-link">{title}</a>
+    </div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
-      <a href={`/${path}/${slug}`} class="read-more">Read More</a>
+      <a href={`/${postAlias}/${slug}`} class="read-more">Read More</a>
     </div>
   </div>
 </div>
