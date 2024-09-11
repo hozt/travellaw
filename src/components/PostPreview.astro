@@ -37,17 +37,16 @@ const featuredImageModule = await getImageModule(imageUrl);
 
 <div key={post.databaseId} class="post-preview">
   {featuredImageModule && (
-    <div>
-      <a href={`/${postAlias}/${slug}`}>
+    <a href={`/${postAlias}/${slug}`}>
+      <div class="featured-image">
         <Image
           src={featuredImageModule.default}
           alt={altText}
           width={imageWidth}
           height={imageHeight}
-          class="featured-image"
         />
-      </a>
-    </div>
+      </div>
+    </a>
   )}
 
   <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
