@@ -23,17 +23,9 @@ footer ul.sub-menu {
   @apply pl-0 m-0 lg:block;
 }
 
-ul.sub-menu {
-  @apply ml-0 z-20 text-lg shadow lg:hidden lg:group-hover:block lg:bg-neutral-100 lg:absolute lg:mt-3 lg:w-56;
-}
-
 /* these lines break the menu into columns */
 .break-column {
   break-before: column;
-}
-
-.menu-resources .sub-menu {
-  @apply lg:gap-4 lg:w-[500px] lg:columns-2 lg:-ml-32;
 }
 
 .two-cols {
@@ -48,39 +40,3 @@ ul.sub-menu {
 .float_right {
   @apply float-right ml-6;
 }
-
-
-
-.front-services {
-  @apply grid grid-cols-2 gap-3 text-center md:grid-cols-3;
-
-  .front-text {
-    @apply block mb-4 text-lg leading-snug no-underline text-dark lg:text-xl;
-  }
-
-  .front-icon {
-    @apply flex items-center justify-center w-16 h-16 mx-auto mb-3 text-5xl text-gray-700 border-2 border-gray-700 rounded-full hover:bg-dark hover:text-white;
-  }
-}
-
-.post-image {
-  @apply max-w-80 max-h-80 w-auto h-auto float-end ml-4 mb-4;
-}
-
-.event-content p {
-  @apply mb-2;
-}
-
-/* testimonials */
-.testimonial-title {
-  @apply font-semibold text-lg;
-}
-.testimonial-content {
-  @apply italic;
-}
-
-/* 404 */
-.icon-error {
-  @apply icon-[mdi--error-outline] text-8xl text-gray-700;
-}
-
