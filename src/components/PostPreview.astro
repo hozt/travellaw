@@ -35,7 +35,7 @@ async function getImageModule(imagePath) {
 const featuredImageModule = await getImageModule(imageUrl);
 ---
 
-<div key={post.databaseId} class="flex pb-4 mb-4 border-b-2 post-preview last:border-none blog-post">
+<div key={post.databaseId} class="post-preview">
   {featuredImageModule && (
     <div>
       <a href={`/${postAlias}/${slug}`}>
@@ -51,7 +51,9 @@ const featuredImageModule = await getImageModule(imageUrl);
   )}
 
   <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
-    <div class="post-title"><a href={`/${postAlias}/${slug}`} class="no-link">{title}</a></div>
+    <div class="post-title">
+      <a href={`/${postAlias}/${slug}`} class="no-link">{title}</a>
+    </div>
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
       <a href={`/${postAlias}/${slug}`} class="read-more">Read More</a>

@@ -46,7 +46,7 @@ if (!page) {
     height={page?.bannerImage?.mediaDetails?.height}
     crumbs={[{ label: page?.title }]}
   />
-  <div class="main-body content">
+  <div class="main-body">
     <div set:html={page?.content} />
     <ContactForm />
   </div>

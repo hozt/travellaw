@@ -49,7 +49,7 @@ if (!articles || articles.length === 0) {
     height={template?.bannerImage?.mediaDetails.height}
     crumbs={crumbs}
   />
-  <div class="container main-body">
+  <div class="main-body">
     {articles.map((article) => (
       <PostPreview post={article} />
     ))}

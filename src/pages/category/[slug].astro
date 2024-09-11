@@ -49,7 +49,7 @@ const title = page?.title || `${categoryName}`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Category", path: "/category" }, { label: title }]}
   />
-  <div class="container main-body">
+  <div class="main-body">
     {page?.content && <div class="content" set:html={page?.content} />}
 
     <div class="category">

@@ -49,7 +49,7 @@ const updatedContent = await replaceImageUrls(content);
     width={bannerImage?.mediaDetails?.width}
     height={bannerImage?.mediaDetails?.height}
   />
-  <div class="main-body content">
+  <div class="main-body">
     <div set:html={updatedContent}></div>
   </div>
 </Layout>

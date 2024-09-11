@@ -27,7 +27,7 @@ const subtitle = page?.subtitle || '';
       height={page?.bannerImage?.mediaDetails?.height}
       crumbs={[{ label: title }]}
     />
-    <div class="main-body content">
+    <div class="main-body">
       {page?.content && (
         <div set:html={page?.content}></div>
       )}
