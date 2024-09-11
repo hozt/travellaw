@@ -19,27 +19,32 @@
     @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
 }
 
+.main-menu-wrapper {
+    @apply flex-wrap hidden mx-auto md:flex;
+}
+
 .main-menu {
-    @apply text-lg bg-gray-200 md:bg-secondary mb-0;
+    @apply w-full mb-0 flex p-0 mx-auto list-none md:justify-center text-lg text-white md:bg-secondary;
 
     span.no-link,
     a {
-        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-white hover:text-black;
+        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
     }
 
     .sub-menu {
-        @apply m-0;
+        @apply m-0 bg-neutral-100 shadow;
         .no-link {
             @apply hover:bg-none text-dark hover:text-dark;
         }
-
         li {
             @apply p-0 pb-1 mx-0 text-base leading-tight;
         }
-
         a {
             @apply py-1.5 text-dark hover:bg-black hover:text-white;
         }
+    }
+    .indicator {
+        @apply icon-[mdi--menu-down] text-xl relative top-0.5 hidden lg:inline-block;
     }
 }
 
@@ -64,12 +69,11 @@
     @apply text-secondary h-auto;
 
     .banner-text {
-        @apply max-w-screen-lg mx-4 pb-6 md:mx-auto;
+        @apply max-w-screen-lg mx-4 pb-2 md:mx-auto;
     }
 }
 
 .banner-text {
-
     h1,
     h2 {
         @apply mx-4 mb-0 text-center;
@@ -128,14 +132,25 @@ footer {
     }
 }
 
-.post {
-    .featured-image {
-        @apply mb-4 md:ml-4 mx-auto float-end max-w-full md:max-w-80;
+
+.post-preview {
+    @apply flex pb-4 mb-4 border-b-2 last:border-none flex-wrap sm:flex-nowrap;
+    .post-title {
+        @apply text-lg font-semibold;
     }
+    .post-excerpt {
+        @apply max-w-full;
+    }
+    .featured-image {
+        @apply w-full sm:w-auto sm:mr-6 mb-3 sm:mb-0;
+    }
+
 }
 
-.post-preview-image {
-    @apply max-w-36 max-h-36 object-cover mr-6;
+.post {
+    .featured-image {
+        @apply mb-4 md:ml-4 mx-auto float-end w-auto;
+    }
 }
 
 .pagination {
@@ -146,4 +161,20 @@ footer {
         @apply bg-primary text-white;
       }
     }
+}
+
+.page {
+    .featured-image {
+        @apply float-end max-w-[400px];
+    }
+}
+
+.faq-group-name {
+    @apply text-2xl font-semibold text-gray-800;
+}
+.faq-title {
+    @apply text-lg font-semibold cursor-pointer text-link hover:text-link-hover;
+}
+.faq-content {
+    @apply mt-2 text-gray-700;
 }
