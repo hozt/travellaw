@@ -16,20 +16,12 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
+const { data } = await client.query({
+  query: GET_FORM,
+  variables: { slug },
+});
 
-console.log("slug:", slug);
-
-let page;
-
-try {
-  const { data } = await client.query({
-    query: GET_FORM,
-    variables: { slug },
-  });
-  page = data?.formBy;
-} catch (e) {
-  console.error("Error fetching page data:", e);
-}
+const page = data?.formBy;
 
 if (!page) {
   return Astro.redirect('/404', 404);
