@@ -38,69 +38,57 @@ function getClassNames(item) {
 </ul>
 
 <style>
-.menu-item {
-  @apply relative;
-}
-
-.sub-menu {
-  @apply hidden md:absolute md:left-0 md:top-full md:z-50;
-}
-
-.menu-item:hover .sub-menu,
-.menu-item:focus-within .sub-menu,
-.menu-item.active .sub-menu {
-  @apply block;
-}
-
-@media (max-width: 767px) {
-  .sub-menu {
-    @apply static bg-transparent shadow-none p-0;
+  .menu-item:hover .sub-menu,
+  .menu-item:focus-within .sub-menu,
+  .menu-item.active .sub-menu {
+    @apply block;
   }
-}
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuItems = document.querySelectorAll('.menu-item');
-    const isMobile = window.innerWidth <= 767;
+document.addEventListener('DOMContentLoaded', () => {
+  const menuItems = document.querySelectorAll('.menu-item');
+  const isMobile = window.innerWidth <= 767;
 
-    menuItems.forEach(item => {
-      const link = item.querySelector('a');
-      const submenu = item.querySelector('.sub-menu');
+  menuItems.forEach(item => {
+    const link = item.querySelector('a');
+    const submenu = item.querySelector('.sub-menu');
 
-      if (submenu) {
+    if (submenu) {
+      link.addEventListener('click', function(e) {
         if (isMobile) {
-          link.addEventListener('click', function(e) {
-            e.preventDefault();
+          if (!item.classList.contains('active')) {
+            e.preventDefault();  // Prevent default only when the submenu is not open
             item.classList.toggle('active');
             submenu.style.display = item.classList.contains('active') ? 'block' : 'none';
-          });
-        } else {
-          item.addEventListener('touchstart', function(e) {
-            if (!item.classList.contains('active')) {
-              e.preventDefault();
-              menuItems.forEach(otherItem => {
-                if (otherItem !== item) {
-                  otherItem.classList.remove('active');
-                  otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
-                }
-              });
-              item.classList.add('active');
-              submenu.style.display = 'block';
+          }
+        }
+      });
+
+      item.addEventListener('touchstart', function(e) {
+        if (!item.classList.contains('active')) {
+          e.preventDefault();
+          menuItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+              otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
             }
           });
+          item.classList.add('active');
+          submenu.style.display = 'block';
         }
-      }
-    });
-
-    // Close submenu if clicked outside
-    document.addEventListener('touchstart', function(e) {
-      if (!e.target.closest('.menu-item')) {
-        menuItems.forEach(item => {
-          item.classList.remove('active');
-          item.querySelector('.sub-menu')?.style.removeProperty('display');
-        });
-      }
-    }, { passive: true });
+      });
+    }
   });
+
+  // Close submenu if clicked outside
+  document.addEventListener('touchstart', function(e) {
+    if (!e.target.closest('.menu-item')) {
+      menuItems.forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.sub-menu')?.style.removeProperty('display');
+      });
+    }
+  }, { passive: true });
+});
 </script>
