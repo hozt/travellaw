@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { Image } from 'astro:assets';
 import FaqDisplay from '../../components/FaqDisplay.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import client from '../../lib/apolloClient';
@@ -56,7 +55,7 @@ const title = page ? page.title : 'FAQ Page'
   <div class="main-body">
     {page && (
       <>
-        <div class="mb-8" set:html={cleanContent}></div>
+        <div class="faq" set:html={cleanContent}></div>
         {faqTopicIds.length > 0 && (
           <FaqDisplay faqTopicIds={faqTopicIds} />
         )}
