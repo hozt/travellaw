@@ -1,8 +1,16 @@
 ---
-import LogoMenuDefault from '../components/LogoMenuDefault.astro';
-import LogoMenu from '../components/LogoMenu.astro';
----
+import Logo from '../components/Logo.astro';
+import Navigation from '../components/Navigation.astro';
+import MenuTottgle from '../components/MenuToggle.astro';
 
-<div class="top-header">
-  <LogoMenuDefault />
+const hideToggle = false;
+const classList = 'main-menu-wrapper ' + (hideToggle ? 'flex' : 'hidden sm:flex');
+
+---
+<div class="logo-wrapper">
+    {!hideToggle && <MenuTottgle />}
+    <Logo />
 </div>
+<nav id="main-nav" class={classList}>
+    <Navigation class="p-0 main-menu" />
+</nav>

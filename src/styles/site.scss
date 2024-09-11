@@ -7,47 +7,48 @@
     .logo-mobile {
         @apply my-4 flex md:hidden justify-center items-center w-full;
         img {
-            @apply w-[250px] h-auto;
+            @apply w-[300px] h-auto;
         }
     }
     .mobile-toggle {
-        @apply w-12 left-4;
+        @apply left-0;
     }
 }
 
 .main-body {
     @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
 }
-
-.main-menu-wrapper {
-    @apply flex-wrap hidden mx-auto md:flex;
-}
-
 .main-menu {
-    @apply w-full mb-0 flex p-0 mx-auto list-none md:justify-center text-lg text-white md:bg-secondary;
+    @apply text-base w-full mb-0 flex flex-col flex-wrap p-0 mx-auto list-none md:flex md:justify-center text-white md:bg-secondary md:flex-row;
 
-    span.no-link,
-    a {
-        @apply block px-3 py-1 text-lg no-underline text-dark md:text-white hover:bg-neutral-100 hover:text-black;
+    li {
+        @apply m-0 relative;
     }
-
+    span.no-link, a {
+        @apply block px-4 py-1.5 no-underline text-dark md:text-white hover:bg-dark hover:text-white;
+    }
     .sub-menu {
-        @apply m-0 bg-neutral-100 shadow;
+        @apply hidden mb-0 mt-0 ml-2 md:ml-0 z-30 relative shadow md:group-hover:block md:bg-neutral-100 md:absolute md:w-56;
+        li {
+            @apply pb-1 mx-0 leading-tight;
+        }
         .no-link {
             @apply hover:bg-none text-dark hover:text-dark;
         }
-        li {
-            @apply p-0 pb-1 mx-0 text-base leading-tight;
-        }
         a {
-            @apply py-1.5 text-dark hover:bg-black hover:text-white;
+            @apply text-dark hover:bg-black hover:text-white py-1.5 relative z-40;
         }
+    }
+    .menu-resources .sub-menu {
+        @apply lg:gap-4 lg:w-[500px] lg:columns-2 lg:-ml-32;
     }
     .indicator {
-        @apply icon-[mdi--menu-down] text-xl relative top-0.5 hidden lg:inline-block;
+        @apply icon-[mdi--menu-down] text-xl absolute;
+    }
+    .active .sub-menu {
+        display: block; /* Ensure submenu is displayed when active */
     }
 }
-
 
 .banner-image {
     @apply text-white drop-shadow-md mb-4 md:h-auto bg-dark h-72;
@@ -154,7 +155,7 @@ footer {
 }
 
 .pagination {
-    @apply font-sans text-lg;
+    @apply font-sans text-lg flex-wrap mx-4 sm:mx-auto;
     a {
       @apply text-dark no-underline px-2 py-1 hover:bg-gray-300;
       &.pagination-active {
@@ -178,3 +179,37 @@ footer {
 .faq-content {
     @apply mt-2 text-gray-700;
 }
+
+.front-services {
+  @apply grid grid-cols-2 gap-3 text-center md:grid-cols-3;
+
+  .front-text {
+    @apply block mb-4 text-lg leading-snug no-underline text-dark lg:text-xl;
+  }
+
+  .front-icon {
+    @apply flex items-center justify-center w-16 h-16 mx-auto mb-3 text-5xl text-gray-700 border-2 border-gray-700 rounded-full hover:bg-dark hover:text-white;
+  }
+}
+
+.post-image {
+  @apply max-w-80 max-h-80 w-auto h-auto float-end ml-4 mb-4;
+}
+
+.event-content p {
+  @apply mb-2;
+}
+
+/* testimonials */
+.testimonial-title {
+  @apply font-semibold text-lg;
+}
+.testimonial-content {
+  @apply italic;
+}
+
+/* 404 */
+.icon-error {
+  @apply icon-[mdi--error-outline] text-8xl text-gray-700;
+}
+

@@ -32,7 +32,7 @@ module.exports = {
         "2xl": "1536px",
       },
       fontSize: {
-        mobile: "15px",
+        mobile: "16px",
         base: "15px",
       },
     },
