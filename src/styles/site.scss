@@ -24,6 +24,9 @@
     li {
         @apply m-0 relative;
     }
+    > li {
+        @apply mx-2;
+    }
     span.no-link, a {
         @apply block px-4 py-1.5 no-underline text-dark md:text-white hover:bg-dark hover:text-white;
     }
