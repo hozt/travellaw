@@ -17,7 +17,6 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-
 let video = null;
 let error = null;
 
@@ -44,6 +43,6 @@ try {
   />
   <div class="main-body">
     <VideoPlayer url={video?.videoUrl} title={video?.title} />
-    {video?.content && <div class="max-w-lg mx-auto mt-4 video-content" set:html={video?.content} />}
+    {video?.content && <div class="video-content" set:html={video?.content} />}
   </div>
 </Layout>

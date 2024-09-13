@@ -7,7 +7,7 @@ import { GET_VIDEOS, GET_TEMPLATE } from '../lib/queries';
 
 const { data: templateData } = await client.query({
   query: GET_TEMPLATE,
-  variables: { slug: 'video' }
+  variables: { slug: 'videos' }
 });
 const { data: videosData } = await client.query({ query: GET_VIDEOS });
 
@@ -44,9 +44,9 @@ const title = page?.title || `Video`;
                 <a href={`/videos/${video.slug}`}>
                   <Image
                     src={video.featuredImage.node.sourceUrl}
-                    width={150}
-                    height={150}
-                    alt={`Featured image for ${video.title}`}
+                    width={video.featuredImage.node.mediaDetails.width}
+                    height={video.featuredImage.node.mediaDetails.height}
+                    alt={`${video.title}`}
                     class="w-24 mr-4 lg:w-32"
                   />
                 </a>
