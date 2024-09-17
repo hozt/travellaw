@@ -22,7 +22,11 @@ export default defineConfig({
     compressor({
       fileExtensions: [".html"]
     }),
-    sitemap(),
+    sitemap({
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date(),
+    }),
     tailwind(),
     pagefind(),
     robotsTxt(),

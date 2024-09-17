@@ -233,7 +233,7 @@ export const GET_POSTS_EXCERPTS = gql`
 `;
 
 export const GET_POSTS_BY_CATEGORY = gql`
-  query GET_POSTS_BY_CATEGORY($slug: ID!) {
+  query($slug: ID!) {
     category(id: $slug, idType: SLUG) {
       name
       posts {
@@ -242,6 +242,7 @@ export const GET_POSTS_BY_CATEGORY = gql`
           slug
           excerpt
           databaseId
+          date
           featuredImage {
             node {
               sourceUrl
@@ -292,8 +293,8 @@ export const GET_TAGS = gql`
 
 // get category list for static paths
 export const GET_CATEGORIES = gql`
-  query {
-    categories {
+  query($first: Int!) {
+    categories(first: $first) {
       nodes {
         name
         slug
@@ -542,3 +543,45 @@ export const GET_EDITOR_KEY = gql`
     }
   }
 `;
+
+export const GET_NEWS_FEED = gql`
+  query($first: Int!) {
+    posts(first: $first, where: {status: PUBLISH, orderby: {field: DATE, order: DESC}}) {
+      nodes {
+        slug
+        title
+        excerpt
+        date
+        databaseId
+      }
+    }
+  }
+`;
+
+// export const GET_CATEGORY_FEED = gql`
+//   query($slug: ID!) {
+//     category(id: $slug, idType: SLUG) {
+//       posts {
+//         nodes {
+//           title
+//           slug
+//           excerpt
+//           date
+//           databaseId
+//         }
+//       }
+//     }
+//   }
+// `;
+
+// // get category names
+// export const GET_CATEGORIES = gql`
+//   query {
+//     categories {
+//       nodes {
+//         name
+//         slug
+//       }
+//     }
+//   }
+// `;

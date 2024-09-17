@@ -1,4 +1,11 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+
+if (import.meta.env.DEV) {
+  // Adds messages only in a dev environment
+  loadDevMessages();
+  loadErrorMessages();
+}
 
 let endpoint = import.meta.env.API_URL;
 if (!endpoint) {
