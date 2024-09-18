@@ -98,6 +98,13 @@ const query = gql`
         mediaItemUrl
       }
     }
+    showcases {
+      nodes {
+        additionalImage {
+          sourceUrl
+        }
+      }
+    }
   }
 `;
 

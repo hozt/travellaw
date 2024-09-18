@@ -62,28 +62,28 @@ const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
   ) : (
     <form method="POST" action="/contact" class={isSubmitted ? 'hidden' : ''}>
       <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-700" for="name">
+        <label class="block mb-2" for="name">
           Name <span class="text-red-500">*</span>
         </label>
         <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
       </div>
 
       <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+        <label class="block mb-2" for="email">
           Email <span class="text-red-500">*</span>
         </label>
         <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
       </div>
 
       <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-700" for="phone">
+        <label class="block mb-2" for="phone">
           Phone
         </label>
         <input type="tel" name="phone" id="phone" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
       <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-700" for="message">
+        <label class="block mb-2" for="message">
           Your Message <span class="text-red-500">*</span>
         </label>
         <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
