@@ -14,7 +14,8 @@ const { data: categoryData } = await client.query({
 });
 
 const page = templateData.templateBy;
-const categories = categoryData?.categories?.nodes;
+let categories = categoryData?.categories?.nodes;
+categories = categories.filter((category) => category.name !== 'Uncategorized');
 
 if (!categories || categories.length === 0) {
   return Astro.redirect('/404', '404');

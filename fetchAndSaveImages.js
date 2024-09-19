@@ -1,3 +1,5 @@
+// src/utils/imageProcessor.js
+import sharp from 'sharp';
 import { request, gql } from 'graphql-request';
 import { parse } from 'node-html-parser';
 import fs from 'fs/promises';
@@ -5,7 +7,6 @@ import path from 'path';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import sharp from 'sharp';
 dotenv.config();
 
 // Get the directory name of the current module
@@ -140,6 +141,7 @@ function extractImageUrlsFromContent(htmlContent) {
 
 async function fetchImageUrls() {
   try {
+    console.log('Fetching image URLs from GraphQL API...');
     const data = await request(endpoint, query, { first: recordsToFetch });
 
     if (!data) {
@@ -154,7 +156,6 @@ async function fetchImageUrls() {
       gallery: []
     };
 
-    // Collect banner images
     ['pages', 'posts', 'forms', 'templates'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.bannerImage?.sourceUrl) {
@@ -172,14 +173,12 @@ async function fetchImageUrls() {
       });
     });
 
-    // Collect content images
     ['pages', 'posts'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         imageUrls.content.push(...extractImageUrlsFromContent(node?.content));
       });
     });
 
-    // Collect logos
     if (data.customSiteSettings?.logo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.logo.sourceUrl);
     }
@@ -199,7 +198,7 @@ async function fetchImageUrls() {
       });
     });
 
-    console.log('All image URLs collected successfully');
+    console.log('Image URLs fetched successfully');
     return imageUrls;
   } catch (error) {
     console.error('Error in fetchImageUrls:', error.message);

@@ -1,10 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Seo from '../components/Seo.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import EventList from '../components/EventList.astro';
 import client from '../lib/apolloClient';
 import { GET_TEMPLATE } from '../lib/queries';
+import { isEnabled } from '../lib/enabledFeatures';
+
+if (!await isEnabled('events')) {
+  return Astro.redirect('/404', 404);
+}
 
 const { data: templateData } = await client.query({
   query: GET_TEMPLATE,

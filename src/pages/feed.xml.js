@@ -19,7 +19,6 @@ export const GET = async ({ params, request }) => {
     }
 
     const posts = data?.posts?.nodes || [];
-    console.log('Fetched posts:', posts);
 
     const rssFeed = await rss({
       title: 'HoZt News Feed',

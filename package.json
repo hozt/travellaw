@@ -7,7 +7,6 @@
     "@astro-community/astro-embed-vimeo": "^0.3.7",
     "@astro-community/astro-embed-youtube": "^0.5.3",
     "@astrojs/rss": "^4.0.7",
-    "@astrojs/sitemap": "^3.1.6",
     "@astrojs/tailwind": "^5.1.0",
     "@iconify-json/map": "^1.1.10",
     "@iconify-json/mdi": "^1.1.68",
@@ -23,8 +22,7 @@
     "js-cookie": "^3.0.5",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
-    "serve": "^14.2.3",
-    "sharp": "^0.33.5"
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",

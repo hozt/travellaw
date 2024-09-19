@@ -80,6 +80,14 @@ export const GET_FOOTER_MENU_ITEMS = gql`
   }
 `;
 
+export const GET_ENABLED_FEATURES = gql`
+  query {
+    customSiteSettings {
+      enabledFeatures
+    }
+  }
+`;
+
 export const GET_SITE_SETTINGS = gql`
   query {
     customSiteSettings {
@@ -558,30 +566,54 @@ export const GET_NEWS_FEED = gql`
   }
 `;
 
-// export const GET_CATEGORY_FEED = gql`
-//   query($slug: ID!) {
-//     category(id: $slug, idType: SLUG) {
-//       posts {
-//         nodes {
-//           title
-//           slug
-//           excerpt
-//           date
-//           databaseId
-//         }
-//       }
-//     }
-//   }
-// `;
-
-// // get category names
-// export const GET_CATEGORIES = gql`
-//   query {
-//     categories {
-//       nodes {
-//         name
-//         slug
-//       }
-//     }
-//   }
-// `;
+export const GET_SITEMAP_SLUGS = gql`
+  query($first: Int!) {
+      pages(first: $first) {
+        nodes {
+          slug
+          modified
+          isFrontPage
+        }
+      }
+      posts(first: $first) {
+        nodes {
+          slug
+          modified
+        }
+      }
+      forms(first: $first) {
+        nodes {
+          slug
+          modified
+        }
+      }
+      galleries {
+        nodes {
+          slug
+          modified
+        }
+      }
+      showcases(first: $first) {
+        nodes {
+          slug
+          modified
+        }
+      }
+      faqTopics(first: $first) {
+        nodes {
+          slug
+          parentId
+        }
+      }
+      tags(first: $first) {
+        nodes {
+          slug
+        }
+      }
+      categories(first: $first) {
+        nodes {
+          slug
+        }
+      }
+    }
+`;
