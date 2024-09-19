@@ -1,6 +1,4 @@
 import { defineConfig } from 'vite';
-// import Compress from "astro-compress";
-import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
 import pagefind from "astro-pagefind";
 import robotsTxt from 'astro-robots-txt';
@@ -22,7 +20,6 @@ export default defineConfig({
     compressor({
       fileExtensions: [".html"]
     }),
-    sitemap(),
     tailwind(),
     pagefind(),
     robotsTxt(),

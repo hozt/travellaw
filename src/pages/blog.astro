@@ -1,6 +1,12 @@
 ---
 import Posts from "../components/Posts.astro";
-const postAlias = import.meta.env.POST_ALIAS;
+import { isEnabled } from '../lib/enabledFeatures';
+
+if (!await isEnabled('posts')) {
+  return Astro.redirect('/404', 404);
+}
+
+const postAlias = import.meta.env.POST_ALIAS || 'blog';
 ---
 
 <script define:vars={{ postAlias }}>

@@ -16,22 +16,13 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
+const { data } = await client.query({
+  query: GET_VIDEO,
+  variables: { slug },
+  fetchPolicy: 'cache-first',
+});
 
-let video = null;
-let error = null;
-
-try {
-  const { data } = await client.query({
-    query: GET_VIDEO,
-    variables: { slug },
-    fetchPolicy: 'cache-first',
-  });
-
-  video = data.videoBy;
-} catch (e) {
-  console.error('Error fetching video data:', e);
-  error = e.message;
-}
+const video = data.videoBy;
 
 ---
 

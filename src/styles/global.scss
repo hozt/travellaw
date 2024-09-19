@@ -44,6 +44,9 @@ a {
 .has-text-align-center,
 .aligncenter {
   @apply mx-auto mb-4 text-center;
+  img {
+    @apply mx-auto;
+  }
 }
 
 .alignright {

@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Seo from '../components/Seo.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls } from '../lib/utils';
@@ -53,4 +52,3 @@ const updatedContent = await replaceImageUrls(content);
     <div set:html={updatedContent}></div>
   </div>
 </Layout>
-

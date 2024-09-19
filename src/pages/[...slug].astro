@@ -9,7 +9,7 @@ import { localImage } from '../lib/utils';
 import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
-  const { data } = await client.query({
+  let { data } = await client.query({
     query: GET_PAGES,
     variables: { first: 200 },
   });

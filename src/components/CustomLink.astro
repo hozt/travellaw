@@ -11,21 +11,35 @@ function isExternalUrl(url) {
 }
 
 let adjustedUrl = url === '/index/' ? '/' : url.replace(apiUrl, '');
+const linkClasses = classes ? classes.join(' ') : '';
 
 ---
 
 {!hasClassNoLink(classes) ? (
   isExternalUrl(adjustedUrl) ? (
-    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={classes?.join(' ')}>
+    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={linkClasses} client:load>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   ) : (
-    <a href={adjustedUrl} class={classes?.join(' ')}>
+    <a href={adjustedUrl} class={linkClasses} client:load>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   )
 ) : (
-  <span class={`${classes?.join(' ')}`}>
+  <span class={linkClasses}>
     {label} {indicator && <span class="indicator"></span>}
   </span>
 )}
+
+<script>
+  if (typeof window !== 'undefined') {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('a[href]');
+
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  }
+</script>

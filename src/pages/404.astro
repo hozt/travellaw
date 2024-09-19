@@ -15,9 +15,10 @@ const template = data?.templateBy;
 
 const title = template?.title || "Page Not Found";
 const description = template?.content || `<div>The page you are looking for does not exist.</div><div class="mt-6 mb-6 text-center"><a href="/">Go back to the homepage</a></div>`;
+const metaDescription = template?.metaDescription || description.replace(/<[^>]*>?/gm, '');
 ---
 
-<Layout title={title} description={description} classes="page-404">
+<Layout title={title} description={metaDescription} classes="page-404">
     <BannerTitle
       title={title}
     />

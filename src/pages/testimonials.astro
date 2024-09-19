@@ -3,6 +3,11 @@ import client from '../lib/apolloClient';
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
 import { GET_TESTIMONIALS, GET_TEMPLATE } from "../lib/queries";
+import { isEnabled } from '../lib/enabledFeatures';
+
+if (!await isEnabled('testimonials')) {
+  return Astro.redirect('/404', 404);
+}
 
 const { data: template } = await client.query({
   query: GET_TEMPLATE,
