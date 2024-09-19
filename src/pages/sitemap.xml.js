@@ -5,6 +5,10 @@ import { GET_SITEMAP_SLUGS, GET_ARTICLES_COUNT } from '../lib/queries';
 const siteUrl = import.meta.env.SITE_URL;
 const recordsToFetch = 1000;
 
+const formatDate = (date) => {
+  return new Date(date).toISOString();
+};
+
 const generateSitemapEntries = (type, nodes, prefix, priority) => {
     if (!nodes || nodes.length === 0) {
       return '';
@@ -21,7 +25,7 @@ const generateSitemapEntries = (type, nodes, prefix, priority) => {
       return `
       <url>
         <loc>${siteUrl}/${path}</loc>
-        <lastmod>${node?.modified || new Date().toISOString()}</lastmod>
+        <lastmod>${formatDate(node?.modified || new Date().toISOString())}</lastmod>
         <priority>${priority}</priority>
       </url>
     `;
