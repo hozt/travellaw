@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { Image } from "astro:assets";
 import BannerTitle from "../components/BannerTitle.astro";
+import PostPreview from "../components/PostPreview.astro";
 import client from '../lib/apolloClient';
 import { GET_VIDEOS, GET_TEMPLATE } from '../lib/queries';
 import { isEnabled } from '../lib/enabledFeatures';
@@ -43,31 +43,7 @@ const title = page?.title || `Video`;
 
     <div class="video">
       {videos.map((video) => (
-        <div key={video.databaseId} class="pb-4 border-b-2 blog-post">
-          <div class="flex">
-            {video.featuredImage && (
-              <div>
-                <a href={`/videos/${video.slug}`}>
-                  <Image
-                    src={video.featuredImage.node.sourceUrl}
-                    width={video.featuredImage.node.mediaDetails.width}
-                    height={video.featuredImage.node.mediaDetails.height}
-                    alt={`${video.title}`}
-                    class="w-24 mr-4 lg:w-32"
-                  />
-                </a>
-              </div>
-            )}
-            <div>
-              <div class="mb-2 video-title">
-                <a href={`/videos/${video.slug}`} class="no-underline">{video.title}</a>
-              </div>
-              <div class="video-excerpt" set:html={video?.excerpt} />
-            </div>
-          </div>
-
-
-        </div>
+        <PostPreview key={video.databaseId} post={video} path="videos" />
       ))}
     </div>
   </div>

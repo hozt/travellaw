@@ -289,6 +289,7 @@ export const GET_PORTFOLIOS_BY_TAG = gql`
   query($slug: ID!) {
     tag(id: $slug, idType: SLUG) {
       name
+      description
       portfolios {
         nodes {
           title
