@@ -1,8 +1,8 @@
 ---
 import { Image } from 'astro:assets';
-import { localImage, getImages } from '../lib/utils';
-const { post } = Astro.props;
-const postAlias = import.meta.env.POST_ALIAS;
+import { getImages } from '../lib/utils';
+const { post, path } = Astro.props;
+const postAlias = path || import.meta.env.POST_ALIAS;
 
 const {
   title,

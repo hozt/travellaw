@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { Image } from "astro:assets";
 import BannerTitle from "../components/BannerTitle.astro";
 import client from '../lib/apolloClient';
 import { GET_PORTFOLIO_EXCERPTS, GET_TEMPLATE } from '../lib/queries';
 import { isEnabled } from '../lib/enabledFeatures';
+import PostPreview from '../components/PostPreview.astro';
 
 if (!await isEnabled('portfolios')) {
   return Astro.redirect('/404', 404);
@@ -39,32 +39,11 @@ const title = page?.title || `Our Portfolio`;
     {page?.content && (
       <div class="content" set:html={page?.content} />
     )}
-
     <div class="portfolios">
-      {portfolio.map((portfolio) => (
-        <div key={portfolio.databaseId} class="pb-4 border-b-2 portfolio-list">
-          <div class="flex">
-            {portfolio.featuredImage && (
-              <div class="mr-6 portfolio-image">
-                <a href={`/portfolio/${portfolio.slug}`}>
-                  <Image
-                    src={portfolio.featuredImage.node.sourceUrl}
-                    width={portfolio.featuredImage.node.mediaDetails.width}
-                    height={portfolio.featuredImage.node.mediaDetails.height}
-                    alt={`${portfolio.title}`}
-                  />
-                </a>
-              </div>
-            )}
-            <div class="portfolio-content">
-              <div class="mb-2 portfolio-title">
-                <a href={`/portfolio/${portfolio.slug}`} class="no-underline">{portfolio.title}</a>
-              </div>
-              <div class="portfolio-excerpt" set:html={portfolio?.excerpt} />
-            </div>
-          </div>
-        </div>
-      ))}
+      { portfolio.map((post) => (
+          <PostPreview key={post.databaseId} post={post} path="portfolio" />
+        ))
+      }
     </div>
   </div>
 </Layout>

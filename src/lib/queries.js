@@ -284,6 +284,28 @@ export const GET_POSTS_BY_TAG = gql`
   }
 `;
 
+// get posts by tags
+export const GET_PORTFOLIOS_BY_TAG = gql`
+  query($slug: ID!) {
+    tag(id: $slug, idType: SLUG) {
+      name
+      portfolios {
+        nodes {
+          title
+          slug
+          excerpt
+          databaseId
+          featuredImage {
+            node {
+              sourceUrl
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 // get tags list for static paths
 export const GET_TAGS = gql`
   query {
@@ -641,6 +663,12 @@ export const GET_PORTFOLIO = gql`
       metaDescription
       date
       content
+      tags {
+        nodes {
+          name
+          slug
+        }
+      }
       featuredImage {
         node {
           altText
@@ -674,7 +702,7 @@ export const GET_PORTFOLIO = gql`
 
 export const GET_PORTFOLIO_EXCERPTS = gql`
   {
-    portfolios(where: {orderby: {field: DATE, order: DESC}}) {
+    portfolios(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
       nodes {
         title
         slug

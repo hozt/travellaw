@@ -1,0 +1,71 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import BannerTitle from "../../../components/BannerTitle.astro";
+import PostPreview from "../../../components/PostPreview.astro";
+import client from "../../../lib/apolloClient";
+import {
+    GET_PORTFOLIOS_BY_TAG,
+    GET_TAGS,
+    GET_TEMPLATE,
+} from "../../../lib/queries";
+
+export async function getStaticPaths() {
+  const { data } = await client.query({
+    query: GET_TAGS,
+    variables: { first: 200 },
+  });
+
+  return data.tags.nodes.map((page) => ({
+    params: { slug: page.slug },
+    props: { page }
+  }));
+}
+
+const { data: templateData } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: "video" },
+});
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+    query: GET_PORTFOLIOS_BY_TAG,
+    variables: { slug },
+});
+
+const page = templateData.templateBy;
+
+const posts = data?.tag?.portfolios?.nodes;
+const tagName = data?.tag?.name;
+const classList = 'tag tag-' + tagName.toLowerCase().replace(" ", "-");
+const title = page?.title || tagName;
+
+if (!posts) {
+  return {
+    status: 404,
+    error: new Error(`No posts found for tag ${slug}`),
+  };
+}
+
+---
+
+<Layout title={title} description={page?.metaDescription} classes={classList} >
+  <BannerTitle
+    title={title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails.width}
+    height={page?.bannerImage?.mediaDetails.height}
+    crumbs={[{ label: "Portfolio", path: "/portfolio/"}, { label: "Tag" }, { label: title }]}
+  />
+  <div class="main-body">
+    {page?.content && <div class="content" set:html={page?.content} />}
+    <div class="category">
+      {
+        posts.map((post) => (
+          <PostPreview key={post.databaseId} post={post} path="portfolio" />
+        ))
+      }
+    </div>
+  </div>
+</Layout>
