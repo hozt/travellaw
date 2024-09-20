@@ -1,0 +1,110 @@
+---
+import client from '../../lib/apolloClient';
+import { GET_ALL_PORTFOLIOS, GET_PORTFOLIO } from '../../lib/queries';
+import Layout from '../../layouts/Layout.astro';
+import BannerTitle from '../../components/BannerTitle.astro';
+import TagLinks from '../../components/TagLinks.astro';
+import { replaceImageUrls, getImages } from '../../lib/utils';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_PORTFOLIOS,
+      variables: { first: 500 },
+    });
+
+    if (!data || !data.portfolios) {
+      console.error('No portfolio data found');
+      return [];
+    }
+
+    return data.portfolios.nodes.map(page => ({
+      params: { slug: page?.slug },
+      props: { page },
+    }));
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+const { data } = await client.query({
+  query: GET_PORTFOLIO,
+  variables: { slug },
+});
+
+const page = data.portfolioBy;
+const featuredImage = page?.featuredImage?.node;
+const additionalImage = page?.additionalImage || [];
+
+if (!page) {
+  throw new Error(`portfolio not found for slug: ${slug}`);
+}
+
+let updatedContent = '';
+try {
+  updatedContent = await replaceImageUrls(page?.content);
+} catch (error) {
+  console.error('Error replacing image URLs:', error);
+}
+
+const featuredImageSourceUrl = featuredImage?.sourceUrl;
+const featuredImageModule = featuredImageSourceUrl ? await getImages('featured', featuredImageSourceUrl) : null;
+const additionalImageModule = additionalImage?.sourceUrl ? await getImages('additional', additionalImage.sourceUrl) : null;
+
+const srcset = featuredImageModule
+  ? `${featuredImageModule.default.src} 1x`
+  : '';
+
+const srcsetAdditional = additionalImageModule
+  ? `${additionalImageModule.default.src} 1x`
+  : '';
+---
+
+<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="portfolio">
+  <BannerTitle
+    title={page?.title}
+    subtitle={page?.subtitle}
+    image={page?.bannerImage?.sourceUrl}
+    width={page?.bannerImage?.mediaDetails?.width}
+    height={page?.bannerImage?.mediaDetails?.height}
+    crumbs={[{ label: 'Portfolio', path: '/portfolio'}, { label: page?.title }]}
+  />
+  <div class="main-body">
+    <div class="mb-8 md:flex">
+      {featuredImageModule && (
+        <div class="w-full mb-8 md:w-1/2 md:mb-0">
+          {featuredImage?.title && <h3 class="text-center">New Website</h3> }
+          <Image
+            src={featuredImageModule.default}
+            srcset={srcset}
+            alt={`Featured image for ${page?.title}`}
+            class="featured-image md:mr-6"
+            width={featuredImageModule.default.width}
+            height={featuredImageModule.default.height}
+            loading="eager"
+          />
+        </div>
+      )}
+      {additionalImageModule && (
+        <div class="w-full md:w-1/2">
+          {additionalImage?.title && <h3 class="text-center">Old Website</h3> }
+          <Image
+            src={additionalImageModule.default}
+            srcset={srcsetAdditional}
+            alt={`Additional image for ${page?.title}`}
+            class="additional-image md:ml-6"
+            width={additionalImageModule.default.width}
+            height={additionalImageModule.default.height}
+            loading="lazy"
+            />
+        </div>
+      )}
+    </div>
+    <div set:html={updatedContent} />
+    <TagLinks tags={page?.tags} />
+  </div>
+</Layout>

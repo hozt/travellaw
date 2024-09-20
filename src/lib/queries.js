@@ -593,7 +593,7 @@ export const GET_SITEMAP_SLUGS = gql`
           modified
         }
       }
-      showcases(first: $first) {
+      portfolios(first: $first) {
         nodes {
           slug
           modified
@@ -616,4 +616,89 @@ export const GET_SITEMAP_SLUGS = gql`
         }
       }
     }
+`;
+
+
+
+export const GET_ALL_PORTFOLIOS = gql`
+  query($first: Int!) {
+    portfolios(first: $first, where: {status: PUBLISH}) {
+      nodes {
+        databaseId
+        slug
+      }
+    }
+  }
+`;
+
+export const GET_PORTFOLIO = gql`
+  query($slug: String!) {
+    portfolioBy(slug: $slug) {
+      databaseId
+      subtitle
+      title
+      slug
+      metaDescription
+      date
+      content
+      featuredImage {
+        node {
+          altText
+          sourceUrl
+          title
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+      additionalImage {
+        sourceUrl
+        title
+        mediaDetails {
+          height
+          width
+        }
+      }
+      bannerImage {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PORTFOLIO_EXCERPTS = gql`
+  {
+    portfolios(where: {orderby: {field: DATE, order: DESC}}) {
+      nodes {
+        title
+        slug
+        databaseId
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            title
+            mediaDetails {
+              width
+              height
+            }
+          }
+        }
+        additionalImage {
+          sourceUrl
+          title
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+    }
+  }
 `;

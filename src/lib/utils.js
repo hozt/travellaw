@@ -98,3 +98,43 @@ export async function getImageLogoUrl(imagePath) {
   }
   return null;
 }
+
+export async function getImages(directory, imagePath) {
+  if (!imagePath) {
+    return null;
+  }
+  let images = {};
+
+  switch (directory) {
+    case 'logos':
+      images = import.meta.glob('../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'additional':
+      images = import.meta.glob('../../assets/images/additional/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'featured':
+      images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'banners':
+      images = import.meta.glob('../../assets/images/banners/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'gallery':
+      images = import.meta.glob('../../assets/images/gallery/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'gallery-thumbnails':
+      images = import.meta.glob('../../assets/images/gallery-thumbnails/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    default:
+      console.log('Invalid directory:', directory);
+      return null;
+  }
+
+  const relativePath = `../../assets/images/${directory}/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+
+  console.log('Additional image not found for path:', relativePath);
+  return null;
+}

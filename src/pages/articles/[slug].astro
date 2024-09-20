@@ -6,6 +6,7 @@ import BannerTitle from '../../components/BannerTitle.astro';
 import TagLinks from '../../components/TagLinks.astro';
 import { replaceImageUrls } from '../../lib/utils';
 import { Image } from 'astro:assets';
+import { getImages } from '../../lib/utils';
 
 export async function getStaticPaths() {
   try {
@@ -51,24 +52,14 @@ try {
   console.error('Error replacing image URLs:', error);
 }
 
-const images = import.meta.glob('../../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
-
-async function getImageModule(imagePath) {
-  if (!imagePath) return null;
-  const relativePath = `../../../assets/images/featured/${imagePath.split('/').pop()}`;
-  if (images[relativePath]) {
-    const imageModule = await images[relativePath]();
-    return imageModule;
-  }
-  console.log('Image not found for path:', relativePath);
-  return null;
+const featuredImageSourceUrl = featuredImage?.sourceUrl;
+let localImage = null;
+if (featuredImageSourceUrl) {
+  localImage = await getImages('featured', featuredImageSourceUrl);
 }
 
-const featuredImageSourceUrl = featuredImage?.sourceUrl;
-const featuredImageModule = featuredImageSourceUrl ? await getImageModule(featuredImageSourceUrl) : null;
-
-const srcset = featuredImageModule
-  ? `${featuredImageModule.default.src} 1x`
+const srcset = localImage
+  ? `${localImage.default.src} 1x`
   : '';
 ---
 
@@ -82,14 +73,12 @@ const srcset = featuredImageModule
     crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
   />
   <div class="main-body">
-    {featuredImageModule && (
+    {localImage && (
       <Image
-        src={featuredImageModule.default}
+        src={localImage.default}
         srcset={srcset}
         alt={`Featured image for ${page?.title}`}
         class="featured-image"
-        width={featuredImageModule.default.width}
-        height={featuredImageModule.default.height}
         loading="eager"
       />
     )}
