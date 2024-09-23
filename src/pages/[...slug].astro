@@ -5,7 +5,7 @@ import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import { replaceImageUrls } from '../lib/utils';
-import { getImages } from '../lib/utils';
+import { getImages, replaceIconShortcode } from '../lib/utils';
 import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
@@ -55,7 +55,8 @@ if (featuredImage?.sourceUrl) {
   localImage = await getImages('featured', featuredImage.sourceUrl);
 }
 
-const updatedContent = await replaceImageUrls(content);
+let updatedContent = await replaceImageUrls(content);
+updatedContent = replaceIconShortcode(updatedContent);
 ---
 
 <Layout pageId={databaseId} title={title} description={metaDescription} classes="page">

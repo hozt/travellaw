@@ -3,6 +3,20 @@ import { parse } from 'node-html-parser';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 
+
+export function replaceIconShortcode(content) {
+  // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
+  const iconRegex = /<i\s+class="[^"]*\bfa-([^"]+)"[^>]*><\/i>/g;
+
+  // Replace the matched <i> tag with the modified version
+  return content.replace(iconRegex, (match, iconName) => {
+    // Generate the replacement HTML
+    const iconClass = `icon-[fa--${iconName}]`;
+    console.log('iconClass:', iconClass);
+    return `<i class="${iconClass}"></i>`;
+  });
+}
+
 export async function replaceImageUrls(content, localImageDir = 'images/content', localPdfDir = 'pdfs') {
   const root = parse(content);
 
@@ -138,3 +152,4 @@ export async function getImages(directory, imagePath) {
   console.log('Additional image not found for path:', relativePath);
   return null;
 }
+

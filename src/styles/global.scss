@@ -100,6 +100,25 @@ a.wp-block-file__button.wp-element-button {
   @apply ml-3;
 }
 
+.wp-block-button {
+  @apply inline-block;
+  a {
+      @apply no-underline;
+  }
+}
+
+.wp-block-buttons {
+  a {
+    @apply no-underline;
+  }
+  &.is-layout-flex {
+      @apply flex;
+  }
+  &.is-content-justification-center {
+      @apply justify-center;
+  }
+}
+
 @tailwind utilities;
 
 @import './fonts.scss';

@@ -8,6 +8,7 @@
     "@astro-community/astro-embed-youtube": "^0.5.3",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/tailwind": "^5.1.0",
+    "@iconify-json/fa": "^1.2.0",
     "@iconify-json/map": "^1.1.10",
     "@iconify-json/mdi": "^1.1.68",
     "@iconify/tailwind": "^1.1.2",

@@ -325,17 +325,34 @@ async function saveRedirectsToFile() {
   console.log('Saved redirects to _redirects file');
 }
 
+
+function replaceIconShortcode(content) {
+  // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
+  const iconRegex = /<i\s+class="[^"]*\bfa-([^"]+)"[^>]*><\/i>/g;
+
+  // Replace the matched <i> tag with the modified version
+  return content.replace(iconRegex, (match, iconName) => {
+    // Generate the replacement HTML
+    const iconClass = `icon-[fa--${iconName}]`;
+    console.log('iconClass:', iconClass);
+    return `<i class="${iconClass}"></i>`;
+  });
+}
+
+
 // All posts and content to a single file for tailwind styles
 async function saveAllContentToFile() {
   const data = await request(endpoint, query, { first: recordsToFetch });
   const allContentPath = path.join(__dirname, 'assets', 'all-content.html');
-  const lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  let lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  lines = replaceIconShortcode(lines);
   await fs
     .writeFile(allContentPath, lines)
     .then(() => console.log('Saved all posts to all-content.html file'));
 
   const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
-  const postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  let postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  postLines = replaceIconShortcode(postLines);
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));

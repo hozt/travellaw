@@ -74,36 +74,20 @@ const srcsetAdditional = additionalImageModule
     crumbs={[{ label: 'Portfolio', path: '/portfolio'}, { label: page?.title }]}
   />
   <div class="main-body">
-    <div class="mb-8 md:flex">
-      {featuredImageModule && (
-        <div class="w-full mb-8 md:w-1/2 md:mb-0">
-          {featuredImage?.title && <h3 class="text-center">New Website</h3> }
-          <Image
-            src={featuredImageModule.default}
-            srcset={srcset}
-            alt={`Featured image for ${page?.title}`}
-            class="featured-image md:mr-6"
-            width={featuredImageModule.default.width}
-            height={featuredImageModule.default.height}
-            loading="eager"
+    {additionalImageModule && (
+      <div class="additional-image">
+        <Image
+          src={additionalImageModule.default}
+          srcset={srcsetAdditional}
+          alt={`Additional image for ${page?.title}`}
+          class="additional-image md:ml-6"
+          width={additionalImageModule.default.width}
+          height={additionalImageModule.default.height}
+          loading="lazy"
           />
-        </div>
-      )}
-      {additionalImageModule && (
-        <div class="w-full md:w-1/2">
-          {additionalImage?.title && <h3 class="text-center">Old Website</h3> }
-          <Image
-            src={additionalImageModule.default}
-            srcset={srcsetAdditional}
-            alt={`Additional image for ${page?.title}`}
-            class="additional-image md:ml-6"
-            width={additionalImageModule.default.width}
-            height={additionalImageModule.default.height}
-            loading="lazy"
-            />
-        </div>
-      )}
-    </div>
+      </div>
+    )}
+
     <div set:html={updatedContent} />
     <TagLinks tags={page?.tags} path="portfolio/tags" />
   </div>

@@ -709,6 +709,7 @@ export const GET_PORTFOLIO_EXCERPTS = gql`
         slug
         databaseId
         excerpt
+        subtitle
         featuredImage {
           node {
             sourceUrl
