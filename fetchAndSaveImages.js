@@ -317,20 +317,26 @@ async function downloadAllImages(imageUrls) {
 }
 
 function replaceIconShortcode(content) {
-  // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
-  const iconRegex = /<i\s+class="[^"]*\bfa-([^"]+)"[^>]*><\/i>/g;
+  // Regular expression to match the [icon name="shopping-cart" prefix="fas"] pattern
+  const iconRegex = /\[icon\s+name="([^"]+)"\s+prefix="([^"]+)"\]/g;
 
-  // Replace the matched <i> tag with the modified version
-  return content.replace(iconRegex, (match, iconName) => {
-    // Validate the extracted iconName
-    if (!iconName || typeof iconName !== 'string' || !/^[a-zA-Z0-9-]+$/.test(iconName)) {
-      console.warn(`Invalid icon name: "${iconName}"`);
-      return match; // Return the original match if the iconName is invalid
+  // Replace the matched shortcode with the <i> tag
+  return content.replace(iconRegex, (match, name, prefix) => {
+    // Debugging logs
+    console.log('Matched shortcode:', match);
+    console.log('Extracted name:', name);
+    console.log('Extracted prefix:', prefix);
+
+    // Check if name and prefix are valid
+    if (!name || !prefix) {
+      console.error('Invalid icon name or prefix:', { name, prefix });
+      return match; // Return the original match if invalid
     }
 
-    // Generate the replacement HTML using string concatenation
-    const iconClass = 'icon-[fa--' + iconName + ']';
-    return '<i class="' + iconClass + '"></i>';
+    // Generate the replacement HTML
+    const iconClass = `${prefix} fa-${name}`;
+    console.log('Generated icon class:', iconClass);
+    return `<i class="${iconClass}"></i>`;
   });
 }
 
