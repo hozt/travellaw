@@ -1,5 +1,5 @@
 ---
-import { getImageLogoUrl } from '../lib/utils';
+import { getImageLogoUrl, getImages } from '../lib/utils';
 import { Image } from 'astro:assets';
 import client from '../lib/apolloClient';
 import { GET_SITE_SETTINGS } from '../lib/queries';
@@ -22,13 +22,12 @@ const mobileLogoWidth = siteSettings?.mobileLogo?.mediaDetails?.width || logoWid
 const mobileLogoHeight = siteSettings?.mobileLogo?.mediaDetails?.height || logoHeight;
 const siteTitle = siteSettings?.siteTitle || 'Logo';
 
-
-const logoUrl = logoSourceUrl ? await getImageLogoUrl(`../../assets/images/logos/${logoSourceUrl.split('/').pop()}`) : null;
+const logoUrl = await getImages('logos', logoSourceUrl);
 let mobileLogoUrl = null;
 if (!mobileLogoSourceUrl) {
   mobileLogoUrl = logoUrl;
 } else {
-  mobileLogoUrl = await getImageLogoUrl(`../../assets/images/logos/${mobileLogoSourceUrl.split('/').pop()}`);
+  mobileLogoUrl = await getImages('logos', mobileLogoSourceUrl);
 }
 
 const widths = [240, 320, 640, 768, 1024];
@@ -40,7 +39,7 @@ const sizes = "100vw";
     <a href="/">
       {logoUrl && (
         <Image
-          src={logoUrl}
+          src={logoUrl.default}
           alt={siteTitle}
           width={logoWidth}
           height={logoHeight}
@@ -56,7 +55,7 @@ const sizes = "100vw";
     <a href="/" >
       {mobileLogoUrl && (
         <Image
-          src={mobileLogoUrl}
+          src={mobileLogoUrl.default}
           alt={siteTitle}
           width={mobileLogoWidth}
           height={mobileLogoHeight}

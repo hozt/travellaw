@@ -2,8 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
-import { replaceImageUrls } from '../lib/utils';
+import { replaceImageUrls, replaceIconShortcode } from '../lib/utils';
 import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
+import fs from 'fs';
+import path from 'path';
 
 // first filter the isFrontPage true
 const frontPages = await client.query({
@@ -11,7 +13,6 @@ const frontPages = await client.query({
   variables: { first: 200 },
 });
 
-// first filter the isFrontPage true
 const frontPage = frontPages.data.pages.nodes.filter((page) => page.isFrontPage);
 
 if (frontPage.length === 0) {
@@ -36,7 +37,17 @@ const {
   databaseId
 } = pageData?.data?.pageBy;
 
-const updatedContent = await replaceImageUrls(content);
+let updatedContent = await replaceImageUrls(content);
+updatedContent = replaceIconShortcode(updatedContent);
+
+//Check if the optional component file exists src/componentsSite/index.astro
+const optionalComponentPath = path.resolve('./src/componentsSite/index.astro');
+const optionalComponentExists = fs.existsSync(optionalComponentPath);
+
+let OptionalComponent;
+if (optionalComponentExists) {
+  OptionalComponent = (await import('../componentsSite/index.astro')).default;
+}
 
 ---
 
@@ -49,6 +60,6 @@ const updatedContent = await replaceImageUrls(content);
     height={bannerImage?.mediaDetails?.height}
   />
   <div class="main-body">
-    <div set:html={updatedContent}></div>
+    {OptionalComponent ? <OptionalComponent content={updatedContent} /> : <div class="content" set:html={updatedContent}></div>}
   </div>
 </Layout>

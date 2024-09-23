@@ -284,6 +284,29 @@ export const GET_POSTS_BY_TAG = gql`
   }
 `;
 
+// get posts by tags
+export const GET_PORTFOLIOS_BY_TAG = gql`
+  query($slug: ID!) {
+    tag(id: $slug, idType: SLUG) {
+      name
+      description
+      portfolios {
+        nodes {
+          title
+          slug
+          excerpt
+          databaseId
+          featuredImage {
+            node {
+              sourceUrl
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 // get tags list for static paths
 export const GET_TAGS = gql`
   query {
@@ -593,7 +616,7 @@ export const GET_SITEMAP_SLUGS = gql`
           modified
         }
       }
-      showcases(first: $first) {
+      portfolios(first: $first) {
         nodes {
           slug
           modified
@@ -616,4 +639,96 @@ export const GET_SITEMAP_SLUGS = gql`
         }
       }
     }
+`;
+
+
+
+export const GET_ALL_PORTFOLIOS = gql`
+  query($first: Int!) {
+    portfolios(first: $first, where: {status: PUBLISH}) {
+      nodes {
+        databaseId
+        slug
+      }
+    }
+  }
+`;
+
+export const GET_PORTFOLIO = gql`
+  query($slug: String!) {
+    portfolioBy(slug: $slug) {
+      databaseId
+      subtitle
+      title
+      slug
+      metaDescription
+      date
+      content
+      tags {
+        nodes {
+          name
+          slug
+        }
+      }
+      featuredImage {
+        node {
+          altText
+          sourceUrl
+          title
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+      additionalImage {
+        sourceUrl
+        title
+        mediaDetails {
+          height
+          width
+        }
+      }
+      bannerImage {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PORTFOLIO_EXCERPTS = gql`
+  {
+    portfolios(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
+      nodes {
+        title
+        slug
+        databaseId
+        excerpt
+        subtitle
+        featuredImage {
+          node {
+            sourceUrl
+            title
+            mediaDetails {
+              width
+              height
+            }
+          }
+        }
+        additionalImage {
+          sourceUrl
+          title
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+    }
+  }
 `;

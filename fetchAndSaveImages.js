@@ -99,8 +99,13 @@ const query = gql`
         mediaItemUrl
       }
     }
-    showcases {
+    portfolios(first: $first) {
       nodes {
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
         additionalImage {
           sourceUrl
         }
@@ -141,7 +146,6 @@ function extractImageUrlsFromContent(htmlContent) {
 
 async function fetchImageUrls() {
   try {
-    console.log('Fetching image URLs from GraphQL API...');
     const data = await request(endpoint, query, { first: recordsToFetch });
 
     if (!data) {
@@ -153,7 +157,8 @@ async function fetchImageUrls() {
       featured: [],
       content: [],
       logos: [],
-      gallery: []
+      gallery: [],
+      additional: [],
     };
 
     ['pages', 'posts', 'forms', 'templates'].forEach(type => {
@@ -165,12 +170,19 @@ async function fetchImageUrls() {
     });
 
     // Collect featured images
-    ['pages', 'posts', 'forms', 'templates'].forEach(type => {
+    ['pages', 'posts', 'forms', 'templates', 'portfolios'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.featuredImage?.node?.sourceUrl) {
           imageUrls.featured.push(node.featuredImage.node.sourceUrl);
         }
       });
+    });
+
+    // get all additional images from portfolios
+    data.portfolios.nodes.forEach(node => {
+      if (node?.additionalImage?.sourceUrl) {
+        imageUrls.additional.push(node.additionalImage.sourceUrl);
+      }
     });
 
     ['pages', 'posts'].forEach(type => {
@@ -210,12 +222,16 @@ async function downloadImageThumbnail(url, outputPath) {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-    const buffer = await response.buffer();
-    // convert image webP that is 300px wide thumbnail
-    // change outputPath to .webp
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Convert image to webP that is 300px wide thumbnail
+    // Change outputPath to .webp
     const outputPathWebp = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).resize({ width: 300 }).webp().toFile(outputPathWebp);
-    console.log(`Downloaded thumbnail: ${outputPath}`);
+
+    console.log(`Downloaded thumbnail: ${outputPathWebp}`);
   } catch (error) {
     console.error(`Error downloading thumbnail ${url}: ${error.message}`);
   }
@@ -225,9 +241,13 @@ async function downloadImage(url, outputPath) {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-    const buffer = await response.buffer();
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     await fs.writeFile(outputPath, buffer);
     console.log(`Downloaded: ${url}`);
+
     // Convert to WebP
     const webpOutputPath = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).webp().toFile(webpOutputPath);
@@ -241,7 +261,10 @@ async function downloadPdf(pdfUrl, outputPath) {
   try {
     const response = await fetch(pdfUrl);
     if (!response.ok) throw new Error(`Failed to fetch PDF: ${pdfUrl}`);
-    const buffer = await response.buffer();
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     await fs.writeFile(outputPath, buffer);
     console.log(`Downloaded PDF: ${outputPath}`);
   } catch (error) {
@@ -293,6 +316,30 @@ async function downloadAllImages(imageUrls) {
   await Promise.all(downloadPromises);
 }
 
+function replaceIconShortcode(content) {
+  // Regular expression to match the [icon name="shopping-cart" prefix="fas"] pattern
+  const iconRegex = /\[icon\s+name="([^"]+)"\s+prefix="([^"]+)"\]/g;
+
+  // Replace the matched shortcode with the <i> tag
+  return content.replace(iconRegex, (match, name, prefix) => {
+    // Debugging logs
+    console.log('Matched shortcode:', match);
+    console.log('Extracted name:', name);
+    console.log('Extracted prefix:', prefix);
+
+    // Check if name and prefix are valid
+    if (!name || !prefix) {
+      console.error('Invalid icon name or prefix:', { name, prefix });
+      return match; // Return the original match if invalid
+    }
+
+    // Generate the replacement HTML
+    const iconClass = `${prefix} fa-${name}`;
+    console.log('Generated icon class:', iconClass);
+    return `<i class="${iconClass}"></i>`;
+  });
+}
+
 async function saveRedirectsToFile() {
   const data = await request(endpoint, query, { first: recordsToFetch });
   const redirects = data.redirects;
@@ -306,13 +353,15 @@ async function saveRedirectsToFile() {
 async function saveAllContentToFile() {
   const data = await request(endpoint, query, { first: recordsToFetch });
   const allContentPath = path.join(__dirname, 'assets', 'all-content.html');
-  const lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  let lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  lines = replaceIconShortcode(lines);
   await fs
     .writeFile(allContentPath, lines)
     .then(() => console.log('Saved all posts to all-content.html file'));
 
   const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
-  const postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  let postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  postLines = replaceIconShortcode(lines);
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));
@@ -325,10 +374,10 @@ async function saveAllContentToFile() {
     if (imageUrls) {
       console.log('Banner Images:', imageUrls.banners.length);
       console.log('Featured Images:', imageUrls.featured.length);
+      console.log('Additional Images:', imageUrls.additional.length);
       console.log('Content Images:', imageUrls.content.length);
       console.log('Logos:', imageUrls.logos.length);
       console.log('Gallery Images:', imageUrls.gallery.length);
-
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
       await fetchAndSavePDFs();

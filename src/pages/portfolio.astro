@@ -1,33 +1,32 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BannerTitle from "../components/BannerTitle.astro";
-import PostPreview from "../components/PostPreview.astro";
 import client from '../lib/apolloClient';
-import { GET_VIDEOS, GET_TEMPLATE } from '../lib/queries';
+import { GET_PORTFOLIO_EXCERPTS, GET_TEMPLATE } from '../lib/queries';
 import { isEnabled } from '../lib/enabledFeatures';
+import PostPreview from '../components/PostPreview.astro';
 
-if (!await isEnabled('videos')) {
+if (!await isEnabled('portfolios')) {
   return Astro.redirect('/404', 404);
 }
-
 
 const { data: templateData } = await client.query({
   query: GET_TEMPLATE,
-  variables: { slug: 'videos' }
+  variables: { slug: 'portfolio' }
 });
-const { data: videosData } = await client.query({ query: GET_VIDEOS });
+const { data: portfolioData } = await client.query({ query: GET_PORTFOLIO_EXCERPTS });
 
 const page = templateData?.templateBy;
-const videos = videosData?.videos?.nodes;
+const portfolio = portfolioData?.portfolios?.nodes;
 
-if (!videos || videos.length === 0) {
+if (!portfolio || portfolio.length === 0) {
   return Astro.redirect('/404', 404);
 }
 
-const title = page?.title || `Video`;
+const title = page?.title || `Our Portfolio`;
 ---
 
-<Layout title={title} templateId={page?.templateId} description={page?.metaDescription} templateId={page?.databaseId} classes="videos">
+<Layout title={title} templateId={page?.templateId} description={page?.metaDescription} templateId={page?.databaseId} classes="portfilio">
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
@@ -40,11 +39,11 @@ const title = page?.title || `Video`;
     {page?.content && (
       <div class="content" set:html={page?.content} />
     )}
-
-    <div class="video">
-      {videos.map((video) => (
-        <PostPreview key={video.databaseId} post={video} path="videos" />
-      ))}
+    <div class="portfolios">
+      { portfolio.map((post) => (
+          <PostPreview key={post.databaseId} post={post} path="portfolio" />
+        ))
+      }
     </div>
   </div>
 </Layout>

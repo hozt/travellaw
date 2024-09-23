@@ -5,6 +5,10 @@ import { GET_SITEMAP_SLUGS, GET_ARTICLES_COUNT } from '../lib/queries';
 const siteUrl = import.meta.env.SITE_URL;
 const recordsToFetch = 1000;
 
+const formatDate = (date) => {
+  return new Date(date).toISOString();
+};
+
 const generateSitemapEntries = (type, nodes, prefix, priority) => {
     if (!nodes || nodes.length === 0) {
       return '';
@@ -21,7 +25,7 @@ const generateSitemapEntries = (type, nodes, prefix, priority) => {
       return `
       <url>
         <loc>${siteUrl}/${path}</loc>
-        <lastmod>${node?.modified || new Date().toISOString()}</lastmod>
+        <lastmod>${formatDate(node?.modified || new Date().toISOString())}</lastmod>
         <priority>${priority}</priority>
       </url>
     `;
@@ -41,7 +45,7 @@ const generateSitemap = async () => {
     { type: 'posts', prefix: postAlias, priority: '0.8' },
     { type: 'forms', prefix: 'forms', priority: '0.6' },
     { type: 'galleries', prefix: 'galleries', priority: '0.6' },
-    { type: 'showcases', prefix: 'showcases', priority: '0.8' },
+    { type: 'portfolios', prefix: 'portfolios', priority: '0.8' },
     { type: 'faqTopics', prefix: 'faqs', priority: '0.8' },
     { type: 'categories', prefix: 'category', priority: '0.7' },
     { type: 'tags', prefix: 'tags', priority: 0.6 },
@@ -53,7 +57,7 @@ const generateSitemap = async () => {
     { feature: 'posts', path: postAlias, priority: '0.8' },
     { feature: 'posts', path: `tags`, priority: '0.8' },
     { feature: 'posts', path: `category`, priority: '0.8' },
-    { feature: 'showcases', path: 'showcases', priority: '0.8' },
+    { feature: 'portfolios', path: 'portfolios', priority: '0.8' },
     { feature: 'videos', path: 'videos', priority: '0.8' },
     { feature: 'testimonials', path: 'testimonials', priority: '0.8' },
     { feature: 'events', path: 'events', priority: '0.7' },

@@ -3,6 +3,25 @@ import { parse } from 'node-html-parser';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 
+
+export function replaceIconShortcode(content) {
+  // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
+  const iconRegex = /<i\s+class="[^"]*\bfa-([^"]+)"[^>]*><\/i>/g;
+
+  // Replace the matched <i> tag with the modified version
+  return content.replace(iconRegex, (match, iconName) => {
+    // Validate the extracted iconName
+    if (!iconName || typeof iconName !== 'string' || !/^[a-zA-Z0-9-]+$/.test(iconName)) {
+      console.warn(`Invalid icon name: "${iconName}"`);
+      return match; // Return the original match if the iconName is invalid
+    }
+
+    // Generate the replacement HTML using string concatenation
+    const iconClass = 'icon-[fa--' + iconName + ']';
+    return '<i class="' + iconClass + '"></i>';
+  });
+}
+
 export async function replaceImageUrls(content, localImageDir = 'images/content', localPdfDir = 'pdfs') {
   const root = parse(content);
 
@@ -98,3 +117,44 @@ export async function getImageLogoUrl(imagePath) {
   }
   return null;
 }
+
+export async function getImages(directory, imagePath) {
+  if (!imagePath) {
+    return null;
+  }
+  let images = {};
+
+  switch (directory) {
+    case 'logos':
+      images = import.meta.glob('../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'additional':
+      images = import.meta.glob('../../assets/images/additional/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'featured':
+      images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'banners':
+      images = import.meta.glob('../../assets/images/banners/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'gallery':
+      images = import.meta.glob('../../assets/images/gallery/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    case 'gallery-thumbnails':
+      images = import.meta.glob('../../assets/images/gallery-thumbnails/*.{jpg,jpeg,png,webp,avif}');
+      break;
+    default:
+      console.log('Invalid directory:', directory);
+      return null;
+  }
+
+  const relativePath = `../../assets/images/${directory}/${imagePath.split('/').pop()}`;
+  if (images[relativePath]) {
+    const imageModule = await images[relativePath]();
+    return imageModule;
+  }
+
+  console.log('Additional image not found for path:', relativePath);
+  return null;
+}
+

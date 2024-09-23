@@ -1,8 +1,8 @@
 ---
 import { Image } from 'astro:assets';
-import { localImage } from '../lib/utils';
-const { post } = Astro.props;
-const postAlias = import.meta.env.POST_ALIAS;
+import { getImages } from '../lib/utils';
+const { post, path } = Astro.props;
+const postAlias = path || import.meta.env.POST_ALIAS;
 
 const {
   title,
@@ -12,44 +12,26 @@ const {
 } = post;
 
 const imageUrl = featuredImage?.node?.sourceUrl;
-let imageLocal = '';
+let imageLocal = null;
 if (imageUrl) {
-    imageLocal = localImage(imageUrl, 'featured');
+    imageLocal = await getImages('featured', imageUrl);
 }
 const altText = featuredImage?.node?.altText || title;
-const imageWidth = featuredImage?.node?.mediaDetails?.width;
-const imageHeight = featuredImage?.node?.mediaDetails?.height;
-
-const images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
-
-async function getImageModule(imagePath) {
-  if (!imagePath) return null;
-  const relativePath = `../../assets/images/featured/${imagePath.split('/').pop()}`;
-  if (images[relativePath]) {
-    const imageModule = await images[relativePath]();
-    return imageModule;
-  }
-  return null;
-}
-
-const featuredImageModule = await getImageModule(imageUrl);
 ---
 
 <div key={post.databaseId} class="post-preview">
-  {featuredImageModule && (
+  {imageLocal && (
     <a href={`/${postAlias}/${slug}`}>
       <div class="featured-image">
         <Image
-          src={featuredImageModule.default}
+          src={imageLocal.default}
           alt={altText}
-          width={imageWidth}
-          height={imageHeight}
         />
       </div>
     </a>
   )}
 
-  <div class={`post-content ${featuredImageModule ? 'has-image' : ''}`}>
+  <div class={`post-content ${imageLocal ? 'has-image' : ''}`}>
     <div class="post-title">
       <a href={`/${postAlias}/${slug}`} class="no-link">{title}</a>
     </div>
