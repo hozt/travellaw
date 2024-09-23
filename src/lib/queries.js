@@ -284,7 +284,6 @@ export const GET_POSTS_BY_TAG = gql`
   }
 `;
 
-<<<<<<< HEAD
 // get posts by tags
 export const GET_PORTFOLIOS_BY_TAG = gql`
   query($slug: ID!) {
@@ -308,8 +307,6 @@ export const GET_PORTFOLIOS_BY_TAG = gql`
   }
 `;
 
-=======
->>>>>>> parent of 15eaa4b (Add portfolio tags and other improvements)
 // get tags list for static paths
 export const GET_TAGS = gql`
   query {
