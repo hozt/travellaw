@@ -12,14 +12,6 @@ export default defineConfig({
     format: "file"
   },
   vite: {
-    // this prevents the warning about the legacy js api
-    css: {
-      preprocessorOptions: {
-        scss: {
-          silenceDeprecations: ["legacy-js-api"],
-        },
-      },
-    },
     resolve: {
       preserveSymlinks: true
     }
