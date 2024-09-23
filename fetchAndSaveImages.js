@@ -322,11 +322,6 @@ function replaceIconShortcode(content) {
 
   // Replace the matched shortcode with the <i> tag
   return content.replace(iconRegex, (match, name, prefix) => {
-    // Debugging logs
-    console.log('Matched shortcode:', match);
-    console.log('Extracted name:', name);
-    console.log('Extracted prefix:', prefix);
-
     // Check if name and prefix are valid
     if (!name || !prefix) {
       console.error('Invalid icon name or prefix:', { name, prefix });
