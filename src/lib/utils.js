@@ -10,10 +10,15 @@ export function replaceIconShortcode(content) {
 
   // Replace the matched <i> tag with the modified version
   return content.replace(iconRegex, (match, iconName) => {
-    // Generate the replacement HTML
-    const iconClass = `icon-[fa--${iconName}]`;
-    console.log('iconClass:', iconClass);
-    return `<i class="${iconClass}"></i>`;
+    // Validate the extracted iconName
+    if (!iconName || typeof iconName !== 'string' || !/^[a-zA-Z0-9-]+$/.test(iconName)) {
+      console.warn(`Invalid icon name: "${iconName}"`);
+      return match; // Return the original match if the iconName is invalid
+    }
+
+    // Generate the replacement HTML using string concatenation
+    const iconClass = 'icon-[fa--' + iconName + ']';
+    return '<i class="' + iconClass + '"></i>';
   });
 }
 
