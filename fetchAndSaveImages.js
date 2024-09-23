@@ -354,6 +354,7 @@ async function saveAllContentToFile() {
   const data = await request(endpoint, query, { first: recordsToFetch });
   const allContentPath = path.join(__dirname, 'assets', 'all-content.html');
   let lines = data.pages.nodes.map(({ content }) => content).join('\n');
+  console.log('Replacing icon shortcodes pages...');
   lines = replaceIconShortcode(lines);
   await fs
     .writeFile(allContentPath, lines)
@@ -361,6 +362,7 @@ async function saveAllContentToFile() {
 
   const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
   let postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  console.log('Replacing icon shortcodes posts...');
   postLines = replaceIconShortcode(lines);
   await fs
     .writeFile(allPostsPath, postLines)
