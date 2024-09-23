@@ -4,10 +4,22 @@ import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode } from '../lib/utils';
 import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
-import fs from 'fs';
-import path from 'path';
 
-// first filter the isFrontPage true
+// Try to import ComponentSite using import.meta.glob
+const components = import.meta.glob('../componentsSite/index.astro');
+let ComponentSite = null;
+let componentSiteExists = false;
+
+if (components['../componentsSite/index.astro']) {
+  try {
+    ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
+    componentSiteExists = true;
+  } catch (error) {
+    console.warn('ComponentSite not found, skipping import.');
+  }
+}
+
+// Fetch front page
 const frontPages = await client.query({
   query: GET_HOME_PAGE,
   variables: { first: 200 },
@@ -40,15 +52,6 @@ const {
 let updatedContent = await replaceImageUrls(content);
 updatedContent = replaceIconShortcode(updatedContent);
 
-//Check if the optional component file exists src/componentsSite/index.astro
-const optionalComponentPath = path.resolve('./src/componentsSite/index.astro');
-const optionalComponentExists = fs.existsSync(optionalComponentPath);
-
-let OptionalComponent;
-if (optionalComponentExists) {
-  OptionalComponent = (await import('../componentsSite/index.astro')).default;
-}
-
 ---
 
 <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
@@ -60,6 +63,9 @@ if (optionalComponentExists) {
     height={bannerImage?.mediaDetails?.height}
   />
   <div class="main-body">
-    {OptionalComponent ? <OptionalComponent content={updatedContent} /> : <div class="content" set:html={updatedContent}></div>}
+    {componentSiteExists
+      ? <ComponentSite content={updatedContent} />
+      : <div class="content" set:html={updatedContent}></div>
+    }
   </div>
 </Layout>
