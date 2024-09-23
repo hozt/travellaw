@@ -1,30 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Seo from '../components/Seo.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
-import { replaceImageUrls, replaceIconShortcode } from '../lib/utils';
+import { replaceImageUrls } from '../lib/utils';
 import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
 
-// Try to import ComponentSite using import.meta.glob
-const components = import.meta.glob('../componentsSite/index.astro');
-let ComponentSite = null;
-let componentSiteExists = false;
-
-if (components['../componentsSite/index.astro']) {
-  try {
-    ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
-    componentSiteExists = true;
-  } catch (error) {
-    console.warn('ComponentSite not found, skipping import.');
-  }
-}
-
-// Fetch front page
+// first filter the isFrontPage true
 const frontPages = await client.query({
   query: GET_HOME_PAGE,
   variables: { first: 200 },
 });
 
+// first filter the isFrontPage true
 const frontPage = frontPages.data.pages.nodes.filter((page) => page.isFrontPage);
 
 if (frontPage.length === 0) {
@@ -49,8 +37,7 @@ const {
   databaseId
 } = pageData?.data?.pageBy;
 
-let updatedContent = await replaceImageUrls(content);
-updatedContent = replaceIconShortcode(updatedContent);
+const updatedContent = await replaceImageUrls(content);
 
 ---
 
@@ -63,9 +50,7 @@ updatedContent = replaceIconShortcode(updatedContent);
     height={bannerImage?.mediaDetails?.height}
   />
   <div class="main-body">
-    {componentSiteExists
-      ? <ComponentSite content={updatedContent} />
-      : <div class="content" set:html={updatedContent}></div>
-    }
+    <div set:html={updatedContent}></div>
   </div>
 </Layout>
+
