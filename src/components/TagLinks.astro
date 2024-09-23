@@ -1,20 +1,17 @@
 ---
 import CustomLink from "./CustomLink.astro";
-const { tags, path } = Astro.props;
+const { tags } = Astro.props;
 const allTags = tags?.nodes;
 
 if (!allTags?.length) return '';
 
-const linkPath = path || 'tags';
-
 ---
+
 <div class="tags">
   <span class="mr-4 font-semibold">Tags:</span>
   {allTags.map(tag => (
-      <CustomLink url={`/${linkPath}/${tag.slug}`} label={tag.name} classes={['mr-4', 'tag-link']}>
-        <span class="mr-4" key={tag.slug}>
-          {tag.name}
-        </span>
-      </CustomLink>
+    <a href={`/tags/${tag.slug}`} class="mr-4 tag-link" key={tag.slug}>
+      {tag.name}
+    </a>
   ))}
 </div>

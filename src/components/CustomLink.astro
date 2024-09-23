@@ -10,7 +10,7 @@ function isExternalUrl(url) {
   return /^(https?:|mailto:|tel:)/.test(url);
 }
 
-let adjustedUrl = url ? url.replace(apiUrl, '') : url;
+let adjustedUrl = url === '/index/' ? '/' : url.replace(apiUrl, '');
 const linkClasses = classes ? classes.join(' ') : '';
 
 ---
