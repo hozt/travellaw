@@ -35,11 +35,11 @@
         li {
             @apply pb-1 mx-0 leading-tight;
         }
-        .no-link {
-            @apply hover:bg-none text-dark hover:text-dark;
-        }
         a {
             @apply text-dark hover:bg-black hover:text-white py-1.5 relative z-40;
+        }
+        .no-link {
+            @apply hover:bg-neutral-100 text-dark hover:text-dark;
         }
     }
     .menu-resources .sub-menu {
