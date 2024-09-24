@@ -57,6 +57,24 @@ if (featuredImage?.sourceUrl) {
 
 let updatedContent = await replaceImageUrls(content);
 updatedContent = replaceIconShortcode(updatedContent);
+
+const currentPath = Astro.url.pathname;
+let fullCrumbs: { label: string; path: string }[] = [];
+// add the different levels past the last one and remove trailing /
+if (currentPath.includes('/')) {
+  const pathParts = currentPath.split('/').filter(Boolean);
+  pathParts.forEach((part, index) => {
+    if (index < pathParts.length - 1) {
+      fullCrumbs.push({
+        label: part.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+        path: `/${pathParts.slice(0, index + 1).join('/')}/`
+      });
+    }
+  });
+}
+
+fullCrumbs.push({ label: title, path: '' });
+
 ---
 
 <Layout pageId={databaseId} title={title} description={metaDescription} classes="page">
@@ -66,7 +84,7 @@ updatedContent = replaceIconShortcode(updatedContent);
     image={bannerImage?.sourceUrl}
     width={bannerImage?.mediaDetails?.width}
     height={bannerImage?.mediaDetails?.height}
-    crumbs={[{ label: title }]}
+    crumbs={fullCrumbs}
   />
   <div class="main-body content">
     {localImage && (
