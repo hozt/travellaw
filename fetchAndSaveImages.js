@@ -316,23 +316,17 @@ async function downloadAllImages(imageUrls) {
   await Promise.all(downloadPromises);
 }
 
-function replaceIconShortcode(content) {
-  // Regular expression to match the [icon name="shopping-cart" prefix="fas"] pattern
-  const iconRegex = /\[icon\s+name="([^"]+)"\s+prefix="([^"]+)"\]/g;
+function replaceIconClass(htmlString) {
+  // Regular expression to match any Font Awesome solid icon class
+  const regex = /<i class="fas fa-([^"]+)"><\/i>/g;
 
-  // Replace the matched shortcode with the <i> tag
-  return content.replace(iconRegex, (match, name, prefix) => {
-    // Check if name and prefix are valid
-    if (!name || !prefix) {
-      console.error('Invalid icon name or prefix:', { name, prefix });
-      return match; // Return the original match if invalid
-    }
+  // Replacement function
+  const replacement = (match, iconName) => `<i class="icon-[fa--${iconName}]"></i>`;
 
-    // Generate the replacement HTML
-    const iconClass = `${prefix} fa-${name}`;
-    console.log('Generated icon class:', iconClass);
-    return `<i class="${iconClass}"></i>`;
-  });
+  // Use the replace method with a callback function
+  const updatedHtml = htmlString.replace(regex, replacement);
+
+  return updatedHtml;
 }
 
 async function saveRedirectsToFile() {
@@ -350,7 +344,7 @@ async function saveAllContentToFile() {
   const allContentPath = path.join(__dirname, 'assets', 'all-content.html');
   let lines = data.pages.nodes.map(({ content }) => content).join('\n');
   console.log('Replacing icon shortcodes pages...');
-  lines = replaceIconShortcode(lines);
+  lines = replaceIconClass(lines);
   await fs
     .writeFile(allContentPath, lines)
     .then(() => console.log('Saved all posts to all-content.html file'));
@@ -358,7 +352,7 @@ async function saveAllContentToFile() {
   const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
   let postLines = data.posts.nodes.map(({ content }) => content).join('\n');
   console.log('Replacing icon shortcodes posts...');
-  postLines = replaceIconShortcode(lines);
+  postLines = replaceIconClass(lines);
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));

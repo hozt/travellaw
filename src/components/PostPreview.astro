@@ -17,6 +17,8 @@ if (imageUrl) {
     imageLocal = await getImages('featured', imageUrl);
 }
 const altText = featuredImage?.node?.altText || title;
+// remove https:// and http:// from the linkUrl also remove the trailing / if is present
+const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
 ---
 
 <div key={post.databaseId} class="post-preview">
@@ -35,6 +37,7 @@ const altText = featuredImage?.node?.altText || title;
     <div class="post-title">
       <a href={`/${postAlias}/${slug}`} class="no-link">{title}</a>
     </div>
+    { linkUrl && (<div class="post-link">{linkUrl}</div>) }
     <div class="post-excerpt" set:html={excerpt} />
     <div class="post-read-more">
       <a href={`/${postAlias}/${slug}`} class="read-more">Read More</a>
