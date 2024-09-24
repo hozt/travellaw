@@ -89,6 +89,11 @@ const srcsetAdditional = additionalImageModule
     )}
 
     <div set:html={updatedContent} />
+    { page.linkUrl && (
+      <div class="mb-6 portfolio-link">
+        <a href={page.linkUrl} target="_blank" rel="noopener noreferrer" class="btn">View Website</a>
+      </div>
+    )}
     <TagLinks tags={page?.tags} path="portfolio/tags" />
   </div>
 </Layout>

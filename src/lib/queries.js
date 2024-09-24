@@ -296,6 +296,7 @@ export const GET_PORTFOLIOS_BY_TAG = gql`
           slug
           excerpt
           databaseId
+          linkUrl
           featuredImage {
             node {
               sourceUrl
@@ -664,6 +665,7 @@ export const GET_PORTFOLIO = gql`
       metaDescription
       date
       content
+      linkUrl
       tags {
         nodes {
           name
@@ -710,6 +712,7 @@ export const GET_PORTFOLIO_EXCERPTS = gql`
         databaseId
         excerpt
         subtitle
+        linkUrl
         featuredImage {
           node {
             sourceUrl
