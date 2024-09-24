@@ -6,7 +6,10 @@ if (fullCrumbs.length === 1) {
   return '';
 }
 
+// Get the base URL of your site
+const baseUrl = new URL(Astro.request.url).origin;
 ---
+
 <nav class="max-w-screen-lg p-2 mx-auto mt-1 text-sm breadcrumbs" aria-label="Breadcrumb">
   <ol class="flex ml-0 list-reset" itemscope itemtype="https://schema.org/BreadcrumbList">
     {fullCrumbs.map((crumb, index) => (
@@ -25,10 +28,16 @@ if (fullCrumbs.length === 1) {
             <span itemprop="name">{crumb.label}</span>
           </a>
         ) : (
-          <div class="inline text-gray-500 hover:text-gray-700 breadcrumb-title" itemprop="name">
+          <span
+            class="inline text-gray-500 hover:text-gray-700 breadcrumb-title"
+            itemprop="name"
+            aria-current="page"
+          >
             {crumb.label}
-          </div>
+          </span>
         )}
+        <meta itemprop="position" content={index + 1} />
+        <meta itemprop="item" content={`${baseUrl}${crumb.path || Astro.url.pathname}`} />
       </li>
     ))}
   </ol>
