@@ -6,7 +6,6 @@
     "@apollo/client": "^3.11.5",
     "@astro-community/astro-embed-vimeo": "^0.3.7",
     "@astro-community/astro-embed-youtube": "^0.5.3",
-    "@astrojs/partytown": "^2.1.2",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/tailwind": "^5.1.0",
     "@iconify-json/fa": "^1.2.0",
@@ -23,8 +22,7 @@
     "js-cookie": "^3.0.5",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
-    "sass": "^1.77.8",
-    "serve": "^14.2.3"
+    "sass": "^1.77.8"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",
@@ -35,7 +33,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "npm run set-editor && npm run fetch && astro build",
-    "serve": "serve ./dist",
+    "build-local": "npm run fetch && astro build",
+    "preview": "astro preview",
     "fetch": "node fetchAndSaveImages.js",
     "set-editor": "node set-editor.js",
     "clean": "rm -rf dist .astro node_modules/.vite assets"
