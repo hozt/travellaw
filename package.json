@@ -6,6 +6,7 @@
     "@apollo/client": "^3.11.5",
     "@astro-community/astro-embed-vimeo": "^0.3.7",
     "@astro-community/astro-embed-youtube": "^0.5.3",
+    "@astrojs/partytown": "^2.1.2",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/tailwind": "^5.1.0",
     "@iconify-json/fa": "^1.2.0",

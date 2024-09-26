@@ -94,6 +94,7 @@ fullCrumbs.push({ label: title, path: '' });
         width={featuredImage?.mediaDetails?.width}
         height={featuredImage?.mediaDetails?.height}
         class="featured-image"
+        loading="eager"
       />
     )}
     <div set:html={updatedContent} />

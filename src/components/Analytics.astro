@@ -1,20 +1,22 @@
 ---
-const ga = import.meta.env.GA_ID;
 
-if (!ga) {
-  return '';
+const id = import.meta.env.GA_ID;
+if (!id) {
+    return;
 }
----
-{ga && (
-  <>
-  <script define:vars={ga} async src={`https://www.googletagmanager.com/gtag/js?id=${ga}`}></script>
-  <script define:vars={ga}>
+
+const gtagScript = `
     window.dataLayer = window.dataLayer || [];
     function gtag() {
-      dataLayer.push(arguments);
+        dataLayer.push(arguments);
     }
-    gtag('js', new Date());
-    gtag('config', `${ga}`);
-  </script>
-  </>
-)}
+    gtag("js", new Date());
+    gtag("config", "${id}");
+`;
+---
+<!-- Google tag (gtag.js) -->
+<script is:inline async
+    type="text/partytown"
+    src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
+></script>
+<script is:inline type="text/partytown" set:html={gtagScript}></script>
