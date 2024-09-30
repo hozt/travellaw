@@ -1,6 +1,15 @@
 ---
 let serverError = '';
 let isSubmitted = false;
+const content = Astro.props.content;
+// remove the <button fro the content and set it as a constant
+const button = content.match(/<button[^>]*>.*<\/button>/)[0];
+// get the label of the button
+const buttonLabel = button.match(/<button[^>]*>(.*)<\/button>/)[1];
+// remove the button from the content
+const contentWithoutButton = content.replace(button, '');
+
+
 
 if (Astro.request.method === 'POST') {
   try {
@@ -17,17 +26,18 @@ if (Astro.request.method === 'POST') {
       throw new Error('Turnstile verification failed. Please try again.');
     }
 
+    // get all the fields submitted
+    const allFields = Object.keys(formDataJson);
+
     const response = await fetch('/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        message: formData.get('message'),
+        ...formDataJson,
         'cf-turnstile-response': turnstileResponse,
+        allFields,
       }),
     });
 
@@ -60,39 +70,13 @@ const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
       <span class="block sm:inline"> Your message has been sent.</span>
     </div>
   ) : (
-    <form method="POST" action="/contact" class={isSubmitted ? 'hidden' : ''}>
-      <div class="mb-4">
-        <label class="block mb-2" for="name">
-          Name <span class="text-red-500">*</span>
-        </label>
-        <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-      </div>
-
-      <div class="mb-4">
-        <label class="block mb-2" for="email">
-          Email <span class="text-red-500">*</span>
-        </label>
-        <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-      </div>
-
-      <div class="mb-4">
-        <label class="block mb-2" for="phone">
-          Phone
-        </label>
-        <input type="tel" name="phone" id="phone" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      </div>
-
-      <div class="mb-4">
-        <label class="block mb-2" for="message">
-          Your Message <span class="text-red-500">*</span>
-        </label>
-        <textarea name="message" id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-      </div>
+    <form method="POST" class="contact-form" action="/contact" class={isSubmitted ? 'hidden' : ''}>
+      <div set:html={contentWithoutButton} />
 
       <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>
 
       <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
-        Send
+        {buttonLabel}
       </button>
     </form>
   )}
