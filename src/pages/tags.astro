@@ -40,7 +40,6 @@ const title = page?.title || `Tags`;
       {tags.map((tag) => (
         <li key={tag.databaseId} class="pb-4 tags">
           <a href={`/tags/${tag.slug}`} class="no-underline">{tag.name} ({tag.count})</a>
-          <div>{tag.description}</div>
         </li>
       ))}
     </ul>
