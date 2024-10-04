@@ -7,7 +7,9 @@ import {
   GET_POSTS_BY_CATEGORY,
   GET_CATEGORIES,
   GET_TEMPLATE,
+  GET_CATEGORY_BY_SLUG
 } from "../../lib/queries";
+import { getPostsByCategory } from "../../lib/fetchAllResults";
 
 export async function getStaticPaths() {
   const { data } = await client.query({
@@ -28,14 +30,24 @@ const { data: templateData } = await client.query({
 
 const { slug } = Astro.params;
 
-const { data } = await client.query({
-    query: GET_POSTS_BY_CATEGORY,
-    variables: { slug },
+const category = await client.query({
+  query: GET_CATEGORY_BY_SLUG,
+  variables: { slug },
 });
 
+if (!category) {
+  return {
+    status: 404,
+    error: new Error(`No category found for slug ${slug}`),
+  };
+}
+
+const categoryId = category?.data?.category?.databaseId;
+const categoryName = category?.data?.category?.name;
+const categoryDescription = category?.data?.category?.description;
+
+const posts  = await getPostsByCategory(categoryId);
 const page = templateData?.templateBy;
-const posts = data?.category?.posts?.nodes;
-const categoryName = data?.category?.name;
 const classes = `category category-${categoryName.toLowerCase().replace(" ", "-")}`;
 const title = page?.title || `${categoryName}`;
 ---
@@ -47,9 +59,10 @@ const title = page?.title || `${categoryName}`;
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
-    crumbs={[{ label: "Category", path: "/category" }, { label: title }]}
+    crumbs={[{ label: "Categories", path: "/category" }, { label: title }]}
   />
   <div class="main-body">
+    { categoryDescription && <div class="category-description">{categoryDescription}</div>}
     {page?.content && <div class="content" set:html={page?.content} />}
 
     <div class="category">

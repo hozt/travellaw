@@ -55,7 +55,7 @@ if (featuredImage?.sourceUrl) {
   localImage = await getImages('featured', featuredImage.sourceUrl);
 }
 
-let updatedContent = await replaceImageUrls(content);
+let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
 
 const currentPath = Astro.url.pathname;

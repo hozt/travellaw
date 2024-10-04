@@ -1,19 +1,19 @@
 ---
 // src/pages/articles/[page].astro
 import Layout from "../../layouts/Layout.astro";
-import ArticleList from "../../components/ArticleList.astro";
+import PostPreview from "../../components/PostPreview.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
 import { GET_ARTICLES_COUNT, GET_TEMPLATE } from "../../lib/queries";
 import Pagination from "../../components/Pagination.astro";
 import { fetchArticles } from "../../lib/api";
 import { articleStore } from "../../store/articleStore";
 import client from "../../lib/apolloClient";
+import { getTotalCount } from "../../lib/fetchAllResults";
 
 const ITEMS_PER_PAGE = 10;
 
 export async function getStaticPaths() {
-  const { data } = await client.query({ query: GET_ARTICLES_COUNT });
-  const totalArticles = data.posts.nodes.length;
+  const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
 
   // Calculate the number of pages
   const totalPages = Math.ceil(totalArticles / 10);
@@ -40,8 +40,7 @@ const title = template?.title || "Articles";
 let store;
 articleStore.subscribe((value) => (store = value))();
 
-const { data } = await client.query({ query: GET_ARTICLES_COUNT });
-const totalArticles = data.posts.nodes.length;
+const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
 
 const articles = await fetchArticles(currentPage, store.pageInfo.endCursor);
 
@@ -61,7 +60,11 @@ const totalPages =
     crumbs={[{ label: title }]}
   />
   <div class="main-body">
-    <ArticleList articles={articles} />
+    <div class="article-list">
+      {articles.map((article) => (
+        <PostPreview key={article.databaseId} post={article} />
+      ))}
+    </div>
     <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>
 </Layout>

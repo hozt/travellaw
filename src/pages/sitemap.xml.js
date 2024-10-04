@@ -1,5 +1,6 @@
 import client from '../lib/apolloClient';
 import { isEnabled } from '../lib/enabledFeatures';
+import { getTotalCount } from '../lib/fetchAllResults';
 import { GET_SITEMAP_SLUGS, GET_ARTICLES_COUNT } from '../lib/queries';
 
 const siteUrl = import.meta.env.SITE_URL;
@@ -80,8 +81,7 @@ const generateSitemap = async () => {
   `);
 
   // Add category paged URLs if needed
-  const { data: articleCount } = await client.query({ query: GET_ARTICLES_COUNT });
-  const totalArticles = articleCount.posts.nodes.length;
+  const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
   const ITEMS_PER_PAGE = 10;
   const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
   if (totalPages > 1) {

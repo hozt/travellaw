@@ -6,6 +6,7 @@ import { GET_TESTIMONIALS, GET_TEMPLATE } from "../lib/queries";
 import { isEnabled } from '../lib/enabledFeatures';
 
 if (!await isEnabled('testimonials')) {
+  console.log('Testimonials feature is disabled');
   return Astro.redirect('/404', 404);
 }
 

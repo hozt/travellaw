@@ -10,30 +10,37 @@ const isFirst = currentPage === 1;
 const isLast = currentPage === totalPages;
 const prevPage = currentPage - 1;
 const nextPage = currentPage + 1;
+// const nextPage = currentPage + 1;
+const maxPagesToShow = 15;
+const halfMaxPagesToShow = Math.floor(maxPagesToShow / 2);
+
+let startPage = Math.max(currentPage - halfMaxPagesToShow, 1);
+let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
+
+if (endPage - startPage < maxPagesToShow - 1) {
+  startPage = Math.max(endPage - maxPagesToShow + 1, 1);
+}
 ---
 
 <nav aria-label="Article pagination" class="flex items-center justify-center mt-8 mb-2 space-x-2 md:space-x-4 pagination">
-  <div class="flex items-center space-x-1">
+  <div class="flex flex-wrap items-center space-x-1">
     {!isFirst && (
-      <a rel="prev" href=`/${postAlias}/${prevPage}` class="flex items-center mr-2 pagination-prev">
+      <a rel="prev" href={`/${postAlias}/${prevPage}`} class="flex items-center mr-2 pagination-prev">
         <span class="icon-[mdi--navigate-before] icon text-3xl"></span>
         Previous
       </a>
     )}
 
-    {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-      num <= totalPages && (
-        <a
-          href={num === 1 ? postAlias : `/${postAlias}/${num}`}
-          aria-current={currentPage === num ? 'page' : undefined}
-          class={`flex items-center ${currentPage === num ? 'pagination-active' : 'pagination-non-active'}`}
-        >
-          {num}
-        </a>
-      )
+    {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((num) => (
+      <a
+        href={num === 1 ? `/${postAlias}` : `/${postAlias}/${num}`}
+        aria-current={currentPage === num ? 'page' : undefined}
+        class={`flex items-center ${currentPage === num ? 'pagination-active' : 'pagination-non-active'}`}
+      >
+        {num}
+      </a>
     ))}
   </div>
-
   <div class="flex items-center">
     {!isLast && (
       <a rel="next" href={`/${postAlias}/${nextPage}`} class="flex items-center pagination-next">

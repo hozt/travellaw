@@ -153,6 +153,7 @@ export const GET_PAGES = gql`
         featuredImage {
           node {
             sourceUrl
+            altText
             mediaDetails {
               width
               height
@@ -167,11 +168,15 @@ export const GET_PAGES = gql`
 `;
 
 export const GET_ALL_POSTS = gql`
-  query($first: Int!) {
-    posts(first: $first, where: {status: PUBLISH}) {
+  query($first: Int!, $after: String) {
+    allNodes:posts(first: $first, after: $after, where: {status: PUBLISH}) {
       nodes {
         databaseId
         slug
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -226,6 +231,7 @@ export const GET_POSTS_EXCERPTS = gql`
         databaseId
         featuredImage {
           node {
+            altText
             sourceUrl
           }
         }
@@ -240,23 +246,34 @@ export const GET_POSTS_EXCERPTS = gql`
   }
 `;
 
-export const GET_POSTS_BY_CATEGORY = gql`
+export const GET_CATEGORY_BY_SLUG = gql`
   query($slug: ID!) {
     category(id: $slug, idType: SLUG) {
       name
-      posts {
-        nodes {
-          title
-          slug
-          excerpt
-          databaseId
-          date
-          featuredImage {
-            node {
-              sourceUrl
-            }
+      databaseId
+    }
+  }
+`;
+
+export const GET_POSTS_BY_CATEGORY = gql`
+  query($first: Int!, $after: String, $categoryIn: [ID]!) {
+    allNodes:posts(first: $first, after: $after, where: { categoryIn: $categoryIn }) {
+      nodes {
+        title
+        slug
+        excerpt
+        databaseId
+        date
+        featuredImage {
+          node {
+            altText
+            sourceUrl
           }
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -275,6 +292,7 @@ export const GET_POSTS_BY_TAG = gql`
           databaseId
           featuredImage {
             node {
+              altText
               sourceUrl
             }
           }
@@ -299,6 +317,7 @@ export const GET_PORTFOLIOS_BY_TAG = gql`
           linkUrl
           featuredImage {
             node {
+              altText
               sourceUrl
             }
           }
@@ -310,14 +329,18 @@ export const GET_PORTFOLIOS_BY_TAG = gql`
 
 // get tags list for static paths
 export const GET_TAGS = gql`
-  query {
-    tags {
+  query($first: Int!, $after: String) {
+    allNodes:tags(first: $first, after: $after) {
       nodes {
         name
         slug
         databaseId
         description
         count
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -405,6 +428,7 @@ export const GET_VIDEOS = gql`
         videoUrl
         featuredImage {
           node {
+            altText
             sourceUrl
             mediaDetails {
               sizes {
@@ -430,6 +454,7 @@ export const GET_EVENTS = gql`
         location
         featuredImage {
           node {
+            altText
             sourceUrl
             mediaDetails {
               width
@@ -443,10 +468,14 @@ export const GET_EVENTS = gql`
 `;
 
 export const GET_ARTICLES_COUNT = gql`
-  query {
-    posts(first: 500) {
+  query($first: Int!, $after: String) {
+    allNodes: posts(first: $first, after: $after) {
       nodes {
         id
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -715,6 +744,7 @@ export const GET_PORTFOLIO_EXCERPTS = gql`
         linkUrl
         featuredImage {
           node {
+            altText
             sourceUrl
             title
             mediaDetails {

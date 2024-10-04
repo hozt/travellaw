@@ -40,19 +40,6 @@ const query = gql`
         content
       }
     }
-    posts(first: $first) {
-      nodes {
-        bannerImage {
-          sourceUrl
-        }
-        featuredImage {
-          node {
-            sourceUrl
-          }
-        }
-        content
-      }
-    }
     forms(first: $first) {
       nodes {
         bannerImage {
@@ -114,7 +101,31 @@ const query = gql`
   }
 `;
 
+const queryPosts = gql`
+  query GetPosts($first: Int!, $after: String) {
+    posts(first: $first, after: $after) {
+      nodes {
+        bannerImage {
+          sourceUrl
+        }
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+        content
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 function extractImageUrlsFromContent(htmlContent) {
+  const imageUrl = process.env.API_URL;
+
   if (!htmlContent) {
     return [];
   }
@@ -122,10 +133,12 @@ function extractImageUrlsFromContent(htmlContent) {
   const root = parse(htmlContent);
   const imageUrls = new Set();
 
+
   root.querySelectorAll('img').forEach(img => {
     // Extract src attribute
     const src = img.getAttribute('src');
-    if (src) {
+    // only download images if they are on the domain imageUrl
+    if (src && src.startsWith(imageUrl)) {
       imageUrls.add(src);
     }
 
@@ -147,6 +160,7 @@ function extractImageUrlsFromContent(htmlContent) {
 async function fetchImageUrls() {
   try {
     const data = await request(endpoint, query, { first: recordsToFetch });
+    const posts = await fetchAllPosts();
 
     if (!data) {
       throw new Error('No data returned from the GraphQL API');
@@ -161,7 +175,7 @@ async function fetchImageUrls() {
       additional: [],
     };
 
-    ['pages', 'posts', 'forms', 'templates'].forEach(type => {
+    ['pages', 'forms', 'templates'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.bannerImage?.sourceUrl) {
           imageUrls.banners.push(node.bannerImage.sourceUrl);
@@ -169,8 +183,18 @@ async function fetchImageUrls() {
       });
     });
 
+    // posts
+    posts.forEach(node => {
+      if (node?.bannerImage?.sourceUrl) {
+        imageUrls.banners.push(node.bannerImage.sourceUrl);
+      }
+      if (node?.featuredImage?.node?.sourceUrl) {
+        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
+      }
+    });
+
     // Collect featured images
-    ['pages', 'posts', 'forms', 'templates', 'portfolios'].forEach(type => {
+    ['pages', 'forms', 'templates', 'portfolios'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.featuredImage?.node?.sourceUrl) {
           imageUrls.featured.push(node.featuredImage.node.sourceUrl);
@@ -185,10 +209,12 @@ async function fetchImageUrls() {
       }
     });
 
-    ['pages', 'posts'].forEach(type => {
-      data[type]?.nodes?.forEach(node => {
-        imageUrls.content.push(...extractImageUrlsFromContent(node?.content));
-      });
+    data['pages'].nodes.forEach(node => {
+      imageUrls.content.push(...extractImageUrlsFromContent(node?.content));
+    });
+
+    posts.forEach(node => {
+      imageUrls.content.push(...extractImageUrlsFromContent(node?.content));
     });
 
     if (data.customSiteSettings?.logo?.sourceUrl) {
@@ -216,6 +242,24 @@ async function fetchImageUrls() {
     console.error('Error in fetchImageUrls:', error.message);
     return null;
   }
+}
+
+async function fetchAllPosts() {
+  let allPosts = [];
+  let hasNextPage = true;
+  let after = null;
+
+  while (hasNextPage) {
+    const data = await request(endpoint, queryPosts, { first: 100, after });
+
+    const nodes = data.posts.nodes;
+    allPosts = [...allPosts, ...nodes];
+
+    const pageInfo = data.posts.pageInfo;
+    hasNextPage = pageInfo.hasNextPage;
+    after = pageInfo.endCursor;
+  }
+  return allPosts;
 }
 
 async function downloadImageThumbnail(url, outputPath) {
@@ -349,10 +393,11 @@ async function saveAllContentToFile() {
     .writeFile(allContentPath, lines)
     .then(() => console.log('Saved all posts to all-content.html file'));
 
+  const posts = await fetchAllPosts();
   const allPostsPath = path.join(__dirname, 'assets', 'all-posts.html');
-  let postLines = data.posts.nodes.map(({ content }) => content).join('\n');
+  let postLines = posts.map(({ content }) => content).join('\n');
   console.log('Replacing icon shortcodes posts...');
-  postLines = replaceIconClass(lines);
+  postLines = replaceIconClass(postLines);
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));
