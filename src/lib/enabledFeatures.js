@@ -8,7 +8,6 @@ export async function isEnabled(feature) {
   });
 
   const isEnabled = data.customSiteSettings.enabledFeatures.includes(feature);
-  // console.log('enabled features:', data.customSiteSettings.enabledFeatures, feature, isEnabled);
   return isEnabled;
 }
 

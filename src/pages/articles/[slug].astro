@@ -7,28 +7,15 @@ import TagLinks from '../../components/TagLinks.astro';
 import { replaceImageUrls } from '../../lib/utils';
 import { Image } from 'astro:assets';
 import { getImages } from '../../lib/utils';
+import { getAllResults } from '../../lib/fetchAllResults';
 
 export async function getStaticPaths() {
-  try {
-    const { data } = await client.query({
-      query: GET_ALL_POSTS,
-      variables: { first: 500 },
-    });
+  const allPosts = await getAllResults(GET_ALL_POSTS);
 
-    // Handle the case where no data is returned
-    if (!data || !data.posts) {
-      console.error('No posts data found');
-      return [];
-    }
-
-    return data.posts.nodes.map(page => ({
+    return allPosts.map(page => ({
       params: { slug: page?.slug },
       props: { page },
     }));
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    return [];
-  }
 }
 
 const { slug } = Astro.params;

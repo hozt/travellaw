@@ -19,6 +19,8 @@ if (components['../componentsSite/index.astro']) {
   }
 }
 
+console.log('ComponentSite');
+
 // Fetch front page
 const frontPages = await client.query({
   query: GET_HOME_PAGE,
@@ -49,9 +51,8 @@ const {
   databaseId
 } = pageData?.data?.pageBy;
 
-let updatedContent = await replaceImageUrls(content);
+let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
-
 ---
 
 <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>

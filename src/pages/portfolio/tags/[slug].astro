@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import BannerTitle from "../../../components/BannerTitle.astro";
 import PostPreview from "../../../components/PostPreview.astro";
 import client from "../../../lib/apolloClient";
+import { getAllResults } from "../../../lib/fetchAllResults";
 import {
     GET_PORTFOLIOS_BY_TAG,
     GET_TAGS,
@@ -10,12 +11,9 @@ import {
 } from "../../../lib/queries";
 
 export async function getStaticPaths() {
-  const { data } = await client.query({
-    query: GET_TAGS,
-    variables: { first: 200 },
-  });
+  const tags = await getAllResults(GET_TAGS);
 
-  return data.tags.nodes.map((page) => ({
+  return tags.map((page) => ({
     params: { slug: page.slug },
     props: { page }
   }));

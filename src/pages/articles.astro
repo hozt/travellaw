@@ -3,6 +3,7 @@ import Posts from "../components/Posts.astro";
 import { isEnabled } from '../lib/enabledFeatures';
 
 if (!await isEnabled('posts')) {
+  console.log('Posts feature is disabled');
   return Astro.redirect('/404', 404);
 }
 

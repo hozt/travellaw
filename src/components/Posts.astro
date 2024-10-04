@@ -5,6 +5,8 @@ import BannerTitle from "../components/BannerTitle.astro";
 import { GET_ARTICLES_COUNT, GET_TEMPLATE, GET_POSTS_EXCERPTS } from "../lib/queries";
 import Pagination from "../components/Pagination.astro";
 import client from "../lib/apolloClient";
+import { getTotalCount } from "../lib/fetchAllResults";
+
 const postAlias = import.meta.env.POST_ALIAS;
 
 const ITEMS_PER_PAGE = 10;
@@ -19,8 +21,7 @@ const { data: templateData } = await client.query({
 const template = templateData.templateBy;
 const title = template?.title || postAlias.charAt(0).toUpperCase() + postAlias.slice(1);
 
-const { data: articleCount } = await client.query({ query: GET_ARTICLES_COUNT });
-const totalArticles = articleCount.posts.nodes.length;
+const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
 
 const { data: articlesData } = await client.query({
   query: GET_POSTS_EXCERPTS,

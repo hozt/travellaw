@@ -1,3 +1,4 @@
+// apolloClient.js
 import { ApolloClient, InMemoryCache } from '@apollo/client/core';
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
@@ -8,6 +9,7 @@ if (import.meta.env.DEV) {
 }
 
 let endpoint = import.meta.env.API_URL;
+
 if (!endpoint) {
   throw new Error('GRAPHQL_URL environment variable is not set');
 }

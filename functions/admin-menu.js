@@ -2,7 +2,7 @@ export async function onRequest(context) {
     const { request, env } = context;
 
     const providedKey = request.headers.get('X-Editor-Key');
-    const editorKey = '51a819ecf215440eed2092e80f2308';
+    const editorKey = 'adfasdfasfaasdfsafdadfs';
 
     if (providedKey === editorKey) {
       console.log('Authorized');
