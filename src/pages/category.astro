@@ -34,19 +34,14 @@ const title = page?.title || `Categories`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: title }]}
   />
-  {page?.content && (
-  <div class="container content" set:html={page?.content} />
-  )}
+  {page?.content && ( <div class="container content" set:html={page?.content} /> )}
   <div class="main-body">
-    <div class="category">
+    <ul class="category">
       {categories.map((category) => (
-        <div key={category.databaseId} class="pb-4 border-b-2 blog-post">
-          <h3 class="mb-2">
-            <a href={`/category/${category.slug}`} class="no-underline">{category.name}</a>
-          </h3>
-          {category?.description && <div>{category?.description}</div>}
-        </div>
+        <li>
+          <a href={`/category/${category.slug}`} class="no-underline">{category.name} {category.count > 0 && ( <span class="count">({category.count})</span> )}</a>
+        </li>
       ))}
-    </div>
+    </ul>
   </div>
 </Layout>

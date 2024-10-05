@@ -31,14 +31,12 @@ const title = page?.title || `Tags`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: title }]}
   />
-  {page?.content && (
-  <div class="container content" set:html={page?.content} />
-  )}
+  {page?.content && ( <div class="container content" set:html={page?.content} /> )}
   <div class="main-body">
     <ul class="tag">
       {tags.map((tag) => (
-        <li key={tag.databaseId} class="pb-4 tags">
-          <a href={`/tags/${tag.slug}`} class="no-underline">{tag.name} ({tag.count})</a>
+        <li>
+          <a href={`/tags/${tag.slug}`} class="no-underline">{tag.name} {tag.count > 0 && ( <span class="count">({tag.count})</span> )}</a>
         </li>
       ))}
     </ul>
