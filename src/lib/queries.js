@@ -42,13 +42,22 @@ export const GET_MENU_ITEMS = gql`
         url
         target
         parentDatabaseId
-        childItems {
+        childItems(first: $first) {
           nodes {
             id
             label
             url
             target
             cssClasses
+            childItems(first: $first) {
+              nodes {
+                id
+                label
+                url
+                target
+                cssClasses
+              }
+            }
           }
         }
       }
@@ -251,6 +260,7 @@ export const GET_CATEGORY_BY_SLUG = gql`
     category(id: $slug, idType: SLUG) {
       name
       databaseId
+      description
     }
   }
 `;
@@ -284,7 +294,9 @@ export const GET_POSTS_BY_TAG = gql`
   query($slug: ID!) {
     tag(id: $slug, idType: SLUG) {
       name
-      posts {
+      description
+      databaseId
+      posts(first: 100, where: {orderby: {field: DATE, order: DESC}}) {
         nodes {
           title
           slug

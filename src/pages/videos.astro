@@ -37,11 +37,8 @@ const title = page?.title || `Video`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: title }]}
   />
+  {page?.content && ( <div class="container" set:html={page?.content} /> )}
   <div class="main-body">
-    {page?.content && (
-      <div class="content" set:html={page?.content} />
-    )}
-
     <div class="video">
       {videos.map((video) => (
         <PostPreview key={video.databaseId} post={video} path="videos" />

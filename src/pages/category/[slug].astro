@@ -4,7 +4,6 @@ import BannerTitle from "../../components/BannerTitle.astro";
 import PostPreview from "../../components/PostPreview.astro";
 import client from "../../lib/apolloClient";
 import {
-  GET_POSTS_BY_CATEGORY,
   GET_CATEGORIES,
   GET_TEMPLATE,
   GET_CATEGORY_BY_SLUG
@@ -28,7 +27,7 @@ const { data: templateData } = await client.query({
   variables: { slug: "category" },
 });
 
-const { slug } = Astro.params;
+const { slug } = Astro.params
 
 const category = await client.query({
   query: GET_CATEGORY_BY_SLUG,
@@ -52,7 +51,7 @@ const classes = `category category-${categoryName.toLowerCase().replace(" ", "-"
 const title = page?.title || `${categoryName}`;
 ---
 
-<Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} classes={classes}>
+<Layout title={title} description={page?.metaDescription} templateId={page?.databaseId} categoryId={categoryId} classes={classes}>
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
@@ -61,10 +60,9 @@ const title = page?.title || `${categoryName}`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Categories", path: "/category" }, { label: title }]}
   />
+  { categoryDescription && <div class="container category-description">{categoryDescription}</div>}
+  { page?.content && <div class="container content" set:html={page?.content} />}
   <div class="main-body">
-    { categoryDescription && <div class="category-description">{categoryDescription}</div>}
-    {page?.content && <div class="content" set:html={page?.content} />}
-
     <div class="category">
       { posts.map((post) => (
         <PostPreview post={post} key={post.databaseId} path="articles" />

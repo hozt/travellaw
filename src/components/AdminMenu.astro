@@ -1,5 +1,5 @@
 ---
-const { pageId, postId, templateId } = Astro.props;
+const { pageId, postId, templateId, categoryId, tagId, galleryId } = Astro.props;
 ---
 
 <div id="admin-menu" class="z-10 bg-gray-500 admin-menu" style="display:none;">
@@ -10,7 +10,7 @@ const { pageId, postId, templateId } = Astro.props;
   </ul>
 </div>
 
-<script define:vars={{ pageId, postId, templateId }}>
+<script define:vars={{ pageId, postId, templateId, categoryId, tagId, galleryId }}>
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -22,27 +22,20 @@ const { pageId, postId, templateId } = Astro.props;
 
     try {
       const response = await fetch(
-        `/admin-menu?postId=${postId || ""}&pageId=${pageId || ""}&templateId=${templateId || ""}`,
+        `/admin-menu?postId=${postId || ""}&pageId=${pageId || ""}&templateId=${templateId || ""}&categoryId=${categoryId || ""}&tagId=${tagId || ""}&galleryId=${galleryId || ""}`,
         {
           headers: { "X-Editor-Key": editorKey },
         }
       );
 
       if (response.ok) {
-        // display the menu
         document.getElementById("admin-menu").style.display = "block";
-        const menuHTML = await response.text(); // This line reads the stream
+        const menuHTML = await response.text();
         if (menuHTML) {
           document.getElementById("menu-content").innerHTML = menuHTML;
         } else {
           console.error("Admin menu HTML is empty");
         }
-      } else {
-        console.error(
-          "Failed to load admin menu:",
-          response.status,
-          response.statusText
-        );
       }
     } catch (error) {
       console.error("Error loading admin menu:", error);

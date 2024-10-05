@@ -29,6 +29,15 @@ function getClassNames(item) {
           {item.childItems.nodes.map(child => (
             <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
               <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
+              {child.childItems?.nodes?.length > 0 && (
+                <ul class="sub-menu-child">
+                  {child.childItems.nodes.map(grandchild => (
+                    <li class={grandchild ? grandchild.cssClasses?.join(' ') : ''} key={grandchild.id}>
+                      <CustomLink url={grandchild.url} label={grandchild.label} classes={grandchild.cssClasses} />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
