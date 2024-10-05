@@ -50,7 +50,7 @@ if (!posts) {
 
 ---
 
-<Layout title={title} description={page?.metaDescription} classes={classList} tagId="{tagId}">
+<Layout title={title} description={page?.metaDescription} classes={classList} tagId={tagId}>
   <BannerTitle
     title={title}
     subtitle={page?.subtitle}
@@ -59,9 +59,9 @@ if (!posts) {
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Tag", path: "/tags" }, { label: title }]}
   />
+  {tagDescription && <div class="container tag-description">{tagDescription}</div>}
+  {page?.content && <div class="container" set:html={page?.content} />}
   <div class="main-body">
-    {page?.content && <div class="content" set:html={page?.content} />}
-    {tagDescription && <div class="tag-description">{tagDescription}</div>}
     <div class="category">
       {
         posts.map((post) => (

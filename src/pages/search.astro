@@ -26,10 +26,8 @@ const subtitle = page?.subtitle || '';
       height={page?.bannerImage?.mediaDetails?.height}
       crumbs={[{ label: title }]}
     />
+    {page?.content && ( <div class="container content" set:html={page?.content}></div> )}
     <div class="main-body">
-      {page?.content && (
-        <div set:html={page?.content}></div>
-      )}
       <Search id="search" class="pagefind-ui" />
     </div>
 </Layout>

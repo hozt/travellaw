@@ -42,13 +42,22 @@ export const GET_MENU_ITEMS = gql`
         url
         target
         parentDatabaseId
-        childItems {
+        childItems(first: $first) {
           nodes {
             id
             label
             url
             target
             cssClasses
+            childItems(first: $first) {
+              nodes {
+                id
+                label
+                url
+                target
+                cssClasses
+              }
+            }
           }
         }
       }

@@ -60,10 +60,9 @@ const title = page?.title || `${categoryName}`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Categories", path: "/category" }, { label: title }]}
   />
+  { categoryDescription && <div class="container category-description">{categoryDescription}</div>}
+  { page?.content && <div class="container content" set:html={page?.content} />}
   <div class="main-body">
-    { categoryDescription && <div class="category-description">{categoryDescription}</div>}
-    {page?.content && <div class="content" set:html={page?.content} />}
-
     <div class="category">
       { posts.map((post) => (
         <PostPreview post={post} key={post.databaseId} path="articles" />

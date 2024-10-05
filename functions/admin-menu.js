@@ -18,8 +18,8 @@ export async function onRequest(context) {
       const editPageUrl = pageId ? `${editorUrl}post.php?post=${pageId}&action=edit` : null;
       const editorGallery = galleryId ? `${editorUrl}post.php?post=${galleryId}&action=edit` : null;
       const editTemplateUrl = templateId ? `${editorUrl}post.php?post=${templateId}&action=edit` : null;
-      const editTagUrl = `${editorUrl}term.php?taxonomy=post_tag&tag_ID=${tagId}&action=edit`;
-      const editCategoryUrl = `${editorUrl}edit-tags.php?taxonomy=category&tag_ID=${categoryId}&action=edit`;
+      const editTagUrl = tagId ? `${editorUrl}term.php?taxonomy=post_tag&tag_ID=${tagId}&action=edit` : null;
+      const editCategoryUrl = categoryId ? `${editorUrl}edit-tags.php?taxonomy=category&tag_ID=${categoryId}&action=edit` : null;
       const editMenuUrl = `${editorUrl}nav-menus.php`;
       const regenerateUrl = `${editorUrl}admin.php?page=custom_webhook`;
 

@@ -34,11 +34,10 @@ const title = page?.title || `Categories`;
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: title }]}
   />
+  {page?.content && (
+  <div class="container content" set:html={page?.content} />
+  )}
   <div class="main-body">
-    {page?.content && (
-      <div class="content" set:html={page?.content} />
-    )}
-
     <div class="category">
       {categories.map((category) => (
         <div key={category.databaseId} class="pb-4 border-b-2 blog-post">
