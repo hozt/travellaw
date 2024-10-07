@@ -1,5 +1,5 @@
 ---
-// same as src/pages/blog/[slug].astro
+// same as src/pages/articles/[slug].astro
 import client from '../../lib/apolloClient';
 import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
@@ -12,7 +12,7 @@ import { getAllResults } from '../../lib/fetchAllResults';
 
 export async function getStaticPaths() {
   const postAlias = import.meta.env.POST_ALIAS;
-  if (postAlias !== 'articles') {
+  if (postAlias !== 'blog') {
     return [];
   }
   const allPosts = await getAllResults(GET_ALL_POSTS);

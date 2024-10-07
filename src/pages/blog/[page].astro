@@ -1,6 +1,5 @@
 ---
-// same as src/pages/blog/[page].astro
-import Layout from "../../layouts/Layout.astro";
+// same as src/pages/blog/[page].astroimport Layout from "../../layouts/Layout.astro";
 import PostPreview from "../../components/PostPreview.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
 import { GET_ARTICLES_COUNT, GET_TEMPLATE } from "../../lib/queries";
@@ -14,7 +13,7 @@ const ITEMS_PER_PAGE = 10;
 
 export async function getStaticPaths() {
   const postAlias = import.meta.env.POST_ALIAS;
-  if (postAlias !== 'articles') {
+  if (postAlias !== 'blog') {
     return [];
   }
   const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
