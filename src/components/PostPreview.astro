@@ -23,24 +23,21 @@ const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace
 
 <div key={post.databaseId} class="post-preview">
   {imageLocal && (
-    <a href={`/${postAlias}/${slug}`}>
-      <div class="featured-image">
+    <div class="featured-image">
+      <a href={`/${postAlias}/${slug}`}>
         <Image
           src={imageLocal.default}
           alt={altText}
         />
-      </div>
-    </a>
+      </a>
+    </div>
   )}
 
   <div class={`post-content ${imageLocal ? 'has-image' : ''}`}>
     <div class="post-title">
-      <a href={`/${postAlias}/${slug}`} class="no-link">{title}</a>
+      <a href={`/${postAlias}/${slug}`}>{title}</a>
     </div>
     { linkUrl && (<div class="post-link">{linkUrl}</div>) }
     <div class="post-excerpt" set:html={excerpt} />
-    <div class="post-read-more">
-      <a href={`/${postAlias}/${slug}`} class="read-more">Read More</a>
-    </div>
   </div>
 </div>
