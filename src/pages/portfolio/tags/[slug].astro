@@ -4,6 +4,7 @@ import BannerTitle from "../../../components/BannerTitle.astro";
 import PostPreview from "../../../components/PostPreview.astro";
 import client from "../../../lib/apolloClient";
 import { getAllResults } from "../../../lib/fetchAllResults";
+import { isEnabled } from '../../../lib/enabledFeatures';
 import {
     GET_PORTFOLIOS_BY_TAG,
     GET_TAGS,
@@ -11,6 +12,9 @@ import {
 } from "../../../lib/queries";
 
 export async function getStaticPaths() {
+  if (!await isEnabled('portfolio')) {
+    return [];
+  }
   const tags = await getAllResults(GET_TAGS);
 
   return tags.map((page) => ({
