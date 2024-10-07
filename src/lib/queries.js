@@ -149,6 +149,7 @@ export const GET_PAGES = gql`
       nodes {
         uri
         slug
+        isFrontPage
         title
         subtitle
         content
@@ -289,6 +290,33 @@ export const GET_POSTS_BY_CATEGORY = gql`
   }
 `;
 
+ export const GET_POSTS_BY_CATEGORY_SLUG = gql`
+  query($slug: ID!) {
+    category(id: $slug, idType: SLUG) {
+      id
+      posts {
+        nodes {
+          title
+          slug
+          excerpt
+          databaseId
+          date
+          featuredImage {
+            node {
+              altText
+              sourceUrl
+            }
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+`;
+
 // get posts by tags
 export const GET_POSTS_BY_TAG = gql`
   query($slug: ID!) {
@@ -349,6 +377,16 @@ export const GET_TAGS = gql`
         databaseId
         description
         count
+        portfolios {
+          nodes {
+            id
+          }
+        }
+        posts {
+          nodes {
+            id
+          }
+        }
       }
       pageInfo {
         endCursor

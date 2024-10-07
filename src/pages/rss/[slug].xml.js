@@ -1,7 +1,6 @@
-// pages/rss/[slug].xml.js
 import rss from '@astrojs/rss';
 import client from '../../lib/apolloClient';
-import { GET_CATEGORIES, GET_POSTS_BY_CATEGORY } from '../../lib/queries';
+import { GET_CATEGORIES, GET_POSTS_BY_CATEGORY_SLUG } from '../../lib/queries';
 
 const siteUrl = import.meta.env.SITE_URL;
 const postAlias = import.meta.env.POST_ALIAS;
@@ -13,14 +12,9 @@ export async function getStaticPaths() {
       variables: { first: 200 },
     });
 
-    if (!data || !data.categories || !data.categories.nodes) {
-      console.error('Unexpected data structure:', data);
-      return [];
-    }
-
     return data.categories.nodes.map((category) => ({
       params: { slug: category.slug },
-      props: { category },
+      props: { category }, // Include any props you want to pass to the page component
     }));
   } catch (error) {
     console.error('Error in getStaticPaths:', error);
@@ -34,7 +28,7 @@ export async function getStaticPaths() {
   }
 }
 
-export const GET = async ({ params, request }) => {
+export const GET = async ({ params }) => {
   try {
     const slug = params?.slug;
 
@@ -44,7 +38,7 @@ export const GET = async ({ params, request }) => {
     }
 
     const { data } = await client.query({
-      query: GET_POSTS_BY_CATEGORY,
+      query: GET_POSTS_BY_CATEGORY_SLUG,
       variables: { slug },
     });
 

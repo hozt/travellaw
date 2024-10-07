@@ -3,7 +3,6 @@ import { parse } from 'node-html-parser';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 
-
 export function replaceIconShortcode(content) {
   // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
   const iconRegex = /<i\s+class="[^"]*\bfa-([^"]+)"[^>]*><\/i>/g;
@@ -23,6 +22,9 @@ export function replaceIconShortcode(content) {
 }
 
 export async function replaceImageUrls(content, localImageDir = 'images/content', localPdfDir = 'pdfs') {
+  if (!content) {
+    return content;
+  }
   const root = parse(content);
 
   // Helper function to replace image URLs and add .webp extension

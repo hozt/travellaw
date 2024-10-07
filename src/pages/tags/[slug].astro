@@ -13,8 +13,9 @@ import {
 
 export async function getStaticPaths() {
   const tags = await getAllResults(GET_TAGS);
+  const tagsFilted = tags.filter((tag) => tag.posts.nodes.length > 0);
 
-  return tags.map((page) => ({
+  return tagsFilted.map((page) => ({
     params: { slug: page.slug },
     props: { page }
   }));

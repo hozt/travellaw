@@ -14,7 +14,9 @@ export async function getStaticPaths() {
     variables: { first: 200 },
   });
 
-  return data.pages.nodes.map(page => {
+  const filteredPages = data.pages.nodes.filter(page => page.isFrontPage === false);
+
+  return filteredPages.map(page => {
     const slugArray = page.uri.split('/').filter(Boolean);
     return {
       params: { slug: slugArray.join('/') },
