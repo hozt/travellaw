@@ -14,12 +14,8 @@ if (components['../componentsSite/index.astro']) {
   try {
     ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
     componentSiteExists = true;
-  } catch (error) {
-    console.warn('ComponentSite not found, skipping import.');
-  }
+  } catch (error) {}
 }
-
-console.log('ComponentSite');
 
 // Fetch front page
 const frontPages = await client.query({

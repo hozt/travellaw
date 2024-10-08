@@ -301,7 +301,7 @@ async function downloadImageThumbnail(url, outputPath) {
 
     // Convert image to webP that is 300px wide thumbnail
     // Change outputPath to .webp
-    const outputPathWebp = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    const outputPathWebp = outputPath.replace(/\.(gif|jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).resize({ width: 300 }).webp().toFile(outputPathWebp);
 
     console.log(`Downloaded thumbnail: ${outputPathWebp}`);
@@ -322,7 +322,7 @@ async function downloadImage(url, outputPath) {
     console.log(`Downloaded: ${url}`);
 
     // Convert to WebP
-    const webpOutputPath = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    const webpOutputPath = outputPath.replace(/\.(gif|jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).webp().toFile(webpOutputPath);
     console.log(`Converted to WebP: ${webpOutputPath}`);
   } catch (error) {

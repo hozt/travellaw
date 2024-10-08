@@ -112,7 +112,7 @@ export function localFileName(imageUrl) {
 
 export async function getImageLogoUrl(imagePath) {
   // remove the file name from imagePath
-  const images = import.meta.glob(`../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}`);
+  const images = import.meta.glob(`../../assets/images/logos/*.{gif,jpg,jpeg,png,webp,avif}`);
   if (images[imagePath]) {
     const imageModule = await images[imagePath]();
     return imageModule.default;
@@ -128,22 +128,22 @@ export async function getImages(directory, imagePath) {
 
   switch (directory) {
     case 'logos':
-      images = import.meta.glob('../../assets/images/logos/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/logos/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     case 'additional':
-      images = import.meta.glob('../../assets/images/additional/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/additional/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     case 'featured':
-      images = import.meta.glob('../../assets/images/featured/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/featured/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     case 'banners':
-      images = import.meta.glob('../../assets/images/banners/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/banners/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     case 'gallery':
-      images = import.meta.glob('../../assets/images/gallery/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/gallery/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     case 'gallery-thumbnails':
-      images = import.meta.glob('../../assets/images/gallery-thumbnails/*.{jpg,jpeg,png,webp,avif}');
+      images = import.meta.glob('../../assets/images/gallery-thumbnails/*.{gif,jpg,jpeg,png,webp,avif}');
       break;
     default:
       console.log('Invalid directory:', directory);
