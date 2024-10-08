@@ -65,13 +65,14 @@ export const GET_MENU_ITEMS = gql`
   }
 `;
 
-export const GET_FOOTER_MENU_ITEMS = gql`
-  query {
-    menuItems(where: { location: FOOTER }) {
+export const GET_MENU_ITEMS_BY_LOCATION = gql`
+  query($location: MenuLocationEnum!) {
+    menuItems(where: { location: $location }) {
       nodes {
         id
         label
         cssClasses
+        menuIcon
         url
         target
         parentDatabaseId
@@ -82,6 +83,7 @@ export const GET_FOOTER_MENU_ITEMS = gql`
             url
             target
             cssClasses
+            menuIcon
           }
         }
       }

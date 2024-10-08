@@ -10,7 +10,7 @@ if (fullCrumbs.length === 1) {
 const baseUrl = new URL(Astro.request.url).origin;
 ---
 
-<nav class="max-w-screen-lg p-2 mx-auto mt-1 text-sm breadcrumbs" aria-label="Breadcrumb">
+<nav class="container breadcrumbs" aria-label="Breadcrumb">
   <ol class="flex ml-0 list-reset" itemscope itemtype="https://schema.org/BreadcrumbList">
     {fullCrumbs.map((crumb, index) => (
       <li class="flex items-center" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">

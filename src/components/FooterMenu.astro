@@ -1,13 +1,14 @@
 ---
 import client from '../lib/apolloClient';
 import CustomLink from './CustomLink.astro';
-import { GET_FOOTER_MENU_ITEMS } from '../lib/queries';
+import { GET_MENU_ITEMS_BY_LOCATION } from '../lib/queries';
 
 const { classes } = Astro.props;
 
 // Fetch the menu items from the GraphQL endpoint
 const { data } = await client.query({
-  query: GET_FOOTER_MENU_ITEMS,
+  query: GET_MENU_ITEMS_BY_LOCATION,
+  variables: { location: 'FOOTER' },
 });
 
 const menuItems = data?.menuItems?.nodes || [];

@@ -123,6 +123,20 @@ const queryPosts = gql`
   }
 `;
 
+const queryMenuIcons = gql`
+  query NewQuery {
+    menuItems {
+      nodes {
+        menuIcon
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 function extractImageUrlsFromContent(htmlContent) {
   const imageUrl = process.env.API_URL;
 
@@ -260,6 +274,21 @@ async function fetchAllPosts() {
     after = pageInfo.endCursor;
   }
   return allPosts;
+}
+
+async function fetchMenuIcons() {
+  let allIcons = [];
+  let hasNextPage = true;
+  let after = null;
+  while (hasNextPage) {
+    const data = await request(endpoint, queryMenuIcons, { first: 100, after });
+    const nodes = data.menuItems.nodes;
+    allIcons = [...allIcons, ...nodes];
+    const pageInfo = data.menuItems.pageInfo;
+    hasNextPage = pageInfo.hasNextPage;
+    after = pageInfo.endCursor;
+  }
+  return allIcons;
 }
 
 async function downloadImageThumbnail(url, outputPath) {
@@ -401,6 +430,16 @@ async function saveAllContentToFile() {
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));
+  // now save menu icons to a file
+  console.log('Menu icons...');
+  const menuIcons = await fetchMenuIcons();
+  // filter all the empty menu icons
+  const menuIconsFormatted = menuIcons.filter(({ menuIcon }) => menuIcon);
+  const menuIconsPath = path.join(__dirname, 'assets', 'menu-icons.html');
+  let menuLines = menuIconsFormatted.map(({ menuIcon }) => `<i class="icon-[fa--${menuIcon.replace(/fa-/, '')}]"></i>`).join('\n');
+  await fs
+    .writeFile(menuIconsPath, menuLines)
+    .then(() => console.log('Saved menu icons to menu-icons.html file'));
 }
 
 // Main execution
