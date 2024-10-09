@@ -1,5 +1,6 @@
 import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
+import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
 import { getPostsByIds, getStickyPosts } from '../lib/fetchPosts';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
@@ -19,7 +20,7 @@ export function replaceIconShortcode(content) {
 
     // Generate the replacement HTML using string concatenation
     const iconClass = 'icon-[fa--' + iconName + ']';
-    return '<i class="' + iconClass + '"></i>';
+    return '<i class="icon ' + iconClass + '"></i>';
   });
 }
 
@@ -184,16 +185,11 @@ async function replaceAllShortCodes(content, pattern, replaceFn) {
   let newContent = content;
   let match;
 
-  // Use a while loop with exec to find all matches
   while ((match = pattern.exec(newContent)) !== null) {
     const fullMatch = match[0];
-    const attributes = match[1];
-    const replacement = await replaceFn(fullMatch, attributes);
+    const replacement = await replaceFn(...match);
 
-    // Replace this specific instance
     newContent = newContent.slice(0, match.index) + replacement + newContent.slice(match.index + fullMatch.length);
-
-    // Move the lastIndex to avoid infinite loop
     pattern.lastIndex = match.index + replacement.length;
   }
 
@@ -202,15 +198,27 @@ async function replaceAllShortCodes(content, pattern, replaceFn) {
 
 // Export async function to replace WordPress shortcodes with custom functionality
 export async function replaceShortCodes(content) {
+  content = decodeHTMLEntities(content);
   const shortCodes = [
+    {
+      // [podcast latest="true" feed="https://example.com/feed"]
+      pattern: /\[podcast\s+latest="true"\s+feed="([^"]+)"\]/g,
+      replace: async (match, feedUrl) => {
+
+        try {
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl);
+          return podcastHtml;
+        } catch (error) {
+          console.error('Error rendering podcast:', error);
+          return `<p>Error loading podcast: ${error.message}</p>`;
+        }
+      }
+    },
     {
       pattern: /\[display-posts([^\]]*)\]/g,
       replace: async (match, attributes) => {
-        console.log('Replace function called with:', match, attributes);
-
         // Decode HTML entities in the attributes
         const decodedAttributes = decodeHTMLEntities(attributes);
-        console.log('Decoded attributes:', decodedAttributes);
 
         // Parse attributes
         const idMatch = decodedAttributes.match(/id="([^"]+)"/);
@@ -223,12 +231,6 @@ export async function replaceShortCodes(content) {
         const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
         const classes = classMatch ? classMatch[1] : '';
 
-        console.log('Parsed IDs:', ids);
-        console.log('Parsed Title:', title);
-        console.log('Parsed Sticky:', sticky);
-        console.log('Parsed Classes:', classes);
-
-        // Get the data from GraphQL function getPostById()
         let posts = [];
 
         if (sticky) {

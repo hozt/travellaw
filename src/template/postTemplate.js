@@ -29,8 +29,6 @@ async function PostTemplate(props) {
             <img
               src="${imageLocal.default.src}"
               alt="${altText}"
-              width="${imageLocal.default.width}"
-              height="${imageLocal.default.height}"
             />
           </a>
         </div>
