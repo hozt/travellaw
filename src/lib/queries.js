@@ -232,27 +232,56 @@ export const GET_POST = gql`
   }
 `;
 
+export const POST_EXCERPT_FRAGMENT = gql`
+  fragment PostExcerptFields on Post {
+    id
+    title
+    excerpt
+    slug
+    databaseId
+    featuredImage {
+      node {
+        altText
+        sourceUrl
+      }
+    }
+  }
+`;
+
 export const GET_POSTS_EXCERPTS = gql`
+  ${POST_EXCERPT_FRAGMENT}
   query($first: Int!, $after: String) {
     posts(first: $first, after: $after) {
       nodes {
-        id
-        title
-        excerpt
-        slug
-        databaseId
-        featuredImage {
-          node {
-            altText
-            sourceUrl
-          }
-        }
+        ...PostExcerptFields
       }
       pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
         startCursor
+      }
+    }
+  }
+`;
+
+export const GET_POSTS_EXCERPTS_STICKY = gql`
+  ${POST_EXCERPT_FRAGMENT}
+  query {
+    posts(first: 10, where: {isStickyPost: true}) {
+      nodes {
+        ...PostExcerptFields
+      }
+    }
+  }
+`;
+
+export const GET_POSTS_EXCERPTS_BY_IDS = gql`
+  ${POST_EXCERPT_FRAGMENT}
+  query ($ids: [ID!]) {
+    posts(where: {in: $ids}) {
+      nodes {
+        ...PostExcerptFields
       }
     }
   }

@@ -40,7 +40,7 @@ const title = page?.title || `Our Portfolio`;
   <div class="main-body">
     <div class="portfolios">
       { portfolio.map((post) => (
-          <PostPreview key={post.databaseId} post={post} path="portfolio" />
+          <PostPreview key={post.databaseId} post={post} path="portfolio" classes="post-preview" />
         ))
       }
     </div>

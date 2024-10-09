@@ -1,5 +1,6 @@
 ---
 // same as src/pages/blog/[page].astroimport Layout from "../../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 import PostPreview from "../../components/PostPreview.astro";
 import BannerTitle from "../../components/BannerTitle.astro";
 import { GET_ARTICLES_COUNT, GET_TEMPLATE } from "../../lib/queries";
@@ -65,7 +66,7 @@ const totalPages =
   <div class="main-body">
     <div class="article-list">
       {articles.map((article) => (
-        <PostPreview key={article.databaseId} post={article} />
+        <PostPreview key={article.databaseId} post={article} classes="post-preview" />
       ))}
     </div>
     <Pagination currentPage={currentPage} totalPages={totalPages} />

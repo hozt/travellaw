@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { getImages } from '../lib/utils';
-const { post, path } = Astro.props;
+const { post, path, classes } = Astro.props;
 const postAlias = path || import.meta.env.POST_ALIAS;
 
 const {
@@ -21,7 +21,7 @@ const altText = featuredImage?.node?.altText || title;
 const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
 ---
 
-<div key={post.databaseId} class="post-preview">
+<div key={post.databaseId} class={classes}>
   {imageLocal && (
     <div class="featured-image">
       <a href={`/${postAlias}/${slug}`}>

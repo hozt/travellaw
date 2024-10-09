@@ -1,7 +1,9 @@
 import { parse } from 'node-html-parser';
-
+import PostTemplate from '../template/postTemplate';
+import { getPostsByIds, getStickyPosts } from '../lib/fetchPosts';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
+const postAlias = import.meta.env.POST_ALIAS;
 
 export function replaceIconShortcode(content) {
   // Regular expression to match the <i class="fas fa-shopping-cart"> pattern
@@ -159,4 +161,117 @@ export async function getImages(directory, imagePath) {
   console.log('Additional image not found for path:', relativePath);
   return null;
 }
+// Helper function to decode HTML entities
+function decodeHTMLEntities(text) {
+  const entities = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&#x2F;': '/',
+    '&#x60;': '`',
+    '&#x3D;': '=',
+    '&#8221;': '"',
+    '&#8243;': '"'
+  };
+  return text.replace(/&[#\w]+;/g, entity => entities[entity] || entity);
+}
 
+// Export async function to replace WordPress shortcodes with custom functionality
+// Helper function to replace all instances of a shortcode
+async function replaceAllShortCodes(content, pattern, replaceFn) {
+  let newContent = content;
+  let match;
+
+  // Use a while loop with exec to find all matches
+  while ((match = pattern.exec(newContent)) !== null) {
+    const fullMatch = match[0];
+    const attributes = match[1];
+    const replacement = await replaceFn(fullMatch, attributes);
+
+    // Replace this specific instance
+    newContent = newContent.slice(0, match.index) + replacement + newContent.slice(match.index + fullMatch.length);
+
+    // Move the lastIndex to avoid infinite loop
+    pattern.lastIndex = match.index + replacement.length;
+  }
+
+  return newContent;
+}
+
+// Export async function to replace WordPress shortcodes with custom functionality
+export async function replaceShortCodes(content) {
+  const shortCodes = [
+    {
+      pattern: /\[display-posts([^\]]*)\]/g,
+      replace: async (match, attributes) => {
+        console.log('Replace function called with:', match, attributes);
+
+        // Decode HTML entities in the attributes
+        const decodedAttributes = decodeHTMLEntities(attributes);
+        console.log('Decoded attributes:', decodedAttributes);
+
+        // Parse attributes
+        const idMatch = decodedAttributes.match(/id="([^"]+)"/);
+        const titleMatch = decodedAttributes.match(/title="([^"]+)"/);
+        const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
+        const classMatch = decodedAttributes.match(/class="([^"]+)"/);
+
+        const ids = idMatch ? idMatch[1].split(',').map(id => id.trim()) : [];
+        const title = titleMatch ? titleMatch[1] : '';
+        const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
+        const classes = classMatch ? classMatch[1] : '';
+
+        console.log('Parsed IDs:', ids);
+        console.log('Parsed Title:', title);
+        console.log('Parsed Sticky:', sticky);
+        console.log('Parsed Classes:', classes);
+
+        // Get the data from GraphQL function getPostById()
+        let posts = [];
+
+        if (sticky) {
+          posts = await getStickyPosts();
+        } else if (ids.length > 0) {
+          posts = await getPostsByIds(ids);
+        }
+
+        if (posts && posts.length > 0) {
+          const postPreviews = await Promise.all(posts.map(post =>
+            PostTemplate({ post, classes: 'post-template', path: postAlias })
+          ));
+          const classList = ['display-posts'];
+          if (classes) {
+            classList.push(classes);
+          }
+          if (sticky) {
+            classList.push('hasSticky');
+          }
+          if (ids.length > 0) {
+            classList.push('hasIds');
+          }
+          if (title) {
+            classList.push('hasTitle');
+          }
+          const classAttribute = classList.join(' ');
+          return `
+            <div class="${classAttribute}">
+              ${title ? `<h2>${title}</h2>` : ''}
+              <div class="posts">${postPreviews.join('')}</div>
+            </div>
+          `;
+        }
+
+        // Return the original match if posts are not found
+        return match;
+      }
+    }
+  ];
+
+  // Replace all matched shortcodes with the modified version
+  for (const shortCode of shortCodes) {
+    content = await replaceAllShortCodes(content, shortCode.pattern, shortCode.replace);
+  }
+  return content;
+}
