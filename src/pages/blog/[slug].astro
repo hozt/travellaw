@@ -5,6 +5,7 @@ import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import TagLinks from '../../components/TagLinks.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
 import { replaceImageUrls } from '../../lib/utils';
 import { Image } from 'astro:assets';
 import { getImages } from '../../lib/utils';
@@ -75,5 +76,6 @@ const srcset = localImage
     )}
     <div set:html={updatedContent} />
     <TagLinks tags={page?.tags} />
+    <RelatedPosts relatedPosts={page?.relatedPosts} />
   </div>
 </Layout>

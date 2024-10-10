@@ -228,6 +228,11 @@ export const GET_POST = gql`
           height
         }
       }
+      relatedPosts {
+        slug
+        uri
+        title
+      }
     }
   }
 `;
