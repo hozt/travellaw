@@ -19,7 +19,7 @@ export function replaceIconShortcode(content) {
     }
 
     // Generate the replacement HTML using string concatenation
-    const iconClass = 'icon-[fa--' + iconName + ']';
+    const iconClass = 'icon-[fa-solid--' + iconName + ']';
     return '<i class="icon ' + iconClass + '"></i>';
   });
 }

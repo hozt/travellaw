@@ -40,7 +40,7 @@ const tagName = data?.tag?.name;
 const tagDescription = data?.tag?.description;
 const tagId = data?.tag?.databaseId;
 const classList = 'tag tag-' + tagName.toLowerCase().replace(" ", "-");
-const title = page?.title || tagName;
+const title = tagName || page?.title;
 
 if (!posts) {
   return {

@@ -30,10 +30,8 @@ export async function renderLatestPodcastEpisode(feedUrl) {
                     </a>
                 </div>
                 <div class="post-content has-image">
-                    <div class="post-title">
-                        <a href="/podcast/#latest">${latestEpisode.title}</a>
-                    </div>
-                    <div class="hidden">On: ${latestEpisode.pubDate}</div>
+                    <div class="post-title"><a href="/podcast/#latest">Docs Talk Shop</a></div>
+                    <div class="post-excerpt">${latestEpisode.title}</div>
                 </div>
             </div>
         </div>

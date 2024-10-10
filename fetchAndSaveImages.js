@@ -394,7 +394,7 @@ function replaceIconClass(htmlString) {
   const regex = /<i class="fas fa-([^"]+)"><\/i>/g;
 
   // Replacement function
-  const replacement = (match, iconName) => `<i class="icon-[fa--${iconName}]"></i>`;
+  const replacement = (match, iconName) => `<i class="icon-[fa-solid--${iconName}]"></i>`;
 
   // Use the replace method with a callback function
   const updatedHtml = htmlString.replace(regex, replacement);
