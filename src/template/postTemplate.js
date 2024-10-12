@@ -22,7 +22,7 @@ async function PostTemplate(props) {
   const cleanLinkUrl = linkUrl ? linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
 
   return `
-    <div key="${databaseId}" class="${classes}">
+    <div class="${classes}">
       ${imageLocal ? `
         <div class="featured-image">
           <a href="/${postAlias}/${slug}">

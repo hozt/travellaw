@@ -201,8 +201,9 @@ export async function replaceShortCodes(content) {
   content = decodeHTMLEntities(content);
   const shortCodes = [
     {
-      // [podcast latest="true" feed="https://example.com/feed"]
-      pattern: /\[podcast\s+latest="true"\s+feed="([^"]+)"\]/g,
+      // <p>[podcast latest="true" feed="https://example.com/feed"]</p>
+      // update the pattern to match the <p> tag and the shortcode
+      pattern: /<p>\[podcast\s+latest="true"\s+feed="([^"]+)"\]<\/p>/g,
       replace: async (match, feedUrl) => {
 
         try {
@@ -215,7 +216,7 @@ export async function replaceShortCodes(content) {
       }
     },
     {
-      pattern: /\[display-posts([^\]]*)\]/g,
+      pattern: /<p>\[display-posts([^\]]*)\]<\/p>/g,
       replace: async (match, attributes) => {
         // Decode HTML entities in the attributes
         const decodedAttributes = decodeHTMLEntities(attributes);
@@ -243,24 +244,14 @@ export async function replaceShortCodes(content) {
           const postPreviews = await Promise.all(posts.map(post =>
             PostTemplate({ post, classes: 'post-template', path: postAlias })
           ));
-          const classList = ['display-posts'];
+          const classList = [];
           if (classes) {
             classList.push(classes);
-          }
-          if (sticky) {
-            classList.push('hasSticky');
-          }
-          if (ids.length > 0) {
-            classList.push('hasIds');
-          }
-          if (title) {
-            classList.push('hasTitle');
           }
           const classAttribute = classList.join(' ');
           return `
             <div class="${classAttribute}">
-              ${title ? `<h2>${title}</h2>` : ''}
-              <div class="posts">${postPreviews.join('')}</div>
+                ${postPreviews.join('')}
             </div>
           `;
         }

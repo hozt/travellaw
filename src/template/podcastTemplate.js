@@ -21,20 +21,17 @@ export async function renderLatestPodcastEpisode(feedUrl) {
 
       // Create the HTML for the latest episode
       return `
-        <h2>Latest Podcast Episode</h2>
-        <div class="front-featured">
-            <div class="post-template">
-                <div class="featured-image">
-                    <a href="/podcast/#latest">
-                        <img class="w-full" src="https://drdeborahmd.hozt.com/wp-content/uploads/sites/12/2024/10/docstalk.jpeg" alt={episode.title} />
-                    </a>
-                </div>
-                <div class="post-content has-image">
-                    <div class="post-title"><a href="/podcast/#latest">Docs Talk Shop</a></div>
-                    <div class="post-excerpt">${latestEpisode.title}</div>
-                </div>
-            </div>
-        </div>
+          <div class="post-template">
+              <div class="featured-image">
+                  <a href="/podcast/#latest">
+                      <img class="w-full" src="https://drdeborahmd.hozt.com/wp-content/uploads/sites/12/2024/10/docstalk.jpeg" alt={episode.title} />
+                  </a>
+              </div>
+              <div class="post-content has-image">
+                  <div class="post-title"><a href="/podcast/#latest">Docs Talk Shop</a></div>
+                  <div class="post-excerpt">${latestEpisode.title}</div>
+              </div>
+          </div>
       `;
     }
   } catch (error) {
