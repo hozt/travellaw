@@ -20,7 +20,7 @@ const sizes = "100vw";
 ---
 
 {!showBottom && <Breadcrumb crumbs={crumbs} />}
-<div class={`banner relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
+<div class={`banner overflow-hidden h-[50vh] relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
   {imageLocal && (
     <Image
       src={imageLocal.default}
@@ -28,7 +28,7 @@ const sizes = "100vw";
       formats={formats}
       sizes={sizes}
       alt={alt}
-      class="object-cover w-full h-full max-h-96"
+      class="object-cover w-full h-full animate-zoom-out"
       decoding="async"
       loading="eager"
     />

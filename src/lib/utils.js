@@ -226,15 +226,22 @@ export async function replaceShortCodes(content) {
         const titleMatch = decodedAttributes.match(/title="([^"]+)"/);
         const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
         const classMatch = decodedAttributes.match(/class="([^"]+)"/);
+        // match tag
+        const tagMatch = decodedAttributes.match(/tag="([^"]+)"/);
+        const countMatch = decodedAttributes.match(/count="([^"]+)"/);
 
         const ids = idMatch ? idMatch[1].split(',').map(id => id.trim()) : [];
         const title = titleMatch ? titleMatch[1] : '';
         const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
         const classes = classMatch ? classMatch[1] : '';
+        const tag = tagMatch ? tagMatch[1] : '';
+        const count = countMatch ? countMatch[1] : 1;
 
         let posts = [];
 
-        if (sticky) {
+        if (tag) {
+          posts = await getPostsByTag(tag, count);
+        } else if (sticky) {
           posts = await getStickyPosts();
         } else if (ids.length > 0) {
           posts = await getPostsByIds(ids);

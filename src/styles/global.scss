@@ -166,7 +166,7 @@ a.wp-block-file__button.wp-element-button {
 }
 
 .wp-block-column {
-    @apply flex-1 p-6 mr-5 last:mr-0;
+    @apply py-0;
     p {
         @apply my-0;
     }

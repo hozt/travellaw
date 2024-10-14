@@ -1,4 +1,4 @@
-import { GET_POSTS_EXCERPTS_BY_IDS, GET_POSTS_EXCERPTS_STICKY } from './queries';
+import { GET_POSTS_EXCERPTS_BY_IDS, GET_POSTS_EXCERPTS_STICKY, GET_POSTS_BY_TAG_COUNT } from './queries';
 import client from './apolloClient';
 
 export async function getPostsByIds(ids) {
@@ -29,3 +29,19 @@ export async function getStickyPosts() {
       return [];
     }
 }
+
+// get posts by tag with count
+export async function getPostsByTag(tag, count) {
+    const { data } = await client.query({
+      query: GET_POSTS_BY_TAG_COUNT,
+      variables: { tag, count },
+    });
+
+    if (data?.posts?.nodes) {
+      return data.posts.nodes;
+    } else {
+      console.error('No posts found for tag:', tag);
+      return [];
+    }
+}
+
