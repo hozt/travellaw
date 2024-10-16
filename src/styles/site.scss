@@ -15,6 +15,13 @@
     }
 }
 
+.container {
+    @apply mx-4 lg:mx-auto max-w-screen-lg;
+}
+.breadcrumbs {
+    @apply text-sm text-gray-700 mt-1;
+}
+
 .main-body {
     @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
 }
@@ -33,7 +40,7 @@
     .sub-menu {
         @apply hidden mb-0 mt-0 ml-2 md:ml-0 z-30 relative shadow md:group-hover:block md:bg-neutral-100 md:absolute md:w-56;
         li {
-            @apply pb-1 mx-0 leading-tight;
+            @apply pb-0 mx-0 leading-tight;
         }
         a {
             @apply text-dark hover:bg-black hover:text-white py-1.5 relative z-40;
@@ -42,8 +49,11 @@
             @apply hover:bg-neutral-100 text-dark hover:text-dark;
         }
     }
+    .sub-menu-child {
+        @apply mb-0;
+    }
     .menu-resources .sub-menu {
-        @apply lg:gap-4 lg:w-[500px] lg:columns-2 lg:-ml-32;
+        @apply lg:gap-4 lg:w-[550px] lg:columns-2 lg:-ml-40;
     }
     .indicator {
         @apply icon-[mdi--menu-down] text-xl absolute;
