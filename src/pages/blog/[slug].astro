@@ -1,5 +1,5 @@
 ---
-// same as src/pages/blog/[slug].astro
+// same as src/pages/articles/[slug].astro
 import client from '../../lib/apolloClient';
 import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
@@ -13,7 +13,7 @@ import { getAllResults } from '../../lib/fetchAllResults';
 
 export async function getStaticPaths() {
   const postAlias = import.meta.env.POST_ALIAS;
-  if (postAlias !== 'articles') {
+  if (postAlias !== 'blog') {
     return [];
   }
   const allPosts = await getAllResults(GET_ALL_POSTS);
@@ -31,27 +31,28 @@ const { data } = await client.query({
   });
 
 const page = data.postBy;
+const featuredImage = page?.featuredImage?.node;
 
 if (!page) {
   throw new Error(`Post not found for slug: ${slug}`);
 }
 
-const featuredImage = page?.featuredImage?.node;
+let updatedContent = '';
+try {
+  updatedContent = await replaceImageUrls(page?.content);
+} catch (error) {
+  console.error('Error replacing image URLs:', error);
+}
+
 const featuredImageSourceUrl = featuredImage?.sourceUrl;
+let localImage = null;
+if (featuredImageSourceUrl) {
+  localImage = await getImages('featured', featuredImageSourceUrl);
+}
 
-// Process content and image concurrently
-const [updatedContent, localImage] = await Promise.all([
-  replaceImageUrls(page?.content).catch(error => {
-    console.error('Error replacing image URLs:', error);
-    return ''; // Return empty string on error
-  }),
-  featuredImageSourceUrl ? getImages('featured', featuredImageSourceUrl).catch(error => {
-    console.error('Error fetching local image:', error);
-    return null; // Return null on error
-  }) : Promise.resolve(null)
-]);
-
-const srcset = localImage ? `${localImage.default.src} 1x` : '';
+const srcset = localImage
+  ? `${localImage.default.src} 1x`
+  : '';
 ---
 
 <Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="post">

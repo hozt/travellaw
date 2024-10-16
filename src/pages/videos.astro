@@ -11,7 +11,6 @@ if (!await isEnabled('videos')) {
   return Astro.redirect('/404', 404);
 }
 
-
 const { data: templateData } = await client.query({
   query: GET_TEMPLATE,
   variables: { slug: 'videos' }
@@ -41,7 +40,7 @@ const title = page?.title || `Video`;
   <div class="main-body">
     <div class="video">
       {videos.map((video) => (
-        <PostPreview key={video.databaseId} post={video} path="videos" />
+        <PostPreview key={video.databaseId} post={video} path="videos" classes="post-preview" />
       ))}
     </div>
   </div>

@@ -119,6 +119,80 @@ a.wp-block-file__button.wp-element-button {
   }
 }
 
+.wp-block-button {
+  @apply  bg-dark text-lg py-1 px-4 rounded-lg hover:bg-black;
+  a {
+    @apply no-underline text-white;
+  }
+}
+
+.wp-block-cover,
+.wp-block-media-text {
+    @apply flex flex-col md:flex-row items-center md:mx-auto bg-neutral-300 p-3;
+    &.alignfull {
+        min-height: unset !important;
+    }
+    h2 {
+        @apply text-3xl font-semibold;
+    }
+    &.is-stacked-on-mobile {
+        @apply md:flex-row flex-col;
+    }
+    .wp-block-media-text__media {
+        @apply w-full md:w-1/2;
+        img {
+            @apply w-full md:mb-0;
+        }
+    }
+    .wp-block-media-text__content {
+        @apply p-6 text-center md:text-left md:w-1/2;
+    }
+    &.has-media-on-the-right {
+        @apply flex-col md:flex-row-reverse;
+        .wp-block-media-text__media {
+            @apply order-first;
+        }
+        .wp-block-media-text__content {
+            @apply order-last md:pl-6 md:pr-12;
+        }
+    }
+    p {
+        @apply empty:hidden mb-0;
+    }
+}
+
+.wp-block-columns {
+    @apply flex flex-col md:flex-row;
+}
+
+.wp-block-column {
+    @apply py-0;
+    p {
+        @apply my-0;
+    }
+}
+.has-small-font-size {
+    @apply text-sm;
+}
+.has-regular-font-size {
+    @apply text-base;
+}
+.has-large-font-size {
+    @apply text-lg;
+}
+.has-xl-font-size {
+    @apply text-xl;
+}
+.has-xxl-font-size {
+    @apply text-2xl;
+}
+.has-xxxl-font-size {
+    @apply text-3xl;
+}
+.has-xxxxl-font-size {
+    @apply text-4xl;
+}
+
 @tailwind utilities;
 
 @import './fonts.scss';

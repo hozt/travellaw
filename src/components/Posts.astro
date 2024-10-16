@@ -52,7 +52,7 @@ if (!articles || articles.length === 0) {
   />
   <div class="main-body">
     {articles.map((article) => (
-      <PostPreview post={article} />
+      <PostPreview post={article} classes="post-preview" />
     ))}
     <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>

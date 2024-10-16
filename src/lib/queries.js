@@ -65,13 +65,14 @@ export const GET_MENU_ITEMS = gql`
   }
 `;
 
-export const GET_FOOTER_MENU_ITEMS = gql`
-  query {
-    menuItems(where: { location: FOOTER }) {
+export const GET_MENU_ITEMS_BY_LOCATION = gql`
+  query($location: MenuLocationEnum!) {
+    menuItems(where: { location: $location }) {
       nodes {
         id
         label
         cssClasses
+        menuIcon
         url
         target
         parentDatabaseId
@@ -82,6 +83,7 @@ export const GET_FOOTER_MENU_ITEMS = gql`
             url
             target
             cssClasses
+            menuIcon
           }
         }
       }
@@ -149,6 +151,7 @@ export const GET_PAGES = gql`
       nodes {
         uri
         slug
+        isFrontPage
         title
         subtitle
         content
@@ -225,31 +228,75 @@ export const GET_POST = gql`
           height
         }
       }
+      relatedPosts {
+        slug
+        uri
+        title
+      }
+    }
+  }
+`;
+
+export const POST_EXCERPT_FRAGMENT = gql`
+  fragment PostExcerptFields on Post {
+    id
+    title
+    excerpt
+    slug
+    databaseId
+    featuredImage {
+      node {
+        altText
+        sourceUrl
+      }
     }
   }
 `;
 
 export const GET_POSTS_EXCERPTS = gql`
+  ${POST_EXCERPT_FRAGMENT}
   query($first: Int!, $after: String) {
     posts(first: $first, after: $after) {
       nodes {
-        id
-        title
-        excerpt
-        slug
-        databaseId
-        featuredImage {
-          node {
-            altText
-            sourceUrl
-          }
-        }
+        ...PostExcerptFields
       }
       pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
         startCursor
+      }
+    }
+  }
+`;
+
+export const GET_POSTS_EXCERPTS_STICKY = gql`
+  ${POST_EXCERPT_FRAGMENT}
+  query {
+    posts(first: 10, where: {isStickyPost: true}) {
+      nodes {
+        ...PostExcerptFields
+      }
+    }
+  }
+`;
+
+export const GET_POSTS_EXCERPTS_BY_IDS = gql`
+  ${POST_EXCERPT_FRAGMENT}
+  query ($ids: [ID!]) {
+    posts(where: {in: $ids}) {
+      nodes {
+        ...PostExcerptFields
+      }
+    }
+  }
+`;
+
+export const GET_POSTS_BY_TAG_COUNT = gql`
+  query ($tag: String!, $count: Int!) {
+    posts(where: { tag: $tag }, first: $count) {
+      nodes {
+        ...PostExcerpt
       }
     }
   }
@@ -289,6 +336,33 @@ export const GET_POSTS_BY_CATEGORY = gql`
   }
 `;
 
+ export const GET_POSTS_BY_CATEGORY_SLUG = gql`
+  query($slug: ID!) {
+    category(id: $slug, idType: SLUG) {
+      id
+      posts {
+        nodes {
+          title
+          slug
+          excerpt
+          databaseId
+          date
+          featuredImage {
+            node {
+              altText
+              sourceUrl
+            }
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+`;
+
 // get posts by tags
 export const GET_POSTS_BY_TAG = gql`
   query($slug: ID!) {
@@ -317,7 +391,7 @@ export const GET_POSTS_BY_TAG = gql`
 // get posts by tags
 export const GET_PORTFOLIOS_BY_TAG = gql`
   query($slug: ID!) {
-    tag(id: $slug, idType: SLUG) {
+    portfolioCategory(id: $slug, idType: SLUG) {
       name
       description
       portfolios {
@@ -349,6 +423,35 @@ export const GET_TAGS = gql`
         databaseId
         description
         count
+        posts {
+          nodes {
+            id
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+// get portfolioCategories
+export const GET_PORTFOLIO_CATEGORIES = gql`
+  query($first: Int!, $after: String) {
+    allNodes:portfolioCategories(first: $first, after: $after) {
+      nodes {
+        name
+        slug
+        databaseId
+        description
+        count
+        portfolios {
+          nodes {
+            id
+          }
+        }
       }
       pageInfo {
         endCursor
@@ -707,7 +810,7 @@ export const GET_PORTFOLIO = gql`
       date
       content
       linkUrl
-      tags {
+      tags:portfolioCategories {
         nodes {
           name
           slug

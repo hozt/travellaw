@@ -1,0 +1,21 @@
+---
+const { relatedPosts } = Astro.props;
+const postAlias = import.meta.env.POST_ALIAS;
+
+const hasRelatedPosts = relatedPosts && Array.isArray(relatedPosts) && relatedPosts.length > 1;
+---
+
+{hasRelatedPosts && (
+  <div class="related-posts">
+    <div class="related-heading">Related Posts</div>
+    <ul class="related-post">
+      {relatedPosts.map((related) => (
+        <li>
+          <a href={`/${postAlias}/${related.slug}`} class="related-post">
+            {related.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

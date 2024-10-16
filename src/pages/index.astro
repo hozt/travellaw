@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
-import { replaceImageUrls, replaceIconShortcode } from '../lib/utils';
+import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
 import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
 
 // Try to import ComponentSite using import.meta.glob
@@ -14,12 +14,8 @@ if (components['../componentsSite/index.astro']) {
   try {
     ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
     componentSiteExists = true;
-  } catch (error) {
-    console.warn('ComponentSite not found, skipping import.');
-  }
+  } catch (error) {}
 }
-
-console.log('ComponentSite');
 
 // Fetch front page
 const frontPages = await client.query({
@@ -53,6 +49,7 @@ const {
 
 let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
+updatedContent = await replaceShortCodes(updatedContent);
 ---
 
 <Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>

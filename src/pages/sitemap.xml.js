@@ -25,7 +25,7 @@ const generateSitemapEntries = (type, nodes, prefix, priority) => {
       const path = prefix ? `${prefix}/${node.slug}` : node.slug;
       return `
       <url>
-        <loc>${siteUrl}/${path}</loc>
+        <loc>${siteUrl}/${path}/</loc>
         <lastmod>${formatDate(node?.modified || new Date().toISOString())}</lastmod>
         <priority>${priority}</priority>
       </url>
@@ -74,7 +74,7 @@ const generateSitemap = async () => {
 
   const landingPagesEnabled = filteredLandingPages.map(({ path, priority }) => `
     <url>
-      <loc>${siteUrl}/${path}</loc>
+      <loc>${siteUrl}/${path}/</loc>
       <priority>${priority}</priority>
       <lastmod>${new Date().toISOString()}</lastmod>
     </url>
@@ -88,7 +88,7 @@ const generateSitemap = async () => {
     for (let i = 2; i <= totalPages; i++) {
       landingPages.push(`
         <url>
-          <loc>${siteUrl}/${postAlias}/${i}</loc>
+          <loc>${siteUrl}/${postAlias}/${i}/</loc>
           <lastmod>${new Date().toISOString()}</lastmod>
           <priority>0.7</priority>
         </url>

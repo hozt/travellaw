@@ -123,6 +123,20 @@ const queryPosts = gql`
   }
 `;
 
+const queryMenuIcons = gql`
+  query NewQuery {
+    menuItems {
+      nodes {
+        menuIcon
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 function extractImageUrlsFromContent(htmlContent) {
   const imageUrl = process.env.API_URL;
 
@@ -262,6 +276,21 @@ async function fetchAllPosts() {
   return allPosts;
 }
 
+async function fetchMenuIcons() {
+  let allIcons = [];
+  let hasNextPage = true;
+  let after = null;
+  while (hasNextPage) {
+    const data = await request(endpoint, queryMenuIcons, { first: 100, after });
+    const nodes = data.menuItems.nodes;
+    allIcons = [...allIcons, ...nodes];
+    const pageInfo = data.menuItems.pageInfo;
+    hasNextPage = pageInfo.hasNextPage;
+    after = pageInfo.endCursor;
+  }
+  return allIcons;
+}
+
 async function downloadImageThumbnail(url, outputPath) {
   try {
     const response = await fetch(url);
@@ -272,7 +301,7 @@ async function downloadImageThumbnail(url, outputPath) {
 
     // Convert image to webP that is 300px wide thumbnail
     // Change outputPath to .webp
-    const outputPathWebp = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    const outputPathWebp = outputPath.replace(/\.(gif|jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).resize({ width: 300 }).webp().toFile(outputPathWebp);
 
     console.log(`Downloaded thumbnail: ${outputPathWebp}`);
@@ -293,7 +322,7 @@ async function downloadImage(url, outputPath) {
     console.log(`Downloaded: ${url}`);
 
     // Convert to WebP
-    const webpOutputPath = outputPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    const webpOutputPath = outputPath.replace(/\.(gif|jpg|jpeg|png)$/, '.webp');
     await sharp(buffer).webp().toFile(webpOutputPath);
     console.log(`Converted to WebP: ${webpOutputPath}`);
   } catch (error) {
@@ -365,7 +394,7 @@ function replaceIconClass(htmlString) {
   const regex = /<i class="fas fa-([^"]+)"><\/i>/g;
 
   // Replacement function
-  const replacement = (match, iconName) => `<i class="icon-[fa--${iconName}]"></i>`;
+  const replacement = (match, iconName) => `<i class="icon-[fa-solid--${iconName}]"></i>`;
 
   // Use the replace method with a callback function
   const updatedHtml = htmlString.replace(regex, replacement);
@@ -401,6 +430,16 @@ async function saveAllContentToFile() {
   await fs
     .writeFile(allPostsPath, postLines)
     .then(() => console.log('Saved all posts to all-posts.html file'));
+  // now save menu icons to a file
+  console.log('Menu icons...');
+  const menuIcons = await fetchMenuIcons();
+  // filter all the empty menu icons
+  const menuIconsFormatted = menuIcons.filter(({ menuIcon }) => menuIcon);
+  const menuIconsPath = path.join(__dirname, 'assets', 'menu-icons.html');
+  let menuLines = menuIconsFormatted.map(({ menuIcon }) => `<i class="icon-[fa--${menuIcon.replace(/fa-/, '')}]"></i>`).join('\n');
+  await fs
+    .writeFile(menuIconsPath, menuLines)
+    .then(() => console.log('Saved menu icons to menu-icons.html file'));
 }
 
 // Main execution

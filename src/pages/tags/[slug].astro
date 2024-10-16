@@ -13,8 +13,9 @@ import {
 
 export async function getStaticPaths() {
   const tags = await getAllResults(GET_TAGS);
+  const tagsFilted = tags.filter((tag) => tag.posts.nodes.length > 0);
 
-  return tags.map((page) => ({
+  return tagsFilted.map((page) => ({
     params: { slug: page.slug },
     props: { page }
   }));
@@ -39,7 +40,7 @@ const tagName = data?.tag?.name;
 const tagDescription = data?.tag?.description;
 const tagId = data?.tag?.databaseId;
 const classList = 'tag tag-' + tagName.toLowerCase().replace(" ", "-");
-const title = page?.title || tagName;
+const title = tagName || page?.title;
 
 if (!posts) {
   return {
@@ -65,7 +66,7 @@ if (!posts) {
     <div class="category">
       {
         posts.map((post) => (
-          <PostPreview key={post.databaseId} post={post} path="articles" />
+          <PostPreview key={post.databaseId} post={post} classes="post-preview" />
         ))
       }
     </div>

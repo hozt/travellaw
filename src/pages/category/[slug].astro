@@ -65,7 +65,7 @@ const title = page?.title || `${categoryName}`;
   <div class="main-body">
     <div class="category">
       { posts.map((post) => (
-        <PostPreview post={post} key={post.databaseId} path="articles" />
+        <PostPreview post={post} key={post.databaseId} path="articles" classes="post-preview" />
       ))
       }
     </div>

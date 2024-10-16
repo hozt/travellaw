@@ -1,0 +1,36 @@
+---
+import client from '../lib/apolloClient';
+import { GET_MENU_ITEMS_BY_LOCATION } from '../lib/queries';
+
+const { classes } = Astro.props;
+
+const { data } = await client.query({
+  query: GET_MENU_ITEMS_BY_LOCATION,
+  variables: { location: 'SOCIAL' },
+});
+
+const menuItems = data?.menuItems?.nodes || [];
+const menuItemsFormatted = menuItems.map((menuItem) => {
+  const label = menuItem.label;
+  const url = menuItem.url;
+  let iconClass = '';
+  if (menuItem.menuIcon) {
+    iconClass = `icon-[fa--${menuItem.menuIcon.replace(/fa-/, '')}]`;
+  }
+  const menuClasses = menuItem.cssClasses.join(' ');
+  return { label, url, menuClasses, iconClass };
+});
+
+---
+
+<nav>
+  <ul class=`list-none social-menu ${classes}`>
+    { menuItemsFormatted.map((menuItem) => (
+      <li key={menuItem.id}>
+        <a href={menuItem.url} target="_blank" rel="noopener noreferrer" class={menuItem.menuClasses}>
+          <i class={`icon ${menuItem.iconClass}`}></i>
+        </a>
+      </li>
+    )) }
+  </ul>
+</nav>
