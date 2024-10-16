@@ -391,7 +391,7 @@ export const GET_POSTS_BY_TAG = gql`
 // get posts by tags
 export const GET_PORTFOLIOS_BY_TAG = gql`
   query($slug: ID!) {
-    tag(id: $slug, idType: SLUG) {
+    portfolioCategory(id: $slug, idType: SLUG) {
       name
       description
       portfolios {
@@ -423,12 +423,31 @@ export const GET_TAGS = gql`
         databaseId
         description
         count
-        portfolios {
+        posts {
           nodes {
             id
           }
         }
-        posts {
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+// get portfolioCategories
+export const GET_PORTFOLIO_CATEGORIES = gql`
+  query($first: Int!, $after: String) {
+    allNodes:portfolioCategories(first: $first, after: $after) {
+      nodes {
+        name
+        slug
+        databaseId
+        description
+        count
+        portfolios {
           nodes {
             id
           }
@@ -791,7 +810,7 @@ export const GET_PORTFOLIO = gql`
       date
       content
       linkUrl
-      tags {
+      tags:portfolioCategories {
         nodes {
           name
           slug

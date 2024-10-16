@@ -1,4 +1,5 @@
 ---
+// src/pages/portfolio/tags/[slug].astro
 import Layout from "../../../layouts/Layout.astro";
 import BannerTitle from "../../../components/BannerTitle.astro";
 import PostPreview from "../../../components/PostPreview.astro";
@@ -7,41 +8,61 @@ import { getAllResults } from "../../../lib/fetchAllResults";
 import { isEnabled } from '../../../lib/enabledFeatures';
 import {
     GET_PORTFOLIOS_BY_TAG,
-    GET_TAGS,
+    GET_PORTFOLIO_CATEGORIES,
     GET_TEMPLATE,
 } from "../../../lib/queries";
 
 export async function getStaticPaths() {
-  if (!await isEnabled('portfolio')) {
+  const portfolioEnabled = await isEnabled('portfolios');
+
+  if (!portfolioEnabled) {
+    console.log('Portfolio is not enabled');
     return [];
   }
-  const tags = await getAllResults(GET_TAGS);
 
-  return tags.map((page) => ({
-    params: { slug: page.slug },
-    props: { page }
-  }));
+  try {
+    const tags = await getAllResults(GET_PORTFOLIO_CATEGORIES);
+
+    const paths = tags.map((page) => ({
+      params: { slug: page.slug },
+      props: { page }
+    }));
+
+    console.log('Generated paths:', paths.map(p => p.params.slug));
+
+    return paths;
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    return [];
+  }
 }
 
-const { data: templateData } = await client.query({
-  query: GET_TEMPLATE,
-  variables: { slug: "tags" },
-});
-
+console.log('Astro.params', Astro.params);
 const { slug } = Astro.params;
 
-const { data } = await client.query({
+const [templateData, portfolioData] = await Promise.all([
+  client.query({
+    query: GET_TEMPLATE,
+    variables: { slug: "tags" },
+  }),
+  client.query({
     query: GET_PORTFOLIOS_BY_TAG,
     variables: { slug },
-});
+  })
+]);
 
-const page = templateData.templateBy;
+const page = templateData.data.templateBy;
+const data = portfolioData.data;
 
-const posts = data?.tag?.portfolios?.nodes;
-const tagName = data?.tag?.name;
-const tagDescription = data?.tag?.description;
+const posts = data?.portfolioCategory?.portfolios?.nodes;
+const tagName = data?.portfolioCategory?.name;
+const tagDescription = data?.portfolioCategory?.description;
 const classList = 'tag tag-' + tagName.toLowerCase().replace(" ", "-");
 const title = tagName || page?.title;
+
+if (!posts || posts.length === 0) {
+  console.log(`No posts found for tag ${slug}`);
+}
 
 if (!posts) {
   return {
