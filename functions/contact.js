@@ -55,6 +55,10 @@ export async function onRequestPost({ request, env }) {
                             Name: 'Recipient',
                         },
                     ],
+                    ReplyTo: {
+                        Email: fromEmail,
+                        Name: 'Contact Form',
+                    },
                     Subject: emailSubject,
                     TextPart: emailText,
                     HTMLPart: emailHtml,
