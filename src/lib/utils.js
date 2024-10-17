@@ -206,7 +206,6 @@ export async function replaceShortCodes(content) {
       pattern: /<p>\[podcast\s+latest="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
       replace: async (match, latest, feedUrl, image) => {
         try {
-          console.log('Rendering podcast:', feedUrl, image);
           const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image);
           return podcastHtml;
         } catch (error) {

@@ -5,16 +5,13 @@ const parser = new Parser();
 
 // Function to fetch and render the latest podcast episode
 export async function renderLatestPodcastEpisode(feedUrl, podcastImage) {
-  console.log(`Attempting to fetch podcast feed: ${feedUrl}`);
   try {
     const feed = await parser.parseURL(feedUrl);
-    console.log('Feed parsed successfully');
 
     // Get the latest episode (the first item in the feed)
     const latestEpisode = feed.items[0];
 
     if (latestEpisode) {
-      console.log('Latest episode found:', latestEpisode.title);
       let summary = latestEpisode.itunes?.summary || '';
       if (summary.length > 150) {
         summary = summary.substring(0, 150) + '...';
