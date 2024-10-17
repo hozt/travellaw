@@ -20,7 +20,7 @@ const sizes = "100vw";
 ---
 
 {!showBottom && <Breadcrumb crumbs={crumbs} />}
-<div class={`banner overflow-hidden h-[50vh] relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
+<div class={`banner overflow-hidden relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
   {imageLocal && (
     <Image
       src={imageLocal.default}
