@@ -32,8 +32,8 @@ export async function onRequestPost({ request, env }) {
         const toEmail = env.MAILJET_TO_EMAIL;
         const emailSubject = 'New Contact Form Submission';
 
-        let emailText = 'Do not reply directly to this email.\n\n';
-        let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
+        let emailText = '\n';
+        let emailHtml = '<br>';
 
         for (const [key, value] of formData.entries()) {
             if (key !== 'cf-turnstile-response') {
@@ -56,8 +56,7 @@ export async function onRequestPost({ request, env }) {
                         },
                     ],
                     ReplyTo: {
-                        Email: replyTo,
-                        Name: 'Contact Form',
+                        Email: replyTo
                     },
                     Subject: emailSubject,
                     TextPart: emailText,
