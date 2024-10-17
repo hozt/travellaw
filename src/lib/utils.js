@@ -201,13 +201,13 @@ export async function replaceShortCodes(content) {
   content = decodeHTMLEntities(content);
   const shortCodes = [
     {
-      // <p>[podcast latest="true" feed="https://example.com/feed"]</p>
-      // update the pattern to match the <p> tag and the shortcode
-      pattern: /<p>\[podcast\s+latest="true"\s+feed="([^"]+)"\]<\/p>/g,
-      replace: async (match, feedUrl) => {
-
+      // <p>[podcast latest="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
+      // Update the pattern to match the <p> tag and the shortcode with all attributes
+      pattern: /<p>\[podcast\s+latest="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
+      replace: async (match, latest, feedUrl, image) => {
         try {
-          const podcastHtml = await renderLatestPodcastEpisode(feedUrl);
+          console.log('Rendering podcast:', feedUrl, image);
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image);
           return podcastHtml;
         } catch (error) {
           console.error('Error rendering podcast:', error);
