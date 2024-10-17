@@ -13,12 +13,13 @@ const menuItems = data?.menuItems?.nodes || [];
 const menuItemsFormatted = menuItems.map((menuItem) => {
   const label = menuItem.label;
   const url = menuItem.url;
-  let iconClass = '';
-  if (menuItem.menuIcon) {
-    iconClass = `icon-[fa--${menuItem.menuIcon.replace(/fa-/, '')}]`;
+  if (menuItem.cssClasses.length === 0) {
+    menuItem.cssClasses = menuItem.cssClasses.split(' ');
   }
-  const menuClasses = menuItem.cssClasses.join(' ');
-  return { label, url, menuClasses, iconClass };
+
+  let menuClasses = menuItem.cssClasses.join(' ');
+  menuClasses = menuClasses.replace('icon-', 'icon-[') + ']';
+  return { label, url, menuClasses };
 });
 
 ---
@@ -27,8 +28,9 @@ const menuItemsFormatted = menuItems.map((menuItem) => {
   <ul class=`list-none social-menu ${classes}`>
     { menuItemsFormatted.map((menuItem) => (
       <li key={menuItem.id}>
-        <a href={menuItem.url} target="_blank" rel="noopener noreferrer" class={menuItem.menuClasses}>
-          <i class={`icon ${menuItem.iconClass}`}></i>
+        <a href={menuItem.url} target="_blank" rel="noopener noreferrer">
+          <i class={`icon ${menuItem.menuClasses}`} aria-hidden="true"></i>
+          <span class="sr-only">{menuItem.label}</span>
         </a>
       </li>
     )) }

@@ -7,6 +7,13 @@ const site = process.env.SITE_URL;
 
 export default defineConfig({
   vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern-compiler"
+        }
+      }
+    },
     resolve: {
       preserveSymlinks: true
     }

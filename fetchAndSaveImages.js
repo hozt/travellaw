@@ -127,7 +127,7 @@ const queryMenuIcons = gql`
   query NewQuery {
     menuItems {
       nodes {
-        menuIcon
+        cssClasses
       }
       pageInfo {
         endCursor
@@ -433,13 +433,21 @@ async function saveAllContentToFile() {
   // now save menu icons to a file
   console.log('Menu icons...');
   const menuIcons = await fetchMenuIcons();
-  // filter all the empty menu icons
-  const menuIconsFormatted = menuIcons.filter(({ menuIcon }) => menuIcon);
-  const menuIconsPath = path.join(__dirname, 'assets', 'menu-icons.html');
-  let menuLines = menuIconsFormatted.map(({ menuIcon }) => `<i class="icon-[fa--${menuIcon.replace(/fa-/, '')}]"></i>`).join('\n');
+  // filter the empty classes
+  const menuItemsFormatted = menuIcons.filter(({ cssClasses }) => cssClasses);
+  // create an string of all the classes in all the menu items with one class on each line
+  const menuClasses = menuItemsFormatted
+  .filter(({ cssClasses }) => cssClasses.length > 0) // Skip empty classes
+  .map(({ cssClasses }) => {
+    let classList = cssClasses.join(' ');
+    classList = classList.replace('icon-', 'icon-[') + ']';
+    return `<i class="icon ${classList}"></i>`;
+  });
+
+  const menuClassesPath = path.join(__dirname, 'assets', 'menu-classes.html');
   await fs
-    .writeFile(menuIconsPath, menuLines)
-    .then(() => console.log('Saved menu icons to menu-icons.html file'));
+    .writeFile(menuClassesPath, menuClasses)
+    .then(() => console.log('Saved menu classes to menu-classes.html file'));
 }
 
 // Main execution

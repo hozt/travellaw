@@ -72,7 +72,6 @@ export const GET_MENU_ITEMS_BY_LOCATION = gql`
         id
         label
         cssClasses
-        menuIcon
         url
         target
         parentDatabaseId
@@ -83,7 +82,6 @@ export const GET_MENU_ITEMS_BY_LOCATION = gql`
             url
             target
             cssClasses
-            menuIcon
           }
         }
       }
