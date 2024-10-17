@@ -9,7 +9,7 @@ export async function onRequestPost({ request, env }) {
             formDataJson[key] = value;
         });
 
-        console.log('formData JSON:', JSON.stringify(formDataJson));
+        const replyTo = formDataJson.email || env.MAILJET_TO_EMAIL;
 
         const turnstileToken = formData.get('cf-turnstile-response');
         console.log('Turnstile token:', turnstileToken);
@@ -56,7 +56,7 @@ export async function onRequestPost({ request, env }) {
                         },
                     ],
                     ReplyTo: {
-                        Email: fromEmail,
+                        Email: replyTo,
                         Name: 'Contact Form',
                     },
                     Subject: emailSubject,
@@ -97,8 +97,8 @@ async function sendEmail(apiKey, apiSecret, emailData) {
         const response = await fetch('https://api.mailjet.com/v3.1/send', {
             method: 'POST',
             headers: {
-                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
                 'Content-Type': 'application/json',
+                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
             },
             body: JSON.stringify(emailData),
         });
