@@ -9,7 +9,7 @@ export async function onRequestPost({ request, env }) {
             formDataJson[key] = value;
         });
 
-        console.log('formData JSON:', JSON.stringify(formDataJson));
+        const replyTo = formDataJson.email || env.MAILJET_TO_EMAIL;
 
         const turnstileToken = formData.get('cf-turnstile-response');
         console.log('Turnstile token:', turnstileToken);
@@ -32,8 +32,8 @@ export async function onRequestPost({ request, env }) {
         const toEmail = env.MAILJET_TO_EMAIL;
         const emailSubject = 'New Contact Form Submission';
 
-        let emailText = 'Do not reply directly to this email.\n\n';
-        let emailHtml = '<p><strong>Do not reply directly to this email.</strong></p><br>';
+        let emailText = '\n';
+        let emailHtml = '<br>';
 
         for (const [key, value] of formData.entries()) {
             if (key !== 'cf-turnstile-response') {
@@ -55,6 +55,9 @@ export async function onRequestPost({ request, env }) {
                             Name: 'Recipient',
                         },
                     ],
+                    ReplyTo: {
+                        Email: replyTo
+                    },
                     Subject: emailSubject,
                     TextPart: emailText,
                     HTMLPart: emailHtml,
@@ -93,8 +96,8 @@ async function sendEmail(apiKey, apiSecret, emailData) {
         const response = await fetch('https://api.mailjet.com/v3.1/send', {
             method: 'POST',
             headers: {
-                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
                 'Content-Type': 'application/json',
+                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
             },
             body: JSON.stringify(emailData),
         });
