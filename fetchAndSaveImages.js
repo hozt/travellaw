@@ -123,6 +123,27 @@ const queryPosts = gql`
   }
 `;
 
+const queryOthers = gql`
+  query GetOthers($first: Int!, $after: String) {
+    others(first: $first, after: $after) {
+      nodes {
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+        galleryImages {
+          sourceUrl
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 const queryMenuIcons = gql`
   query NewQuery {
     menuItems {
@@ -216,6 +237,14 @@ async function fetchImageUrls() {
       });
     });
 
+    // get featured from others
+    const othersFeatured = await fetchAllOthers();
+    othersFeatured.forEach(node => {
+      if (node?.featuredImage?.node?.sourceUrl) {
+        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
+      }
+    });
+
     // get all additional images from portfolios
     data.portfolios.nodes.forEach(node => {
       if (node?.additionalImage?.sourceUrl) {
@@ -249,8 +278,17 @@ async function fetchImageUrls() {
         }
       });
     });
-
-    console.log('Image URLs fetched successfully');
+    // Collect other gallery images
+    const others = await fetchAllOthers();
+    console.log('Others:', others);
+    others.forEach(node => {
+      node.galleryImages.forEach(image => {
+        if (image?.sourceUrl) {
+          imageUrls.gallery.push(image?.sourceUrl);
+          console.log('Image URL:', image?.sourceUrl);
+        }
+      });
+    });
     return imageUrls;
   } catch (error) {
     console.error('Error in fetchImageUrls:', error.message);
@@ -274,6 +312,23 @@ async function fetchAllPosts() {
     after = pageInfo.endCursor;
   }
   return allPosts;
+}
+
+async function fetchAllOthers() {
+  let allOthers = [];
+  let hasNextPage = true;
+  let after = null;
+  while (hasNextPage) {
+    const data = await request(endpoint, queryOthers, { first: 100, after });
+    const nodes = data.others.nodes;
+    allOthers = [...allOthers, ...nodes];
+    const pageInfo = data.others.pageInfo;
+    hasNextPage = pageInfo.hasNextPage;
+    after = pageInfo.endCursor;
+  }
+  // remove all the gallery images that are null
+  allOthers = allOthers.filter(({ galleryImages }) => galleryImages);
+  return allOthers;
 }
 
 async function fetchMenuIcons() {
