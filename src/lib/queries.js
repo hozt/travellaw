@@ -510,16 +510,6 @@ export const GET_FAQ_TOPICS = gql`
   }
 `;
 
-export const GET_FAQ_TOPIC_BY_SLUG = gql`
-  query($slug: ID!) {
-    faqTopic(id: $slug, idType: SLUG) {
-      name
-      description
-      faqTopicId
-    }
-  }
-`;
-
 export const GET_TEMPLATE = gql`
   query($slug: String!) {
     templateBy(slug: $slug) {

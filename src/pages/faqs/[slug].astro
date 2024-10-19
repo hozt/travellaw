@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import FaqDisplay from '../../components/FaqDisplay.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import client from '../../lib/apolloClient';
-import { GET_TEMPLATE, GET_FAQ_TOPICS, GET_FAQ_TOPIC_BY_SLUG } from '../../lib/queries';
+import { GET_TEMPLATE, GET_FAQ_TOPICS } from '../../lib/queries';
 
 export async function getStaticPaths() {
   const data = await client.query({
@@ -17,36 +17,30 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-// const { data } = await client.query({
-//   query: GET_TEMPLATE,
-//   variables: { slug },
-// });
-
 const { data } = await client.query({
-  query: GET_FAQ_TOPIC_BY_SLUG,
+  query: GET_TEMPLATE,
   variables: { slug },
 });
 
-const page = data?.faqTopic;
+const page = data?.templateBy;
 
-const faqTopicIds: number[] = [];
-if (page?.faqTopicId) {
-  faqTopicIds.push(page.faqTopicId);
+let cleanContent = '';
+let faqTopicIds = [];
+
+if (page && page.content) {
+  // Extract FAQ topic IDs from content
+  const shortcodeRegex = /<p>\[faq-term=(\d+)\]<\/p>/g;
+  faqTopicIds = [];
+
+  let match;
+  while ((match = shortcodeRegex.exec(page.content)) !== null) {
+    faqTopicIds.push(parseInt(match[1]));
+  }
+
+  cleanContent = page.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
 }
-// if (page && page.content) {
-//   // Extract FAQ topic IDs from content
-//   const shortcodeRegex = /<p>\[faq-term=(\d+)\]<\/p>/g;
-//   faqTopicIds = [];
 
-//   let match;
-//   while ((match = shortcodeRegex.exec(page.content)) !== null) {
-//     faqTopicIds.push(parseInt(match[1]));
-//   }
-
-//   cleanContent = page.content.replace(/<p>\[faq-term=\d+\]<\/p>/g, '');
-// }
-
-const title = page ? page?.name : 'FAQ Page'
+const title = page ? page.title : 'FAQ Page'
 ---
 
 <Layout title={page ? page.title : 'FAQ Page'} templateId={page?.databaseId} description={page?.metaDescription} classes="faq">
@@ -61,9 +55,9 @@ const title = page ? page?.name : 'FAQ Page'
   <div class="main-body">
     {page && (
       <>
-        { page?.description && <div class="faq" set:html={page?.description}></div> }
+        <div class="faq" set:html={cleanContent}></div>
         {faqTopicIds.length > 0 && (
-          <FaqDisplay faqTopicIds={faqTopicIds} heading={false} />
+          <FaqDisplay faqTopicIds={faqTopicIds} />
         )}
       </>
     )}
