@@ -16,7 +16,7 @@ if (!menuItems) {
 
 function getClassNames(item) {
   const menuClass = `menu-${item.label.replace(/ /g, '-').toLowerCase()}`;
-  return `${item.cssClasses?.join(' ') || ''} ${item.childItems?.nodes?.length > 0 ? 'group ' : ''}${menuClass}`;
+  return `${item.cssClasses?.join(' ') || ''} ${item.childItems?.nodes?.length > 0 ? 'has-submenu ' : ''}${menuClass}`;
 }
 ---
 
@@ -27,7 +27,7 @@ function getClassNames(item) {
       {item.childItems?.nodes?.length > 0 && (
         <ul class="sub-menu">
           {item.childItems.nodes.map(child => (
-            <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+            <li class={`${child.cssClasses?.join(' ') || ''} ${child.childItems?.nodes?.length > 0 ? 'has-submenu' : ''}`} key={child.id}>
               <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
               {child.childItems?.nodes?.length > 0 && (
                 <ul class="sub-menu-child">
@@ -46,18 +46,36 @@ function getClassNames(item) {
   ))}
 </ul>
 
-<style>
-  .menu-item:hover .sub-menu,
-  .menu-item:focus-within .sub-menu,
-  .menu-item.active .sub-menu {
-    @apply block;
-  }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const menuItems = document.querySelectorAll('.menu-item');
-  const isMobile = window.innerWidth <= 767;
+  let timeout;
+
+  menuItems.forEach(item => {
+    const submenu = item.querySelector('.sub-menu');
+    if (submenu) {
+      item.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+        menuItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+          }
+        });
+        item.classList.add('active');
+      });
+
+      item.addEventListener('mouseleave', () => {
+        timeout = setTimeout(() => {
+          if (!item.matches(':hover')) {
+            item.classList.remove('active');
+          }
+        }, 300);
+      });
+    }
+  });
+
+  // Mobile menu handling
+  const isMobile = () => window.innerWidth <= 768;
 
   menuItems.forEach(item => {
     const link = item.querySelector('a');
@@ -65,39 +83,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (submenu) {
       link.addEventListener('click', function(e) {
-        if (isMobile) {
-          if (!item.classList.contains('active')) {
-            e.preventDefault();  // Prevent default only when the submenu is not open
-            item.classList.toggle('active');
-            submenu.style.display = item.classList.contains('active') ? 'block' : 'none';
-          }
-        }
-      });
-
-      item.addEventListener('touchstart', function(e) {
-        if (!item.classList.contains('active')) {
+        if (isMobile()) {
           e.preventDefault();
+          item.classList.toggle('active');
           menuItems.forEach(otherItem => {
             if (otherItem !== item) {
               otherItem.classList.remove('active');
-              otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
             }
           });
-          item.classList.add('active');
-          submenu.style.display = 'block';
         }
       });
     }
   });
 
   // Close submenu if clicked outside
-  document.addEventListener('touchstart', function(e) {
+  document.addEventListener('click', function(e) {
     if (!e.target.closest('.menu-item')) {
       menuItems.forEach(item => {
         item.classList.remove('active');
-        item.querySelector('.sub-menu')?.style.removeProperty('display');
       });
     }
-  }, { passive: true });
+  });
 });
 </script>
