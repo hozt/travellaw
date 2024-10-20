@@ -25,14 +25,14 @@ function getClassNames(item) {
     <li class={`menu-item ${getClassNames(item)}`} key={item.id}>
       <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
       {item.childItems?.nodes?.length > 0 && (
-        <ul class="sub-menu">
+        <ul class="hidden sub-menu group-hover:block">
           {item.childItems.nodes.map(child => (
-            <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+            <li class={`menu-item-child ${child.cssClasses?.join(' ') || ''}`} key={child.id}>
               <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
               {child.childItems?.nodes?.length > 0 && (
                 <ul class="sub-menu-child">
                   {child.childItems.nodes.map(grandchild => (
-                    <li class={grandchild ? grandchild.cssClasses?.join(' ') : ''} key={grandchild.id}>
+                    <li class={`menu-item-grandchild ${grandchild.cssClasses?.join(' ') || ''}`} key={grandchild.id}>
                       <CustomLink url={grandchild.url} label={grandchild.label} classes={grandchild.cssClasses} />
                     </li>
                   ))}
@@ -46,58 +46,80 @@ function getClassNames(item) {
   ))}
 </ul>
 
-<style>
-  .menu-item:hover .sub-menu,
-  .menu-item:focus-within .sub-menu,
-  .menu-item.active .sub-menu {
-    @apply block;
-  }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const menuItems = document.querySelectorAll('.menu-item');
-  const isMobile = window.innerWidth <= 767;
+  const isMobileOrTablet = window.innerWidth <= 1024;
+  let hideTimeout;
 
   menuItems.forEach(item => {
     const link = item.querySelector('a');
     const submenu = item.querySelector('.sub-menu');
 
     if (submenu) {
+      // Toggle submenu visibility on mobile/tablet
       link.addEventListener('click', function(e) {
-        if (isMobile) {
-          if (!item.classList.contains('active')) {
-            e.preventDefault();  // Prevent default only when the submenu is not open
-            item.classList.toggle('active');
-            submenu.style.display = item.classList.contains('active') ? 'block' : 'none';
-          }
-        }
-      });
-
-      item.addEventListener('touchstart', function(e) {
-        if (!item.classList.contains('active')) {
-          e.preventDefault();
+        if (isMobileOrTablet) {
+          e.preventDefault();  // Prevent link navigation if expanding submenu
           menuItems.forEach(otherItem => {
             if (otherItem !== item) {
               otherItem.classList.remove('active');
               otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
             }
           });
-          item.classList.add('active');
+          item.classList.toggle('active');
+        }
+      });
+
+      // Handle hover delay for desktop view
+      if (!isMobileOrTablet) {
+        // Clear the hide timeout if hovering back
+        item.addEventListener('mouseenter', () => {
+          clearTimeout(hideTimeout);
           submenu.style.display = 'block';
+        });
+
+        // Add a delay when mouse leaves the item
+        item.addEventListener('mouseleave', () => {
+          hideTimeout = setTimeout(() => {
+            submenu.style.display = 'none';
+          }, 300);  // Delay of 300ms
+        });
+      }
+
+      // Handle third-level submenus (grandchild)
+      const childItems = submenu.querySelectorAll('.menu-item-child');
+      childItems.forEach(childItem => {
+        const childLink = childItem.querySelector('a');
+        const subMenuChild = childItem.querySelector('.sub-menu-child');
+
+        if (subMenuChild) {
+          // Show third-level menu on click for mobile/tablet
+          childLink.addEventListener('click', function(e) {
+            if (isMobileOrTablet) {
+              e.preventDefault();  // Prevent link navigation if expanding third level
+              childItems.forEach(otherChild => {
+                if (otherChild !== childItem) {
+                  otherChild.classList.remove('active');
+                  otherChild.querySelector('.sub-menu-child')?.style.removeProperty('display');
+                }
+              });
+              childItem.classList.toggle('active');
+            }
+          });
+        }
+      });
+
+      // Close all submenus when clicked outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.menu-item')) {
+          menuItems.forEach(item => {
+            item.classList.remove('active');
+            item.querySelector('.sub-menu')?.style.removeProperty('display');
+          });
         }
       });
     }
   });
-
-  // Close submenu if clicked outside
-  document.addEventListener('touchstart', function(e) {
-    if (!e.target.closest('.menu-item')) {
-      menuItems.forEach(item => {
-        item.classList.remove('active');
-        item.querySelector('.sub-menu')?.style.removeProperty('display');
-      });
-    }
-  }, { passive: true });
 });
 </script>
