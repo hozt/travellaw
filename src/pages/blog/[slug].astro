@@ -65,7 +65,7 @@ const srcset = localImage
     crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
   />
   <div class="main-body">
-    {localImage && (
+    {localImage && !page?.bannerImage?.sourceUrl && (
       <Image
         src={localImage.default}
         srcset={srcset}
