@@ -17,11 +17,11 @@ const linkClasses = classes ? classes.join(' ') : '';
 
 {!hasClassNoLink(classes) ? (
   isExternalUrl(adjustedUrl) ? (
-    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={linkClasses} client:load>
+    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={linkClasses}>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   ) : (
-    <a href={adjustedUrl} class={linkClasses} client:load>
+    <a href={adjustedUrl} class={linkClasses}>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   )

@@ -22,12 +22,12 @@ function getClassNames(item) {
 <nav class="footer-menu">
   <ul class={classes}>
     {menuItems.map(item => !item.parentDatabaseId && (
-      <li class={getClassNames(item)} key={item.id}>
+      <li class={getClassNames(item)}>
         <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
         {item.childItems?.nodes?.length > 0 && (
           <ul class="ml-0">
             {item.childItems.nodes.map(child => (
-              <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+              <li class={child.cssClasses?.join(' ') || ''}>
                 <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
               </li>
             ))}
