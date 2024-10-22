@@ -786,11 +786,17 @@ export const GET_SITEMAP_SLUGS = gql`
           slug
         }
       }
+      portfolioCategories(first: $first) {
+        nodes {
+          slug
+        }
+      }
       categories(first: $first) {
         nodes {
           slug
         }
       }
+
     }
 `;
 

@@ -6,6 +6,7 @@
     "@apollo/client": "^3.11.5",
     "@astro-community/astro-embed-vimeo": "^0.3.7",
     "@astro-community/astro-embed-youtube": "^0.5.3",
+    "@astrojs/check": "^0.9.4",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/tailwind": "^5.1.1",
     "@iconify-json/fa": "^1.2.0",
@@ -26,7 +27,8 @@
     "node-html-parser": "^6.1.13",
     "prettier-plugin-astro": "^0.14.1",
     "rss-parser": "^3.13.0",
-    "sass": "^1.77.8"
+    "sass": "^1.77.8",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",
@@ -41,6 +43,7 @@
     "preview": "astro preview",
     "fetch": "node fetchAndSaveImages.js",
     "set-editor": "node set-editor.js",
-    "clean": "rm -rf dist .astro node_modules/.vite assets"
+    "clean": "rm -rf dist .astro node_modules/.vite assets",
+    "astro": "astro"
   }
 }

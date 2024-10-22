@@ -22,17 +22,17 @@ function getClassNames(item) {
 
 <ul class="main-menu">
   {menuItems.map(item => item.parentDatabaseId === 0 && (
-    <li class={`menu-item ${getClassNames(item)}`} key={item.id}>
+    <li class={`menu-item ${getClassNames(item)}`}>
       <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
       {item.childItems?.nodes?.length > 0 && (
         <ul class="hidden sub-menu group-hover:block">
           {item.childItems.nodes.map(child => (
-            <li class={`menu-item-child ${child.cssClasses?.join(' ') || ''}`} key={child.id}>
+            <li class={`menu-item-child ${child.cssClasses?.join(' ') || ''}`}>
               <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
               {child.childItems?.nodes?.length > 0 && (
                 <ul class="sub-menu-child">
                   {child.childItems.nodes.map(grandchild => (
-                    <li class={`menu-item-grandchild ${grandchild.cssClasses?.join(' ') || ''}`} key={grandchild.id}>
+                    <li class={`menu-item-grandchild ${grandchild.cssClasses?.join(' ') || ''}`}>
                       <CustomLink url={grandchild.url} label={grandchild.label} classes={grandchild.cssClasses} />
                     </li>
                   ))}

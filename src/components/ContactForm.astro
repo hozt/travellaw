@@ -69,7 +69,7 @@ const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
       <span class="block sm:inline"> Your message has been sent.</span>
     </div>
   ) : (
-    <form method="POST" class="contact-form" action="/contact" class={isSubmitted ? 'hidden' : ''}>
+    <form method="POST" action="/contact" class="contact-form">
       <div set:html={contentWithoutButton} />
 
       <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>

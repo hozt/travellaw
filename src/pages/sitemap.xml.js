@@ -23,6 +23,7 @@ const generateSitemapEntries = (type, nodes, prefix, priority) => {
     }
     return nodes.map((node) => {
       const path = prefix ? `${prefix}/${node.slug}` : node.slug;
+      console.log('path:', path);
       return `
       <url>
         <loc>${siteUrl}/${path}/</loc>
@@ -44,12 +45,13 @@ const generateSitemap = async () => {
   const entries = [
     { type: 'pages', prefix: '', priority: '0.9' },
     { type: 'posts', prefix: postAlias, priority: '0.8' },
-    { type: 'forms', prefix: 'forms', priority: '0.6' },
+    { type: 'forms', prefix: 'form', priority: '0.6' },
     { type: 'galleries', prefix: 'galleries', priority: '0.6' },
     { type: 'portfolios', prefix: 'portfolio', priority: '0.8' },
     { type: 'faqTopics', prefix: 'faqs', priority: '0.8' },
     { type: 'categories', prefix: 'category', priority: '0.7' },
     { type: 'tags', prefix: 'tags', priority: 0.6 },
+    { type: 'portfolioCategories', 'prefix': 'portfolio/tags', priority: '0.6' },
   ].map(({ type, prefix, priority }) => generateSitemapEntries(type, urls[type]?.nodes, prefix, priority))
    .filter(entry => entry !== '');
 
@@ -59,6 +61,7 @@ const generateSitemap = async () => {
     { feature: 'posts', path: `tags`, priority: '0.8' },
     { feature: 'posts', path: `category`, priority: '0.8' },
     { feature: 'portfolios', path: 'portfolio', priority: '0.8' },
+    { feature: 'portfolios', path: 'portfolio/tags', priority: '0.8' },
     { feature: 'videos', path: 'videos', priority: '0.8' },
     { feature: 'testimonials', path: 'testimonials', priority: '0.8' },
     { feature: 'events', path: 'events', priority: '0.7' },
