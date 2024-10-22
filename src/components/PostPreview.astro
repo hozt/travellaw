@@ -21,7 +21,7 @@ const altText = featuredImage?.node?.altText || title;
 const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
 ---
 
-<div key={post.databaseId} class={classes}>
+<div class={classes}>
   {imageLocal && (
     <div class="featured-image">
       <a href={`/${postAlias}/${slug}`}>

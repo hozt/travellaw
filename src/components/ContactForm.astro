@@ -9,8 +9,6 @@ const buttonLabel = button.match(/<button[^>]*>(.*)<\/button>/)[1];
 // remove the button from the content
 const contentWithoutButton = content.replace(button, '');
 
-
-
 if (Astro.request.method === 'POST') {
   try {
     const formData = await Astro.request.formData();

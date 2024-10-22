@@ -58,10 +58,10 @@ const generateSitemap = async () => {
   // Add landing pages if enabled
   const landingPages = [
     { feature: 'posts', path: postAlias, priority: '0.8' },
-    { feature: 'posts', path: `tags`, priority: '0.8' },
+    // { feature: 'posts', path: `tags`, priority: '0.8' },
     { feature: 'posts', path: `category`, priority: '0.8' },
     { feature: 'portfolios', path: 'portfolio', priority: '0.8' },
-    { feature: 'portfolios', path: 'portfolio/tags', priority: '0.8' },
+    // { feature: 'portfolios', path: 'portfolio/tags', priority: '0.8' },
     { feature: 'videos', path: 'videos', priority: '0.8' },
     { feature: 'testimonials', path: 'testimonials', priority: '0.8' },
     { feature: 'events', path: 'events', priority: '0.7' },
