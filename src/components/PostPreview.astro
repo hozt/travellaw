@@ -26,12 +26,12 @@ const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace
 <div class={classes}>
   {imageLocal && (
     <div class="featured-image">
-      <CustomLink url={`/${postAlias}/${slug}`}>
+      <a href={`/${postAlias}/${slug}`}>
         <Image
           src={imageLocal.default}
           alt={altText}
         />
-      </CustomLink>
+      </a>
     </div>
   )}
 
