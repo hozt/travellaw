@@ -165,7 +165,22 @@ a.wp-block-file__button.wp-element-button {
 }
 
 .wp-block-column {
-    @apply py-0;
+  flex: 1 1 0%;
+}
+
+.wp-block-column {
+    @apply py-0 flex-1;
+
+    &.is-vertically-aligned-bottom {
+        @apply flex flex-col justify-end;
+    }
+    &.is-vertically-aligned-top {
+        @apply flex flex-col justify-start;
+    }
+    &.is-vertically-aligned-center {
+        @apply flex flex-col justify-center;
+    }
+
     p {
         @apply my-0;
     }

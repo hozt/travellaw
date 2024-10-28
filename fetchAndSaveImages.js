@@ -52,6 +52,15 @@ const query = gql`
         }
       }
     }
+    videos(first: $first) {
+      nodes {
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+      }
+    }
     templates(first: $first) {
       nodes {
         bannerImage {
@@ -229,7 +238,7 @@ async function fetchImageUrls() {
     });
 
     // Collect featured images
-    ['pages', 'forms', 'templates', 'portfolios'].forEach(type => {
+    ['pages', 'forms', 'templates', 'portfolios', 'videos'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.featuredImage?.node?.sourceUrl) {
           imageUrls.featured.push(node.featuredImage.node.sourceUrl);
