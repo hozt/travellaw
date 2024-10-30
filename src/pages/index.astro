@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
+import CustomJs from '../components/CustomJs.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
-import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
+import { GET_PAGE } from '../lib/queries';
 
 // Try to import ComponentSite using import.meta.glob
 const components = import.meta.glob('../componentsSite/index.astro');
@@ -17,21 +18,9 @@ if (components['../componentsSite/index.astro']) {
   } catch (error) {}
 }
 
-// Fetch front page
-const frontPages = await client.query({
-  query: GET_HOME_PAGE,
-  variables: { first: 200 },
-});
-
-const frontPage = frontPages.data.pages.nodes.filter((page) => page.isFrontPage);
-
-if (frontPage.length === 0) {
-  throw new Error('No front page found');
-}
-
 const pageData = await client.query({
   query: GET_PAGE,
-  variables: { uri: frontPage[0].uri },
+  variables: { uri: '/' },
 });
 
 if (!pageData?.data?.pageBy) {
@@ -44,7 +33,8 @@ const {
   content,
   bannerImage,
   metaDescription,
-  databaseId
+  databaseId,
+  customJs
 } = pageData?.data?.pageBy;
 
 let updatedContent = content ? await replaceImageUrls(content) : '';
@@ -67,3 +57,4 @@ updatedContent = await replaceShortCodes(updatedContent);
     }
   </div>
 </Layout>
+{ customJs && <CustomJs customJs={customJs} /> }

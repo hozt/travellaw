@@ -1,3 +1,4 @@
+// src/template/postTemplate.js
 import { getImages } from '../lib/utils';
 
 async function PostTemplate(props) {

@@ -1,0 +1,21 @@
+---
+const { customJs } = Astro.props;
+
+if (!customJs) {
+  return '';
+}
+
+---
+
+{customJs && (
+<script define:vars={{ customJs }}>
+    (function() {
+    const decodedJs = customJs.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+    try {
+        eval(decodedJs);
+    } catch (error) {
+        console.error('Error in custom JS:', error);
+    }
+    })();
+</script>
+)}

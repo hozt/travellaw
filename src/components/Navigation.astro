@@ -1,12 +1,44 @@
 ---
 import client from '../lib/apolloClient';
-import { GET_MENU_ITEMS } from '../lib/queries';
+import { GET_MENU_ITEMS, GET_MENU_ITEMS_BY_LANGUAGE, GET_LANGUAGES } from '../lib/queries';
 import CustomLink from './CustomLink.astro';
 
-const { data } = await client.query({
-  query: GET_MENU_ITEMS,
-  variables: { first: 200 },
-});
+const slug = Astro.params.slug;
+const defaultLanguage = import.meta.env.DEFAULT_LANGUAGE;
+
+let languageCode = '';
+if (defaultLanguage && slug?.includes('/')) {
+  const parsedSlug = slug.split('/').filter(Boolean);
+  if (parsedSlug.length > 0) {
+    languageCode = parsedSlug[0];
+    const { data: languagesData } = await client.query({
+      query: GET_LANGUAGES
+    });
+    // check if the language code is valid from languagesData
+    const validLanguageCodes = languagesData.languages.map(lang => lang.slug);
+    if (!validLanguageCodes.includes(languageCode)) {
+      languageCode = ''; // Reset if invalid
+    } else {
+      languageCode = languageCode.toUpperCase();
+    }
+  }
+}
+
+let data;
+
+if (languageCode) {
+  const { data: menuData } = await client.query({
+    query: GET_MENU_ITEMS_BY_LANGUAGE,
+    variables: { first: 200, language: languageCode },
+  });
+  data = menuData;
+} else {
+  const { data: menuData } = await client.query({
+    query: GET_MENU_ITEMS,
+    variables: { first: 200 },
+  });
+  data = menuData;
+}
 
 const menuItems = data?.menuItems?.nodes;
 

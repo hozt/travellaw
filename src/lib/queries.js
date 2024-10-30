@@ -8,9 +8,11 @@ export const GET_PAGE = gql`
       content
       dateGmt
       slug
+      uri
       subtitle
       title
       metaDescription
+      customJs
       bannerImage {
         sourceUrl
         mediaDetails {
@@ -25,6 +27,30 @@ export const GET_PAGE = gql`
           mediaDetails {
             height
             width
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_MENU_ITEMS_BY_LANGUAGE = gql`
+  query($first: Int!, $language: LanguageCodeFilterEnum!) {
+    menuItems(where: { location: PRIMARY, language: $language }) {
+      nodes {
+        id
+        label
+        cssClasses
+        url
+        target
+        parentDatabaseId
+        childItems(first: $first) {
+          nodes {
+            id
+            label
+            url
+            target
+            cssClasses
           }
         }
       }
@@ -132,46 +158,56 @@ export const GET_SITE_TITLE = gql`
   }
 `;
 
-export const GET_HOME_PAGE = gql`
-  query($first: Int!) {
-    pages(first: $first, where: { status: PUBLISH }) {
-      nodes {
-        isFrontPage
-        uri
-      }
+
+export const GET_LANGUAGES = gql`
+  query {
+    languages {
+      slug
+      code
+      locale
+      homeUrl
+      name
     }
   }
 `;
 
+export const GET_PAGES_FRAGMENT = gql`
+  fragment GetPagesFields on Page {
+    uri
+    slug
+    isFrontPage
+    title
+    subtitle
+    content
+    customJs
+    bannerImage {
+      sourceUrl
+      mediaDetails {
+        width
+        height
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        altText
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+    metaDescription
+    databaseId
+  }
+`;
+
 export const GET_PAGES = gql`
+  ${GET_PAGES_FRAGMENT}
   query($first: Int!) {
     pages(first: $first, where: { status: PUBLISH }) {
       nodes {
-        uri
-        slug
-        isFrontPage
-        title
-        subtitle
-        content
-        bannerImage {
-          sourceUrl
-          mediaDetails {
-            width
-            height
-          }
-        }
-        featuredImage {
-          node {
-            sourceUrl
-            altText
-            mediaDetails {
-              width
-              height
-            }
-          }
-        }
-        metaDescription
-        databaseId
+        ...GetPagesFields
       }
     }
   }

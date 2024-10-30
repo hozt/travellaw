@@ -19,6 +19,9 @@ if (pathname && !is404) {
 const faviconUrl = favIcon?.customSiteSettings?.faviconLogo?.sourceUrl;
 const faviconType = favIcon?.customSiteSettings?.faviconLogo?.mimeType;
 const logo = favIcon?.customSiteSettings?.logo?.sourceUrl;
+if (!logo) {
+  throw new Error('Logo not found');
+}
 const logoUrl = `${siteUrl}/images/logos/${logo.split('/').pop()}`;
 const { title, description } = Astro.props;
 
