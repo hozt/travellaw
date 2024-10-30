@@ -52,32 +52,24 @@ const isCurrentLanguage = (langHomeUrl) => {
 
 <script>
   function initLanguageSwitcher() {
-    const select = document.getElementById('lang-select');
     const buttons = document.querySelectorAll('#lang-buttons button');
     const currentPath = window.location.pathname;
-
-    if (select) {
-      select.addEventListener('change', (e) => {
-        window.location.href = e.target.value;
-      });
-
-      for (let i = 0; i < select.options.length; i++) {
-        if (currentPath.startsWith(select.options[i].value) || (select.options[i].value === '/' && currentPath === '/')) {
-          select.selectedIndex = i;
-          break;
-        }
-      }
-    }
 
     if (buttons.length > 0) {
       buttons.forEach(button => {
         const href = button.getAttribute('data-href');
-        if (currentPath.startsWith(href) || (href === '/' && currentPath === '/')) {
-          button.classList.add('active');
-          button.style.display = 'none';
-        } else {
-          button.classList.remove('active');
+        const isPolish = currentPath.startsWith('/pl/');
+        const isEnglish = href === '/' || href === '/en/';
+
+        if (isPolish && isEnglish) {
+          // Show English button when on Polish page
           button.style.display = 'inline-block';
+        } else if (!isPolish && !isEnglish) {
+          // Show Polish button when on English page
+          button.style.display = 'inline-block';
+        } else {
+          // Hide current language button
+          button.style.display = 'none';
         }
 
         button.addEventListener('click', () => {
@@ -93,6 +85,7 @@ const isCurrentLanguage = (langHomeUrl) => {
   // Also run it on astro:page-load event, if it occurs
   document.addEventListener('astro:page-load', initLanguageSwitcher);
 </script>
+
 <style>
     .language-switcher {
         button.active {
