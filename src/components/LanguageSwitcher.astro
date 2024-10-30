@@ -1,0 +1,102 @@
+---
+// src/components/LanguageSwitcher.astro
+import client from '../lib/apolloClient';
+import { GET_LANGUAGES } from '../lib/queries';
+
+const { dropdown } = Astro.props;
+
+const { data: languagesData } = await client.query({
+  query: GET_LANGUAGES
+});
+
+const languages = languagesData.languages.map(language => ({
+  ...language,
+  homeUrl: language.homeUrl.replace(/https?:\/\/[^/]+/, '')
+}));
+
+// Get the current path
+const currentPath = Astro.url.pathname;
+
+// Function to determine if a language is currently active
+const isCurrentLanguage = (langHomeUrl) => {
+  return currentPath.startsWith(langHomeUrl) || (langHomeUrl === '/' && currentPath === '/');
+};
+
+---
+<div class="language-switcher">
+    {dropdown ? (
+        <select id="lang-select" aria-label="Language Switcher">
+            {languages.map(language => (
+                <option
+                    value={language.homeUrl}
+                    selected={isCurrentLanguage(language.homeUrl)}
+                >
+                    {language.name}
+                </option>
+            ))}
+        </select>
+    ) : (
+        <div id="lang-buttons">
+            {languages.map(language => (
+                <button
+                    class={isCurrentLanguage(language.homeUrl) ? 'active' : ''}
+                    data-href={language.homeUrl}
+                    aria-label={`Switch to ${language.name}`}
+                >
+                    {language.name}
+                </button>
+            ))}
+        </div>
+    )}
+</div>
+
+<script>
+  function initLanguageSwitcher() {
+    const select = document.getElementById('lang-select');
+    const buttons = document.querySelectorAll('#lang-buttons button');
+    const currentPath = window.location.pathname;
+
+    if (select) {
+      select.addEventListener('change', (e) => {
+        window.location.href = e.target.value;
+      });
+
+      for (let i = 0; i < select.options.length; i++) {
+        if (currentPath.startsWith(select.options[i].value) || (select.options[i].value === '/' && currentPath === '/')) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (buttons.length > 0) {
+      buttons.forEach(button => {
+        const href = button.getAttribute('data-href');
+        if (currentPath.startsWith(href) || (href === '/' && currentPath === '/')) {
+          button.classList.add('active');
+          button.style.display = 'none';
+        } else {
+          button.classList.remove('active');
+          button.style.display = 'inline-block';
+        }
+
+        button.addEventListener('click', () => {
+          window.location.href = href;
+        });
+      });
+    }
+  }
+
+  // Run the function immediately
+  initLanguageSwitcher();
+
+  // Also run it on astro:page-load event, if it occurs
+  document.addEventListener('astro:page-load', initLanguageSwitcher);
+</script>
+<style>
+    .language-switcher {
+        button.active {
+            display: none;
+        }
+    }
+</style>
