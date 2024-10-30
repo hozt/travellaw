@@ -20,10 +20,12 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
   </head>
   <body>
     <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
-    <HeaderSite />
-    <main class={classList.trim()}>
-      <slot />
-    </main>
+    <div class="site-container">
+      <HeaderSite />
+      <main class={classList.trim()}>
+        <slot />
+      </main>
+    </div>
     <footer>
       <FooterSite />
       <div class="copyright">
