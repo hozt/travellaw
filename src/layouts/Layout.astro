@@ -8,6 +8,19 @@ import FooterSite from '../componentsSite/FooterSite.astro';
 import Analytics from '../components/Analytics.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
+let ContentBottom = null;
+let contentBottomExists = false;
+
+const components = import.meta.glob('../componentsSite/ContentBottom.astro');
+
+
+if (components['../componentsSite/ContentBottom.astro']) {
+  try {
+    ContentBottom = (await components['../componentsSite/ContentBottom.astro']() as { default: any }).default;
+    contentBottomExists = true;
+  } catch (error) {}
+}
+
 const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description } = Astro.props;
 const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (postId ? ` post-${postId}` : '') + (templateId ? ` template-${templateId}` : '');
 
@@ -25,6 +38,7 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
       <main class={classList.trim()}>
         <slot />
       </main>
+      {contentBottomExists && <ContentBottom />}
     </div>
     <footer>
       <FooterSite />
