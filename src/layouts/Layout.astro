@@ -8,6 +8,9 @@ import FooterSite from '../componentsSite/FooterSite.astro';
 import Analytics from '../components/Analytics.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
+const slug = Astro.params.slug;
+const slugClass = slug ? slug.replace(/[^a-zA-Z0-9]/g, '-') : '';
+
 let ContentBottom = null;
 let contentBottomExists = false;
 
@@ -31,7 +34,7 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
   <head>
     <Seo title={title} description={description} />
   </head>
-  <body>
+  <body class={slugClass}>
     <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
     <div class="site-container">
       <HeaderSite />
