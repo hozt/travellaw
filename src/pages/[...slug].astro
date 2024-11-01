@@ -34,7 +34,7 @@ export async function getStaticPaths() {
   });
 }
 
-const { slug } = Astro.params; // This is a string in Astro
+const { slug } = Astro.params;
 
 const { data: pagesData } = await client.query({
   query: GET_PAGE,
@@ -55,10 +55,13 @@ const {
   subtitle,
   content,
   bannerImage,
+  metaTitle,
   metaDescription,
   databaseId,
   customJs
 } = page;
+
+const titleTag = metaTitle || title;
 
 const featuredImage = page?.featuredImage?.node;
 
@@ -88,13 +91,12 @@ if (currentPath.includes('/')) {
 fullCrumbs.push({ label: title, path: '' });
 
 // <div class="headless-form-block
-// check to see if pattern is in the updatedContent
 // it should have both form and the class headless-form-block
 const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
 
 ---
 
-<Layout pageId={databaseId} title={title} description={metaDescription} classes="page">
+<Layout pageId={databaseId} title={titleTag} description={metaDescription} classes="page">
   <BannerTitle
     title={title}
     subtitle={subtitle}

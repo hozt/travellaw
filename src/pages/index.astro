@@ -32,17 +32,22 @@ const {
   subtitle,
   content,
   bannerImage,
+  metaTitle,
   metaDescription,
   databaseId,
   customJs
 } = pageData?.data?.pageBy;
+
+const titleTag = metaTitle || title;
+
+console.log('titleTag', titleTag);
 
 let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
 updatedContent = await replaceShortCodes(updatedContent);
 ---
 
-<Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
+<Layout title={titleTag} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
   <BannerTitle
     title={title}
     subtitle={subtitle}

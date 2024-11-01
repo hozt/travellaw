@@ -11,6 +11,7 @@ export const GET_PAGE = gql`
       uri
       subtitle
       title
+      metaTitle
       metaDescription
       customJs
       bannerImage {
@@ -197,6 +198,7 @@ export const GET_PAGES_FRAGMENT = gql`
         }
       }
     }
+    metaTitle
     metaDescription
     databaseId
   }
@@ -235,6 +237,7 @@ export const GET_POST = gql`
       subtitle
       title
       slug
+      metaTitle
       metaDescription
       date
       content
@@ -563,6 +566,7 @@ export const GET_TEMPLATE = gql`
       databaseId
       content
       subtitle
+      metaTitle
       metaDescription
       bannerImage {
         sourceUrl
@@ -657,6 +661,7 @@ export const GET_FORM = gql`
       databaseId
       content
       subtitle
+      metaTitle
       metaDescription
       bannerImage {
         sourceUrl
@@ -713,6 +718,8 @@ export const GET_GALLERY_SLUGS = gql`
       databaseId
       title
       subtitle
+      metaTitle
+      metaDescription
       bannerImage {
           sourceUrl
           mediaDetails {
@@ -856,6 +863,7 @@ export const GET_PORTFOLIO = gql`
       subtitle
       title
       slug
+      metaTitle
       metaDescription
       date
       content

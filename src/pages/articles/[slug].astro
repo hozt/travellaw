@@ -52,9 +52,10 @@ const [updatedContent, localImage] = await Promise.all([
 ]);
 
 const srcset = localImage ? `${localImage.default.src} 1x` : '';
+const titleTag = page?.metaTitle || page?.title;
 ---
 
-<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="post">
+<Layout pageId={page?.databaseId} title={titleTag} description={page?.metaDescription} classes="post">
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}
