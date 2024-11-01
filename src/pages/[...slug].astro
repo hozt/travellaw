@@ -5,7 +5,6 @@ import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import ContactForm from '../components/ContactForm.astro';
-import CustomJs from '../components/CustomJs.astro';
 import { replaceImageUrls } from '../lib/utils';
 import { getImages, replaceIconShortcode } from '../lib/utils';
 import { Image } from 'astro:assets';
@@ -96,7 +95,7 @@ const hasHeadlessForm = updatedContent.includes('headless-form-block') && update
 
 ---
 
-<Layout pageId={databaseId} title={titleTag} description={metaDescription} classes="page">
+<Layout pageId={databaseId} title={titleTag} description={metaDescription} classes="page" customJs={customJs}>
   <BannerTitle
     title={title}
     subtitle={subtitle}
@@ -123,4 +122,3 @@ const hasHeadlessForm = updatedContent.includes('headless-form-block') && update
     )}
   </div>
 </Layout>
-{ customJs && <CustomJs customJs={customJs} /> }

@@ -5,6 +5,7 @@ import Seo from '../components/Seo.astro';
 import AdminMenu from '../components/AdminMenu.astro';
 import HeaderSite from '../componentsSite/HeaderSite.astro';
 import FooterSite from '../componentsSite/FooterSite.astro';
+import CustomJs from '../components/CustomJs.astro';
 import Analytics from '../components/Analytics.astro';
 import SiteTitle from '../components/SiteTitle.astro';
 
@@ -24,7 +25,7 @@ if (components['../componentsSite/ContentBottom.astro']) {
   } catch (error) {}
 }
 
-const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description } = Astro.props;
+const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description, customJs } = Astro.props;
 const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (postId ? ` post-${postId}` : '') + (templateId ? ` template-${templateId}` : '');
 
 ---
@@ -49,6 +50,7 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
         Copyright &copy; {new Date().getFullYear()} <SiteTitle /> all rights reserved
       </div>
     </footer>
+    { customJs && <CustomJs customJs={customJs} /> }
     <Analytics />
   </body>
 </html>

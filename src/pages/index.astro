@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
-import CustomJs from '../components/CustomJs.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
 import { GET_PAGE } from '../lib/queries';
@@ -47,7 +46,7 @@ updatedContent = replaceIconShortcode(updatedContent);
 updatedContent = await replaceShortCodes(updatedContent);
 ---
 
-<Layout title={titleTag} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
+<Layout title={titleTag} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription} customJs={customJs}>
   <BannerTitle
     title={title}
     subtitle={subtitle}
@@ -62,4 +61,3 @@ updatedContent = await replaceShortCodes(updatedContent);
     }
   </div>
 </Layout>
-{ customJs && <CustomJs customJs={customJs} /> }
