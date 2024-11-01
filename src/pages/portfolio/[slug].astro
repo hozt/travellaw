@@ -37,7 +37,6 @@ const { data } = await client.query({
 });
 
 const page = data.portfolioBy;
-const featuredImage = page?.featuredImage?.node;
 const additionalImage = page?.additionalImage || [];
 
 if (!page) {
@@ -51,17 +50,10 @@ try {
   console.error('Error replacing image URLs:', error);
 }
 
-const featuredImageSourceUrl = featuredImage?.sourceUrl;
-const featuredImageModule = featuredImageSourceUrl ? await getImages('featured', featuredImageSourceUrl) : null;
-const additionalImageModule = additionalImage?.sourceUrl ? await getImages('additional', additionalImage.sourceUrl) : null;
+const additionalImageModule = additionalImage?.sourceUrl
+  ? await getImages('additional', additionalImage.sourceUrl)
+  : null;
 
-const srcset = featuredImageModule
-  ? `${featuredImageModule.default.src} 1x`
-  : '';
-
-const srcsetAdditional = additionalImageModule
-  ? `${additionalImageModule.default.src} 1x`
-  : '';
 ---
 
 <Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="portfolio">
@@ -76,15 +68,14 @@ const srcsetAdditional = additionalImageModule
   <div class="main-body">
     {additionalImageModule && (
       <div class="additional-image">
-        <Image
+         <Image
           src={additionalImageModule.default}
-          srcset={srcsetAdditional}
           alt={`Additional image for ${page?.title}`}
           class="additional-image md:ml-6"
-          width={additionalImageModule.default.width}
-          height={additionalImageModule.default.height}
+          widths={[300, 600, 900, 1200]}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           loading="lazy"
-          />
+        />
       </div>
     )}
 
