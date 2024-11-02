@@ -92,6 +92,7 @@ fullCrumbs.push({ label: title, path: '' });
 // <div class="headless-form-block
 // it should have both form and the class headless-form-block
 const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
+const formats = ['avif', 'webp', 'jpg'];
 
 ---
 
@@ -109,9 +110,10 @@ const hasHeadlessForm = updatedContent.includes('headless-form-block') && update
       <Image
         src={localImage.default}
         alt={featuredImage?.altText || title}
-        width={featuredImage?.mediaDetails?.width}
-        height={featuredImage?.mediaDetails?.height}
+        widths={[300, 600, 900, 1200]}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         class="featured-image"
+        formats={formats}
         loading="eager"
       />
     )}

@@ -54,6 +54,8 @@ const additionalImageModule = additionalImage?.sourceUrl
   ? await getImages('additional', additionalImage.sourceUrl)
   : null;
 
+const formats = ['avif', 'webp', 'jpg'];
+
 ---
 
 <Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="portfolio">
@@ -74,6 +76,7 @@ const additionalImageModule = additionalImage?.sourceUrl
           class="additional-image md:ml-6"
           widths={[300, 600, 900, 1200]}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          formats={formats}
           loading="lazy"
         />
       </div>
