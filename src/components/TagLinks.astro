@@ -11,7 +11,7 @@ const linkPath = path || 'tags';
 <div class="tags">
   <span class="mr-4 font-semibold">Tags:</span>
   {allTags.map(tag => (
-      <CustomLink url={`/${linkPath}/${tag.slug}`} label={tag.name} classes={['mr-4', 'tag-link']}>
+      <CustomLink url={`/${linkPath}/${tag.slug}/`} label={tag.name} classes={['mr-4', 'tag-link']}>
         <span class="mr-4">
           {tag.name}
         </span>
