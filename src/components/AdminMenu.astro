@@ -2,7 +2,7 @@
 const { pageId, postId, templateId, categoryId, tagId, galleryId } = Astro.props;
 ---
 
-<div id="admin-menu" class="z-10 bg-gray-500 admin-menu" style="display:none;">
+<div id="admin-menu" class="absolute z-10 bg-gray-500 admin-menu" style="display:none;">
   <ul
     id="menu-content"
     class="sticky top-0 left-0 right-0 flex pl-2 text-sm list-none"
@@ -33,9 +33,12 @@ const { pageId, postId, templateId, categoryId, tagId, galleryId } = Astro.props
         const menuHTML = await response.text();
         if (menuHTML) {
           document.getElementById("menu-content").innerHTML = menuHTML;
+          document.body.style.paddingTop = "25px";
         } else {
           console.error("Admin menu HTML is empty");
         }
+      } else {
+        document.body.style.paddingTop = "0";
       }
     } catch (error) {
       console.error("Error loading admin menu:", error);

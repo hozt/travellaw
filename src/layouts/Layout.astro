@@ -36,7 +36,6 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
     <Seo title={title} description={description} />
   </head>
   <body class={slugClass}>
-    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
     <div class="site-container">
       <HeaderSite />
       <main class={classList.trim()}>
@@ -52,5 +51,6 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
     </footer>
     { customJs && <CustomJs customJs={customJs} /> }
     <Analytics />
+    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
   </body>
 </html>

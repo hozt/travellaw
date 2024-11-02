@@ -40,7 +40,7 @@ const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace
 
   <div class={`post-content ${imageLocal ? 'has-image' : ''}`}>
     <div class="post-title">
-      <CustomLink url={`/${postAlias}/${slug}`} label={title} />
+      <CustomLink url={`/${postAlias}/${slug}/`} label={title} />
     </div>
     { linkUrl && (<div class="post-link">{linkUrl}</div>) }
     <div class="post-excerpt" set:html={excerpt} />
