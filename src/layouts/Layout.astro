@@ -41,16 +41,16 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
       <main class={classList.trim()}>
         <slot />
       </main>
-      {contentBottomExists && <ContentBottom />}
+      {contentBottomExists && <ContentBottom defer:visible />}
     </div>
     <footer>
-      <FooterSite />
+      <FooterSite defer:idle />
       <div class="copyright">
         Copyright &copy; {new Date().getFullYear()} <SiteTitle /> all rights reserved
       </div>
     </footer>
     { customJs && <CustomJs customJs={customJs} /> }
-    <Analytics />
-    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
+    <Analytics defer:idle />
+    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} defer:idle />
   </body>
 </html>
