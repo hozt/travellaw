@@ -1,4 +1,5 @@
 ---
+// src/components/Navigation.astro
 import client from '../lib/apolloClient';
 import { GET_MENU_ITEMS, GET_MENU_ITEMS_BY_LANGUAGE, GET_LANGUAGES } from '../lib/queries';
 import CustomLink from './CustomLink.astro';
@@ -82,7 +83,6 @@ function getClassNames(item) {
 document.addEventListener('DOMContentLoaded', () => {
   const menuItems = document.querySelectorAll('.menu-item');
   const isMobileOrTablet = window.innerWidth <= 1024;
-  let hideTimeout;
 
   menuItems.forEach(item => {
     const link = item.querySelector('a');
@@ -103,19 +103,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
+      let hideTimeout;
+      const hoverDelay = 120;
+
       // Handle hover delay for desktop view
       if (!isMobileOrTablet) {
-        // Clear the hide timeout if hovering back
         item.addEventListener('mouseenter', () => {
           clearTimeout(hideTimeout);
           submenu.style.display = 'block';
         });
 
-        // Add a delay when mouse leaves the item
-        item.addEventListener('mouseleave', () => {
+        item.addEventListener('mouseleave', (event) => {
           hideTimeout = setTimeout(() => {
-            submenu.style.display = 'none';
-          }, 300);  // Delay of 300ms
+            // Check if the mouse is not over the submenu
+            if (!submenu.contains(event.relatedTarget)) {
+              submenu.style.display = 'none';
+            }
+          }, hoverDelay);
+        });
+
+        // Add event listeners to the submenu as well
+        submenu.addEventListener('mouseenter', () => {
+          clearTimeout(hideTimeout);
+        });
+
+        submenu.addEventListener('mouseleave', (event) => {
+          // Check if the mouse is not over the parent item
+          if (!item.contains(event.relatedTarget)) {
+            hideTimeout = setTimeout(() => {
+              submenu.style.display = 'none';
+            }, hoverDelay);
+          }
         });
       }
 
