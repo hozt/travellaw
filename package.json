@@ -38,12 +38,13 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run set-editor && npm run fetch && astro build",
-    "build-local": "npm run fetch && astro build",
+    "build": "npm run set-editor && npm run fetch && astro build && node editor-css.js",
+    "build-local": "npm run fetch && astro build && node editor-css.js",
     "preview": "astro preview",
     "fetch": "node fetchAndSaveImages.js",
     "set-editor": "node set-editor.js",
     "clean": "rm -rf dist .astro node_modules/.vite assets",
-    "astro": "astro"
+    "astro": "astro",
+    "editor-css": "node editor-css.js"
   }
 }

@@ -39,8 +39,6 @@ const {
 
 const titleTag = metaTitle || title;
 
-console.log('titleTag', titleTag);
-
 let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
 updatedContent = await replaceShortCodes(updatedContent);
