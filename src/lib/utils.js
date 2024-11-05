@@ -2,6 +2,7 @@ import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
 import { getPostsByIds, getStickyPosts, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios } from '../lib/fetchPosts';
+import { Image } from 'astro:assets';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 const postAlias = import.meta.env.POST_ALIAS;
@@ -180,7 +181,6 @@ function decodeHTMLEntities(text) {
 }
 
 // Export async function to replace WordPress shortcodes with custom functionality
-// Helper function to replace all instances of a shortcode
 async function replaceAllShortCodes(content, pattern, replaceFn) {
   let newContent = content;
   let match;
@@ -202,64 +202,98 @@ export async function replaceShortCodes(content) {
   const shortCodes = [
     {
       // <p>[podcast latest="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
-      // Update the pattern to match the <p> tag and the shortcode with all attributes
       pattern: /<p>\[podcast\s+latest="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
       replace: async (match, latest, feedUrl, image) => {
         try {
           const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image);
           return podcastHtml;
         } catch (error) {
-          console.error('Error rendering podcast:', error);
           return `<p>Error loading podcast: ${error.message}</p>`;
         }
       }
     },
-    // [gallery slug="my-gallery"]
+    // [gallery-images slug="featured-clients" width="200"]
     {
-      pattern: /\[gallery\s+slug="([^"]+)"\]/g,
-      replace: async (match, slug) => {
+      pattern: /<p>\[gallery-images([^\]]*)\]<\/p>/g,
+      replace: async (match, attributes) => {
+        const decodedAttributes = decodeHTMLEntities(attributes);
+        const slugMatch = decodedAttributes.match(/slug="([^"]+)"/);
+        const slug = slugMatch ? slugMatch[1] : '';
+
+        const widthMatch = decodedAttributes.match(/width="([^"]+)"/);
+        const width = widthMatch ? parseInt(widthMatch[1], 10) : 400; // Ensure width is an integer
+
+        // Fetch gallery images from the API
         const images = await fetchGalleryImages(slug);
+
+        // Generate the HTML for the gallery images
         if (images.length === 0) {
-          return `<p>No images found for gallery: ${slug}</p>`;
+          return `<p>No gallery images found</p>`;
         }
 
-        const galleryHtml = images.map(image => `
-          <figure>
-            <img src="${image.sourceUrl}" alt="${image.altText}" />
-            <figcaption>${image.caption}</figcaption>
-          </figure>
-        `).join('');
+        const galleryHtml = await Promise.all(images.map(async image => {
+          let imageLocal;
+          if (image.sourceUrl) {
+            imageLocal = await getImages('gallery', image.sourceUrl);
+          }
+          return `
+            <figure>
+              <Image
+                src="${imageLocal?.default?.src || image.sourceUrl}"
+                alt="${image?.altText}"
+                width="${width}"
+                inferSize
+                loading="lazy"
+              />
+            </figure>
+          `;
+        }));
 
-        return `<div class="gallery">${galleryHtml}</div>`;
+        return `<div class="gallery-images">${galleryHtml.join('')}</div>`;
       }
     },
-    // [display-portfolio count="4" sticky="true"]
+    // [display-portfolio count="4" sticky="true" width="400"]
     {
-      pattern: /\[portfolios([^\]]*)\]/g,
+      pattern: /<p>\[portfolios([^\]]*)\]<\/p>/g,
       replace: async (match, attributes) => {
         // Decode HTML entities in the attributes
         const decodedAttributes = decodeHTMLEntities(attributes);
         const countMatch = decodedAttributes.match(/count="([^"]+)"/);
-        const count = countMatch ? countMatch[1] : 4;
+        const count = countMatch ? parseInt(countMatch[1], 10) : 4; // Ensure count is an integer
         const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
         const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
+        const widthMatch = decodedAttributes.match(/width="([^"]+)"/);
+        const width = widthMatch ? parseInt(widthMatch[1], 10) : 400; // Ensure width is an integer
         const portfolios = await fetchAllPortfolios(count);
         if (portfolios.length === 0) {
           return `<p>No portfolios found</p>`;
         }
 
-        const portfolioHtml = portfolios.map(portfolio => `
-          <div class="portfolio">
-            <img src="${portfolio.additionalImage.sourceUrl}" alt="${portfolio.additionalImage.altText}" />
-            ${portfolio.tags.nodes.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
-          </div>
-        `).join('');
-        return portfolioHtml;
+        const portfolioHtml = await Promise.all(portfolios.map(async portfolio => {
+          let imageLocal;
+          if (portfolio.additionalImage.sourceUrl) {
+            imageLocal = await getImages('additional', portfolio.additionalImage.sourceUrl);
+          }
+          return `
+            <div class="portfolio">
+              <Image
+                src="${imageLocal?.default?.src || portfolio.additionalImage.sourceUrl}"
+                alt="${portfolio.additionalImage.altText}"
+                width="${width}"
+                inferSize
+                loading="lazy"
+              />
+              ${portfolio.tags.nodes.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+            </div>
+          `;
+        }));
+
+        return portfolioHtml.join('');
       }
     },
     // [testimonials count="4"]
     {
-      pattern: /\[testimonials([^\]]*)\]/g,
+      pattern: /<p>\[testimonials([^\]]*)\]<\/p>/g,
       replace: async (match, attributes) => {
         // Decode HTML entities in the attributes
         const decodedAttributes = decodeHTMLEntities(attributes);

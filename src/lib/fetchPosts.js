@@ -65,8 +65,8 @@ export async function fetchGalleryImages(slug) {
     variables: { slug },
   });
 
-  if (data?.gallery?.galleryImages?.nodes) {
-    return data.gallery.galleryImages.nodes;
+  if (data?.galleryBy?.galleryImages) {
+    return data.galleryBy.galleryImages;
   } else {
     console.error('No gallery images found');
     return [];

@@ -754,6 +754,7 @@ export const GET_GALLERY = gql`
       databaseId
       galleryImages {
         sourceUrl
+        altText
         mediaDetails {
           height
           width
