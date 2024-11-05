@@ -1,7 +1,7 @@
 import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
-import { getPostsByIds, getStickyPosts } from '../lib/fetchPosts';
+import { getPostsByIds, getStickyPosts, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios } from '../lib/fetchPosts';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 const postAlias = import.meta.env.POST_ALIAS;
@@ -212,6 +212,78 @@ export async function replaceShortCodes(content) {
           console.error('Error rendering podcast:', error);
           return `<p>Error loading podcast: ${error.message}</p>`;
         }
+      }
+    },
+    // [gallery slug="my-gallery"]
+    {
+      pattern: /\[gallery\s+slug="([^"]+)"\]/g,
+      replace: async (match, slug) => {
+        const images = await fetchGalleryImages(slug);
+        if (images.length === 0) {
+          return `<p>No images found for gallery: ${slug}</p>`;
+        }
+
+        const galleryHtml = images.map(image => `
+          <figure>
+            <img src="${image.sourceUrl}" alt="${image.altText}" />
+            <figcaption>${image.caption}</figcaption>
+          </figure>
+        `).join('');
+
+        return `<div class="gallery">${galleryHtml}</div>`;
+      }
+    },
+    // [display-portfolio count="4" sticky="true"]
+    {
+      pattern: /\[portfolios([^\]]*)\]/g,
+      replace: async (match, attributes) => {
+        // Decode HTML entities in the attributes
+        const decodedAttributes = decodeHTMLEntities(attributes);
+        const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? countMatch[1] : 4;
+        const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
+        const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
+        const portfolios = await fetchAllPortfolios(count);
+        if (portfolios.length === 0) {
+          return `<p>No portfolios found</p>`;
+        }
+
+        const portfolioHtml = portfolios.map(portfolio => `
+          <div class="portfolio">
+            <img src="${portfolio.additionalImage.sourceUrl}" alt="${portfolio.additionalImage.altText}" />
+            ${portfolio.tags.nodes.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+          </div>
+        `).join('');
+        return portfolioHtml;
+      }
+    },
+    // [testimonials count="4"]
+    {
+      pattern: /\[testimonials([^\]]*)\]/g,
+      replace: async (match, attributes) => {
+        // Decode HTML entities in the attributes
+        const decodedAttributes = decodeHTMLEntities(attributes);
+
+        // Parse attributes
+        const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? countMatch[1] : 4;
+
+        // Fetch testimonials from the API
+        const testimonials = await fetchTestimonials(count);
+
+        // Generate the HTML for the testimonials
+        const rating = 5;
+        const testimonialHtml = testimonials.map(testimonial => `
+          <div class="testimonial">
+            <blockquote>${testimonial.content}</blockquote>
+            <cite>${testimonial.title}</cite>
+            <span>${testimonial.source}</span>
+            <div class="rating">
+              ${'<i class="icon icon-[mdi--star]"></i>'.repeat(rating)}
+          </div>
+        `).join('');
+
+        return `<div class="testimonials">${testimonialHtml}</div>`;
       }
     },
     {

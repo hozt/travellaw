@@ -687,6 +687,21 @@ export const GET_TESTIMONIALS = gql`
   }
 `;
 
+//   query ($tag: String!, $count: Int!) {
+// get testimonials order by random limit to count
+export const GET_TESTIMONIALS_LIMIT = gql`
+  query($count: Int!) {
+    testimonials(where: {status: PUBLISH}, first: $count) {
+      nodes {
+        databaseId
+        title
+        content
+        source
+      }
+    }
+  }
+`;
+
 export const GET_VIDEO_SLUGS = gql`
   query {
     videos {
@@ -851,6 +866,21 @@ export const GET_ALL_PORTFOLIOS = gql`
       nodes {
         databaseId
         slug
+        additionalImage {
+          sourceUrl
+          title
+          altText
+          mediaDetails {
+            height
+            width
+          }
+        }
+        tags:portfolioCategories {
+          nodes {
+            name
+            slug
+          }
+        }
       }
     }
   }
