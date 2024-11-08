@@ -23,7 +23,17 @@ export async function getStickyPosts() {
     });
 
     if (data?.posts?.nodes) {
-      return data.posts.nodes;
+      const posts = data.posts.nodes.map(post => ({ ...post }));
+
+      posts.forEach(post => {
+        post.date = new Date(post.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      });
+
+      return posts;
     } else {
       console.error('No sticky posts found');
       return [];
@@ -73,17 +83,17 @@ export async function fetchGalleryImages(slug) {
   }
 }
 
-export async function fetchAllPortfolios(count) {
+export async function fetchAllPortfolios(count, sticky=false) {
   const { data } = await client.query({
     query: GET_ALL_PORTFOLIOS,
-    variables: { first: parseInt(count) },
+    variables: { first: 100 },
   });
 
   if (data?.portfolios?.nodes) {
-    return data.portfolios.nodes;
+    // if sticky then filter out all nodes that do not have isSticky set to true return only count records
+    return sticky ? data.portfolios.nodes.filter(portfolio => portfolio.isSticky).slice(0, count) : data.portfolios.nodes.slice(0, count);
   } else {
     console.error('No portfolios found');
     return [];
   }
 }
-

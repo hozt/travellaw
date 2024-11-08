@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import Breadcrumb from './Breadcrumb.astro';
 import { getImages } from '../lib/utils';
 
+const breadcrumbPosition = import.meta.env.BREADCRUMS_POSITION || 'bottom';
 const { title, subtitle, image, width, height, crumbs=[] } = Astro.props;
 
 let imageLocal = null;
@@ -19,7 +20,6 @@ const formats = ['avif', 'webp', 'jpg'];
 const sizes = "100vw";
 ---
 
-{!showBottom && <Breadcrumb crumbs={crumbs} />}
 <div class={`banner overflow-hidden relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
   {imageLocal && (
     <Image
@@ -34,8 +34,9 @@ const sizes = "100vw";
     />
   )}
   <div class={`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`}>
-    <h1 class="text-2xl text-center md:text-4xl">{title}</h1>
-    {subtitle && <h2 class="text-lg text-center md:text-xl">{subtitle}</h2>}
+    <h1>{title}</h1>
+    {subtitle && <h2>{subtitle}</h2>}
+    { breadcrumbPosition === 'middle' && <Breadcrumb crumbs={crumbs} /> }
   </div>
 </div>
-{showBottom && <Breadcrumb crumbs={crumbs} />}
+{ breadcrumbPosition === 'bottom' && <Breadcrumb crumbs={crumbs} /> }

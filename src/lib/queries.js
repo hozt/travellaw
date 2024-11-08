@@ -281,6 +281,7 @@ export const POST_EXCERPT_FRAGMENT = gql`
     excerpt
     slug
     databaseId
+    date
     featuredImage {
       node {
         altText
@@ -310,7 +311,7 @@ export const GET_POSTS_EXCERPTS = gql`
 export const GET_POSTS_EXCERPTS_STICKY = gql`
   ${POST_EXCERPT_FRAGMENT}
   query {
-    posts(first: 10, where: {isStickyPost: true}) {
+    posts(first: 10, where: {isStickyPost: true, orderby: {field: MENU_ORDER, order: ASC}}) {
       nodes {
         ...PostExcerptFields
       }
@@ -863,10 +864,11 @@ export const GET_SITEMAP_SLUGS = gql`
 
 export const GET_ALL_PORTFOLIOS = gql`
   query($first: Int!) {
-    portfolios(first: $first, where: {status: PUBLISH}) {
+    portfolios(first: $first, where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
       nodes {
         databaseId
         slug
+        isSticky
         additionalImage {
           sourceUrl
           title

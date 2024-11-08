@@ -10,8 +10,8 @@ async function PostTemplate(props) {
     excerpt,
     slug,
     featuredImage,
-    databaseId,
-    linkUrl
+    linkUrl,
+    date
   } = post;
 
   const imageUrl = featuredImage?.node?.sourceUrl;
@@ -41,6 +41,8 @@ async function PostTemplate(props) {
         </div>
         ${cleanLinkUrl ? `<div class="post-link">${escapeHtml(cleanLinkUrl)}</div>` : ''}
         <div class="post-excerpt">${excerpt}</div>
+        ${date ? `<div class="post-date">${date}</div>` : ''}
+
       </div>
     </div>
   `;

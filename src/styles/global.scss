@@ -48,6 +48,13 @@ a {
   }
 }
 
+.has-text-align-right {
+  @apply text-right;
+}
+.has-text-align-left {
+  @apply text-left;
+}
+
 .alignright {
   @apply mx-auto mb-4 text-center md:float-right md:ml-4;
 }
@@ -158,6 +165,16 @@ a.wp-block-file__button.wp-element-button {
     p {
         @apply empty:hidden mb-0;
     }
+}
+
+.wp-block-cover {
+  @apply relative overflow-hidden p-0;
+  .wp-block-cover__inner-container {
+      @apply absolute left-0 right-0;
+  }
+  img {
+    @apply object-cover w-full h-full rounded-xl;
+  }
 }
 
 .wp-block-columns {

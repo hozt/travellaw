@@ -249,7 +249,7 @@ export async function replaceShortCodes(content) {
           `;
         }));
 
-        return `<div class="gallery-images">${galleryHtml.join('')}</div>`;
+        return `<div class="gallery-short-code">${galleryHtml.join('')}</div>`;
       }
     },
     // [display-portfolio count="4" sticky="true" width="400"]
@@ -264,7 +264,7 @@ export async function replaceShortCodes(content) {
         const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
         const widthMatch = decodedAttributes.match(/width="([^"]+)"/);
         const width = widthMatch ? parseInt(widthMatch[1], 10) : 400; // Ensure width is an integer
-        const portfolios = await fetchAllPortfolios(count);
+        const portfolios = await fetchAllPortfolios(count, sticky);
         if (portfolios.length === 0) {
           return `<p>No portfolios found</p>`;
         }
@@ -276,19 +276,24 @@ export async function replaceShortCodes(content) {
           }
           return `
             <div class="portfolio">
-              <Image
-                src="${imageLocal?.default?.src || portfolio.additionalImage.sourceUrl}"
-                alt="${portfolio.additionalImage.altText}"
-                width="${width}"
-                inferSize
-                loading="lazy"
-              />
-              ${portfolio.tags.nodes.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+              <a href="/portfolio/${portfolio.slug}/" aria-label="Project ${portfolio.title}">
+                <Image
+                  src="${imageLocal?.default?.src || portfolio.additionalImage.sourceUrl}"
+                  alt="${portfolio.additionalImage.altText}"
+                  width="${width}"
+                  loading="lazy"
+                  decoding="async"
+                  class="portfolio-image"
+                />
+              </a>
+              <div class="tags">
+              ${portfolio.tags.nodes.map(tag => `<div class="tag">${tag.name}</div>`).join('')}
+              </div>
             </div>
           `;
         }));
 
-        return portfolioHtml.join('');
+        return `<div class="portfolios-short-code">${portfolioHtml.join('')}</div>`;
       }
     },
     // [testimonials count="4"]
@@ -309,15 +314,21 @@ export async function replaceShortCodes(content) {
         const rating = 5;
         const testimonialHtml = testimonials.map(testimonial => `
           <div class="testimonial">
-            <blockquote>${testimonial.content}</blockquote>
-            <cite>${testimonial.title}</cite>
-            <span>${testimonial.source}</span>
-            <div class="rating">
-              ${'<i class="icon icon-[mdi--star]"></i>'.repeat(rating)}
+            <div class="content">${testimonial.content}</div>
+            <div class="details">
+              <div class="author">
+                <div class="title">${testimonial.title}</div>
+                <div class="source">${testimonial.source}</div>
+              </div>
+              <div class="rating">
+                <div class="rating-stars">${'<i class="icon icon-[mdi--star]"></i>'.repeat(rating)}</div>
+                <div class="rating-actual">${rating} / 5</div>
+              </div>
+            </div>
           </div>
         `).join('');
 
-        return `<div class="testimonials">${testimonialHtml}</div>`;
+        return `<div class="testimonials-short-code">${testimonialHtml}</div>`;
       }
     },
     {
@@ -336,7 +347,6 @@ export async function replaceShortCodes(content) {
         const countMatch = decodedAttributes.match(/count="([^"]+)"/);
 
         const ids = idMatch ? idMatch[1].split(',').map(id => id.trim()) : [];
-        const title = titleMatch ? titleMatch[1] : '';
         const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
         const classes = classMatch ? classMatch[1] : '';
         const tag = tagMatch ? tagMatch[1] : '';
