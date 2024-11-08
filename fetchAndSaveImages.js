@@ -453,6 +453,30 @@ async function downloadAllImages(imageUrls) {
   await Promise.all(downloadPromises);
 }
 
+async function copyIconsToPublic() {
+  const iconsPath = path.join(__dirname, 'assets', 'icons');
+  const publicIconsPath = path.join(__dirname, 'public', 'images', 'icons');
+
+  try {
+    await fs.mkdir(publicIconsPath, { recursive: true });
+
+    const files = await fs.readdir(iconsPath);
+
+    for (const file of files) {
+      const source = path.join(iconsPath, file);
+      const dest = path.join(publicIconsPath, file);
+      try {
+        await fs.copyFile(source, dest);
+        console.log(`Copied ${file} to public folder`);
+      } catch (err) {
+        console.error(`Error copying ${file} to public folder:`, err);
+      }
+    }
+  } catch (err) {
+    console.error('Error processing icons:', err);
+  }
+}
+
 function replaceIconClass(htmlString) {
   // Regular expression to match any Font Awesome solid icon class
   const regex = /<i class="fas fa-([^"]+)"><\/i>/g;
@@ -527,6 +551,7 @@ async function saveAllContentToFile() {
       console.log('Gallery Images:', imageUrls.gallery.length);
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
+      await copyIconsToPublic();
       await fetchAndSavePDFs();
       await saveRedirectsToFile();
       await saveAllContentToFile();
