@@ -26,7 +26,7 @@ async function PostTemplate(props) {
     <div class="${classes}">
       ${imageLocal ? `
         <div class="featured-image">
-          <a href="/${postAlias}/${slug}">
+          <a href="/${postAlias}/${slug}/">
             <img
               src="${imageLocal.default.src}"
               alt="${altText}"
@@ -37,7 +37,7 @@ async function PostTemplate(props) {
 
       <div class="post-content ${imageLocal ? 'has-image' : ''}">
         <div class="post-title">
-          <a href="/${postAlias}/${slug}">${escapeHtml(title)}</a>
+          <a href="/${postAlias}/${slug}/">${escapeHtml(title)}</a>
         </div>
         ${cleanLinkUrl ? `<div class="post-link">${escapeHtml(cleanLinkUrl)}</div>` : ''}
         <div class="post-excerpt">${excerpt}</div>
