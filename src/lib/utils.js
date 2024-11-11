@@ -351,13 +351,14 @@ export async function replaceShortCodes(content) {
         const classes = classMatch ? classMatch[1] : '';
         const tag = tagMatch ? tagMatch[1] : '';
         const count = countMatch ? countMatch[1] : 1;
+        console.log('count featured posts:', count);
 
         let posts = [];
 
         if (tag) {
           posts = await getPostsByTag(tag, count);
         } else if (sticky) {
-          posts = await getStickyPosts();
+          posts = await getStickyPosts(count);
         } else if (ids.length > 0) {
           posts = await getPostsByIds(ids);
         }

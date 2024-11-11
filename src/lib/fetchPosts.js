@@ -17,7 +17,7 @@ export async function getPostsByIds(ids) {
     }
 }
 
-export async function getStickyPosts() {
+export async function getStickyPosts(count) {
     const { data } = await client.query({
       query: GET_POSTS_EXCERPTS_STICKY,
     });
@@ -32,6 +32,10 @@ export async function getStickyPosts() {
           day: 'numeric',
         });
       });
+
+      if (count) {
+        return posts.slice(0, count);
+      }
 
       return posts;
     } else {
