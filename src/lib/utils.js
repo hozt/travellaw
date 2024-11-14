@@ -1,7 +1,7 @@
 import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
-import { getPostsByIds, getStickyPosts, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios } from '../lib/fetchPosts';
+import { getPostsByIds, getStickyPosts, getPostsByTag, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios } from '../lib/fetchPosts';
 import { Image } from 'astro:assets';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
@@ -351,7 +351,6 @@ export async function replaceShortCodes(content) {
         const classes = classMatch ? classMatch[1] : '';
         const tag = tagMatch ? tagMatch[1] : '';
         const count = countMatch ? countMatch[1] : 1;
-        console.log('count featured posts:', count);
 
         let posts = [];
 
@@ -362,7 +361,6 @@ export async function replaceShortCodes(content) {
         } else if (ids.length > 0) {
           posts = await getPostsByIds(ids);
         }
-
         if (posts && posts.length > 0) {
           const postPreviews = await Promise.all(posts.map(post =>
             PostTemplate({ post, classes: 'post-template', path: postAlias })
@@ -379,7 +377,6 @@ export async function replaceShortCodes(content) {
           `;
         }
 
-        // Return the original match if posts are not found
         return match;
       }
     }

@@ -62,7 +62,7 @@ export async function fetchTestimonials(count) {
 export async function getPostsByTag(tag, count) {
     const { data } = await client.query({
       query: GET_POSTS_BY_TAG_COUNT,
-      variables: { tag, count },
+      variables: { tag, count: parseInt(count) },
     });
 
     if (data?.posts?.nodes) {

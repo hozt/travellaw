@@ -94,7 +94,7 @@ export const GET_MENU_ITEMS = gql`
 
 export const GET_MENU_ITEMS_BY_LOCATION = gql`
   query($location: MenuLocationEnum!) {
-    menuItems(where: { location: $location }) {
+    menuItems(where: { location: $location }, first: 100) {
       nodes {
         id
         label
@@ -322,7 +322,7 @@ export const GET_POSTS_EXCERPTS_STICKY = gql`
 export const GET_POSTS_EXCERPTS_BY_IDS = gql`
   ${POST_EXCERPT_FRAGMENT}
   query ($ids: [ID!]) {
-    posts(where: {in: $ids}) {
+    posts(where: {in: $ids, orderby: { field: DATE, order: DESC }}) {
       nodes {
         ...PostExcerptFields
       }
@@ -331,10 +331,11 @@ export const GET_POSTS_EXCERPTS_BY_IDS = gql`
 `;
 
 export const GET_POSTS_BY_TAG_COUNT = gql`
+  ${POST_EXCERPT_FRAGMENT}
   query ($tag: String!, $count: Int!) {
-    posts(where: { tag: $tag }, first: $count) {
+    posts(where: { tag: $tag, orderby: { field: DATE, order: DESC } }, first: $count) {
       nodes {
-        ...PostExcerpt
+        ...PostExcerptFields
       }
     }
   }

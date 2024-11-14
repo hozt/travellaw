@@ -7,7 +7,6 @@ import HeaderSite from '../componentsSite/HeaderSite.astro';
 import FooterSite from '../componentsSite/FooterSite.astro';
 import CustomJs from '../components/CustomJs.astro';
 import Analytics from '../components/Analytics.astro';
-import SiteTitle from '../components/SiteTitle.astro';
 
 const slug = Astro.params.slug;
 const slugClass = slug ? slug.replace(/[^a-zA-Z0-9]/g, '-') : '';
@@ -15,8 +14,7 @@ const slugClass = slug ? slug.replace(/[^a-zA-Z0-9]/g, '-') : '';
 let ContentBottom = null;
 let contentBottomExists = false;
 
-const components = import.meta.glob('../componentsSite/ContentBottom.astro');
-
+let components = import.meta.glob('../componentsSite/ContentBottom.astro');
 
 if (components['../componentsSite/ContentBottom.astro']) {
   try {
@@ -24,6 +22,18 @@ if (components['../componentsSite/ContentBottom.astro']) {
     contentBottomExists = true;
   } catch (error) {}
 }
+
+let CopyrightSite = null;
+let copyrightSiteExists = false;
+
+components = import.meta.glob('../componentsSite/Copyright.astro');
+if (components['../componentsSite/Copyright.astro']) {
+  try {
+    CopyrightSite = (await components['../componentsSite/Copyright.astro']() as { default: any }).default;
+    copyrightSiteExists = true;
+  } catch (error) {}
+}
+
 
 const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description, customJs } = Astro.props;
 const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (postId ? ` post-${postId}` : '') + (templateId ? ` template-${templateId}` : '');
@@ -46,7 +56,7 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
     <footer>
       <FooterSite defer:idle />
       <div class="copyright">
-        Copyright &copy; {new Date().getFullYear()} <SiteTitle /> all rights reserved
+        <CopyrightSite />
       </div>
     </footer>
     { customJs && <CustomJs customJs={customJs} /> }
