@@ -201,14 +201,14 @@ export async function replaceShortCodes(content) {
   content = decodeHTMLEntities(content);
   const shortCodes = [
     {
-      // <p>[podcast latest="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
-      pattern: /<p>\[podcast\s+latest="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
-      replace: async (match, latest, feedUrl, image) => {
+      // <p>[podcast latest="true" listen="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
+      pattern: /<p>\[podcast\s+latest="([^"]+)"\s+listen="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
+      replace: async (match, latest, feedUrl, image, listen) => {
         try {
-          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image);
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, listen);
           return podcastHtml;
         } catch (error) {
-          return `<p>Error loading podcast: ${error.message}</p>`;
+          return '';
         }
       }
     },
@@ -340,17 +340,26 @@ export async function replaceShortCodes(content) {
         // Parse attributes
         const idMatch = decodedAttributes.match(/id="([^"]+)"/);
         const titleMatch = decodedAttributes.match(/title="([^"]+)"/);
+
         const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
+        const sticky = stickyMatch ? stickyMatch[1].toLowerCase() === 'true' : false;
+
         const classMatch = decodedAttributes.match(/class="([^"]+)"/);
-        // match tag
+        const classes = classMatch ? classMatch[1] : '';
+
         const tagMatch = decodedAttributes.match(/tag="([^"]+)"/);
+        const tag = tagMatch ? tagMatch[1] : '';
+
         const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? countMatch[1] : 1;
+
+        const readMoreMatch = decodedAttributes.match(/read-more="([^"]+)"/);
+        const readMore = readMoreMatch ? readMoreMatch[1].toLowerCase() === 'true' : false;
+
+        const dateMatch = decodedAttributes.match(/date="([^"]+)"/);
+        const dateInclude = dateMatch ? dateMatch[1].toLowerCase() === 'true' : false;
 
         const ids = idMatch ? idMatch[1].split(',').map(id => id.trim()) : [];
-        const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
-        const classes = classMatch ? classMatch[1] : '';
-        const tag = tagMatch ? tagMatch[1] : '';
-        const count = countMatch ? countMatch[1] : 1;
 
         let posts = [];
 
@@ -363,7 +372,7 @@ export async function replaceShortCodes(content) {
         }
         if (posts && posts.length > 0) {
           const postPreviews = await Promise.all(posts.map(post =>
-            PostTemplate({ post, classes: 'post-template', path: postAlias })
+            PostTemplate({ post, classes: 'post-template', path: postAlias, readMore, dateInclude })
           ));
           const classList = [];
           if (classes) {

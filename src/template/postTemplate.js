@@ -2,7 +2,7 @@
 import { getImages } from '../lib/utils';
 
 async function PostTemplate(props) {
-  const { post, path, classes } = props;
+  const { post, path, classes, readMore, dateInclude } = props;
   const postAlias = path || process.env.POST_ALIAS;
 
   const {
@@ -41,8 +41,8 @@ async function PostTemplate(props) {
         </div>
         ${cleanLinkUrl ? `<div class="post-link">${escapeHtml(cleanLinkUrl)}</div>` : ''}
         <div class="post-excerpt">${excerpt}</div>
-        ${date ? `<div class="post-date">${date}</div>` : ''}
-
+        ${dateInclude ? `<div class="post-date">${date}</div>` : ''}
+        ${readMore ? `<a href="/${postAlias}/${slug}/" class="read-more">Read more</a>` : ''}
       </div>
     </div>
   `;
