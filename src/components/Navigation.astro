@@ -55,7 +55,7 @@ function getClassNames(item) {
 
 <ul class="main-menu">
   {menuItems.map(item => item.parentDatabaseId === 0 && (
-    <li class={`menu-item ${getClassNames(item)}`}>
+    <li class={`menu-item ${getClassNames(item)}${item.childItems?.nodes?.length > 0 ? ' has-indicator' : ''}`}>
       <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
       {item.childItems?.nodes?.length > 0 && (
         <ul class="hidden sub-menu group-hover:block">

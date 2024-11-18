@@ -78,6 +78,9 @@ const query = gql`
       faviconLogo {
         sourceUrl
       }
+      defaultHeaderImage {
+        sourceUrl
+      }
     }
     galleries {
       nodes {
@@ -275,7 +278,9 @@ async function fetchImageUrls() {
     if (data.customSiteSettings?.mobileLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.mobileLogo.sourceUrl);
     }
-    // save favicon to /public/favicon.svg  convert to svg
+    if (data.customSiteSettings?.defaultHeaderImage?.sourceUrl) {
+      imageUrls.banners.push(data.customSiteSettings.defaultHeaderImage.sourceUrl);
+    }
     if (data.customSiteSettings?.faviconLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.faviconLogo.sourceUrl);
     }

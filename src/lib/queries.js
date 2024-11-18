@@ -124,6 +124,14 @@ export const GET_ENABLED_FEATURES = gql`
   }
 `;
 
+export const GET_TAG_LINE = gql`
+  query {
+    customSiteSettings {
+      tagLine
+    }
+  }
+`;
+
 export const GET_SITE_SETTINGS = gql`
   query {
     customSiteSettings {
@@ -137,6 +145,15 @@ export const GET_SITE_SETTINGS = gql`
         id
       }
       mobileLogo {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+        id
+      }
+      defaultHeaderImage {
         altText
         sourceUrl
         mediaDetails {
@@ -969,6 +986,18 @@ export const GET_PORTFOLIO_EXCERPTS = gql`
           }
         }
       }
+    }
+  }
+`;
+
+export const GET_EMBED_PAGE = gql`
+  query($id: ID!) {
+    page(id: $id, idType: URI) {
+      content
+      title
+      subtitle
+      databaseId
+      slug
     }
   }
 `;

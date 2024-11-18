@@ -1,4 +1,12 @@
-import { GET_POSTS_EXCERPTS_BY_IDS, GET_POSTS_EXCERPTS_STICKY, GET_POSTS_BY_TAG_COUNT, GET_TESTIMONIALS_LIMIT, GET_GALLERY, GET_ALL_PORTFOLIOS } from './queries';
+import {
+  GET_POSTS_EXCERPTS_BY_IDS,
+  GET_POSTS_EXCERPTS_STICKY,
+  GET_POSTS_BY_TAG_COUNT,
+  GET_TESTIMONIALS_LIMIT,
+  GET_GALLERY,
+  GET_ALL_PORTFOLIOS,
+  GET_EMBED_PAGE
+} from './queries';
 import client from './apolloClient';
 
 export async function getPostsByIds(ids) {
@@ -100,4 +108,19 @@ export async function fetchAllPortfolios(count, sticky=false) {
     console.error('No portfolios found');
     return [];
   }
+}
+
+// get page by path
+export async function fetchPageByPath(uri) {
+    const { data } = await client.query({
+      query: GET_EMBED_PAGE,
+      variables: { id: uri },
+    });
+
+    if (data?.page) {
+      return data.page;
+    } else {
+      console.error('No page found for path:', path);
+      return {};
+    }
 }

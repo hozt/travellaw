@@ -134,7 +134,7 @@ a.wp-block-file__button.wp-element-button {
 
 .wp-block-cover,
 .wp-block-media-text {
-    @apply flex flex-col md:flex-row items-center md:mx-auto bg-neutral-300 p-3;
+    @apply flex flex-col md:flex-row items-center md:mx-auto p-3;
     &.alignfull {
         min-height: unset !important;
     }
@@ -163,7 +163,7 @@ a.wp-block-file__button.wp-element-button {
         }
     }
     p {
-        @apply empty:hidden mb-0;
+        @apply empty:hidden mb-4;
     }
 }
 

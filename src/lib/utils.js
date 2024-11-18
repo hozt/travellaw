@@ -1,7 +1,8 @@
 import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
+import { renderPage } from '../template/pageTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
-import { getPostsByIds, getStickyPosts, getPostsByTag, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios } from '../lib/fetchPosts';
+import { getPostsByIds, getStickyPosts, getPostsByTag, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios, fetchPageByPath } from '../lib/fetchPosts';
 import { Image } from 'astro:assets';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
@@ -200,14 +201,33 @@ async function replaceAllShortCodes(content, pattern, replaceFn) {
 export async function replaceShortCodes(content) {
   content = decodeHTMLEntities(content);
   const shortCodes = [
+    // [page path="some-path"]
     {
-      // <p>[podcast latest="true" listen="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
-      pattern: /<p>\[podcast\s+latest="([^"]+)"\s+listen="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
-      replace: async (match, latest, feedUrl, image, listen) => {
+      pattern: /\[page\s+uri="([^"]+)"\]/g,
+      replace: async (match, uri) => {
+        const page = await fetchPageByPath(uri);
+        if (page) {
+          return renderPage({ page });
+        }
+        return '';
+      }
+    },
+    {
+      // [podcast latest="true" read-more="Listen Now" feed="https://feeds.buzzsprout.com/2105251.rss" image="https://drdeborahmd.hozt.com/wp-content/uploads/sites/12/2024/10/docstalk.jpeg"]
+      pattern: /\[podcast\s+latest="([^"]+)"\s+read-more="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]/g,
+      replace: async (match, latest, readMore, feed, image) => {
         try {
-          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, listen);
+          // Parse attributes
+          const isLatest = latest === 'true';
+
+          // Decode HTML entities in the read-more text if needed
+          const decodedReadMore = decodeHTMLEntities(readMore);
+
+          // Pass the read-more text to the render function
+          const podcastHtml = await renderLatestPodcastEpisode(feed, image, isLatest, decodedReadMore);
           return podcastHtml;
         } catch (error) {
+          console.error('Error processing podcast shortcode:', error);
           return '';
         }
       }
@@ -354,7 +374,7 @@ export async function replaceShortCodes(content) {
         const count = countMatch ? countMatch[1] : 1;
 
         const readMoreMatch = decodedAttributes.match(/read-more="([^"]+)"/);
-        const readMore = readMoreMatch ? readMoreMatch[1].toLowerCase() === 'true' : false;
+        const readMore = readMoreMatch ? decodeHTMLEntities(readMoreMatch[1]) : '';
 
         const dateMatch = decodedAttributes.match(/date="([^"]+)"/);
         const dateInclude = dateMatch ? dateMatch[1].toLowerCase() === 'true' : false;

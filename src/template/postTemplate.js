@@ -42,7 +42,7 @@ async function PostTemplate(props) {
         ${cleanLinkUrl ? `<div class="post-link">${escapeHtml(cleanLinkUrl)}</div>` : ''}
         <div class="post-excerpt">${excerpt}</div>
         ${dateInclude ? `<div class="post-date">${date}</div>` : ''}
-        ${readMore ? `<a href="/${postAlias}/${slug}/" class="read-more">Read more</a>` : ''}
+        ${readMore ? `<a href="/${postAlias}/${slug}/" class="read-more">${readMore}</a>` : ''}
       </div>
     </div>
   `;

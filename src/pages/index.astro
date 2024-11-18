@@ -3,59 +3,74 @@ import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
-import { GET_PAGE } from '../lib/queries';
+import { GET_PAGE, GET_TAG_LINE } from '../lib/queries';
 
-// Try to import ComponentSite using import.meta.glob
-const components = import.meta.glob('../componentsSite/index.astro');
-let ComponentSite = null;
-let componentSiteExists = false;
+const components = await import.meta.glob('../componentsSite/index.astro', { eager: true });
+const ComponentSite = components['../componentsSite/index.astro']?.default || null;
 
-if (components['../componentsSite/index.astro']) {
-  try {
-    ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
-    componentSiteExists = true;
-  } catch (error) {}
+// Parallel GraphQL queries
+const [pageResponse, tagLineResponse] = await Promise.all([
+  client.query({
+    query: GET_PAGE,
+    variables: { uri: '/' },
+  }),
+  client.query({
+    query: GET_TAG_LINE,
+  })
+]);
+
+if (!pageResponse?.data?.pageBy) {
+  throw new Error('No page data found for homepage');
 }
 
-const pageData = await client.query({
-  query: GET_PAGE,
-  variables: { uri: '/' },
-});
-
-if (!pageData?.data?.pageBy) {
-  throw new Error('No page data found uri: ' + frontPage[0].uri);
-}
-
+// Destructure with default values for safety
 const {
+  title = '',
+  subtitle = '',
+  content = '',
+  bannerImage = {},
+  metaTitle = '',
+  metaDescription = '',
+  databaseId = '',
+  customJs = ''
+} = pageResponse.data.pageBy;
+
+// Process content transformations in parallel
+const processContent = async (content: string) => {
+  if (!content) return '';
+
+  const withImages = await replaceImageUrls(content);
+  const withIcons = replaceIconShortcode(withImages);
+  return replaceShortCodes(withIcons);
+};
+
+const updatedContent = await processContent(content);
+const tagLine = tagLineResponse?.data?.customSiteSettings?.tagLine || '';
+
+// Compute banner image props once
+const bannerProps = {
   title,
   subtitle,
-  content,
-  bannerImage,
-  metaTitle,
-  metaDescription,
-  databaseId,
-  customJs
-} = pageData?.data?.pageBy;
-
-const titleTag = metaTitle || title;
-
-let updatedContent = content ? await replaceImageUrls(content) : '';
-updatedContent = replaceIconShortcode(updatedContent);
-updatedContent = await replaceShortCodes(updatedContent);
+  tagLine,
+  image: bannerImage?.sourceUrl || '',
+  width: bannerImage?.mediaDetails?.width || 0,
+  height: bannerImage?.mediaDetails?.height || 0,
+};
 ---
 
-<Layout title={titleTag} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription} customJs={customJs}>
-  <BannerTitle
-    title={title}
-    subtitle={subtitle}
-    image={bannerImage?.sourceUrl}
-    width={bannerImage?.mediaDetails?.width}
-    height={bannerImage?.mediaDetails?.height}
-  />
+<Layout
+  title={metaTitle || title}
+  subtitle={subtitle}
+  classes="front"
+  pageId={databaseId}
+  description={metaDescription}
+  customJs={customJs}
+>
+  <BannerTitle {...bannerProps} />
   <div class="main-body">
-    {componentSiteExists
+    {ComponentSite
       ? <ComponentSite content={updatedContent} />
-      : <div class="content" set:html={updatedContent}></div>
+      : <div class="content" set:html={updatedContent} />
     }
   </div>
 </Layout>
