@@ -213,22 +213,30 @@ export async function replaceShortCodes(content) {
       }
     },
     {
-      // [podcast latest="true" read-more="Listen Now" feed="https://feeds.buzzsprout.com/2105251.rss" image="https://drdeborahmd.hozt.com/wp-content/uploads/sites/12/2024/10/docstalk.jpeg"]
-      pattern: /\[podcast\s+latest="([^"]+)"\s+read-more="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]/g,
-      replace: async (match, latest, readMore, feed, image) => {
+      pattern: /<p>\[podcast\s+([^\]]+)\]<\/p>/g,
+      replace: async (match, attributes) => {
         try {
-          // Parse attributes
-          const isLatest = latest === 'true';
+          const decodedAttributes = decodeHTMLEntities(attributes);
 
-          // Decode HTML entities in the read-more text if needed
-          const decodedReadMore = decodeHTMLEntities(readMore);
+          const listenMatch = decodedAttributes.match(/listen="([^"]+)"/);
+          const listen = listenMatch ? listenMatch[1].toLowerCase() === 'true' : false;
 
-          // Pass the read-more text to the render function
-          const podcastHtml = await renderLatestPodcastEpisode(feed, image, isLatest, decodedReadMore);
+          const feedMatch = decodedAttributes.match(/feed="([^"]+)"/);
+          const feedUrl = feedMatch ? feedMatch[1] : '';
+
+          const imageMatch = decodedAttributes.match(/image="([^"]+)"/);
+          const image = imageMatch ? imageMatch[1] : '';
+
+          if (!feedUrl) {
+            console.error('Podcast shortcode is missing required "feed" attribute');
+            return '<!-- Podcast shortcode is missing required "feed" attribute -->';
+          }
+
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, listen);
           return podcastHtml;
         } catch (error) {
           console.error('Error processing podcast shortcode:', error);
-          return '';
+          return `<!-- Error processing podcast shortcode: ${error.message} -->`;
         }
       }
     },
