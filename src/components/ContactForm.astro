@@ -2,20 +2,12 @@
 let serverError = '';
 let isSubmitted = false;
 const content = Astro.props.content;
-
-// now get the content <headless-form  to the closing tag </headless-form>
-const parsedContent = content.match(/<headless-form[\s\S]*?<\/headless-form>/);
-
-if (!parsedContent || parsedContent.length === 0) {
-  return null;
-}
-
 // remove the <button fro the content and set it as a constant
-const button = parsedContent[0].match(/<button[^>]*>.*<\/button>/)[0];
+const button = content.match(/<button[^>]*>.*<\/button>/)[0];
 // get the label of the button
 const buttonLabel = button.match(/<button[^>]*>(.*)<\/button>/)[1];
 // remove the button from the content
-const contentWithoutButton = parsedContent[0].replace(button, '');
+const contentWithoutButton = content.replace(button, '');
 
 if (Astro.request.method === 'POST') {
   try {
@@ -80,7 +72,7 @@ const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
 
       <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>
 
-      <button type="submit" id="submitButton" class="w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2">
+      <button type="submit" id="submitButton" class="focus:outline-none focus:ring-2">
         {buttonLabel}
       </button>
     </form>
