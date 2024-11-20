@@ -2,12 +2,20 @@
 let serverError = '';
 let isSubmitted = false;
 const content = Astro.props.content;
+
+// now get the content <headless-form  to the closing tag </headless-form>
+const parsedContent = content.match(/<headless-form[\s\S]*?<\/headless-form>/);
+
+if (!parsedContent || parsedContent.length === 0) {
+  return null;
+}
+
 // remove the <button fro the content and set it as a constant
-const button = content.match(/<button[^>]*>.*<\/button>/)[0];
+const button = parsedContent[0].match(/<button[^>]*>.*<\/button>/)[0];
 // get the label of the button
 const buttonLabel = button.match(/<button[^>]*>(.*)<\/button>/)[1];
 // remove the button from the content
-const contentWithoutButton = content.replace(button, '');
+const contentWithoutButton = parsedContent[0].replace(button, '');
 
 if (Astro.request.method === 'POST') {
   try {
