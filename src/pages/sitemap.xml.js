@@ -15,23 +15,24 @@ const generateSitemapEntries = (type, nodes, prefix, priority) => {
       return '';
     }
     if (type === 'pages') {
-        nodes = nodes.filter(node => !node.isFrontPage);
+      nodes = nodes.filter(node => !node.isFrontPage && !node.excludeFromSitemap);
     } else if (type === 'categories') {
         nodes = nodes.filter(node => node?.slug !== 'uncategorized');
     } else if (type === 'faqTopics') {
         nodes = nodes.filter(topic => topic.parentId === null);
     }
     return nodes.map((node) => {
-      const path = prefix ? `${prefix}/${node.slug}` : node.slug;
-      console.log('path:', path);
-      return `
-      <url>
-        <loc>${siteUrl}/${path}/</loc>
-        <lastmod>${formatDate(node?.modified || new Date().toISOString())}</lastmod>
-        <priority>${priority}</priority>
-      </url>
-    `;
-    }).join('');
+      if (!node.excludeFromSitemap) {
+        const path = prefix ? `${prefix}/${node.slug}` : node.slug;
+        return `
+        <url>
+          <loc>${siteUrl}/${path}/</loc>
+          <lastmod>${formatDate(node?.modified || new Date().toISOString())}</lastmod>
+          <priority>${priority}</priority>
+        </url>`;
+      }
+      }).join('');
+
 };
 
 const generateSitemap = async () => {

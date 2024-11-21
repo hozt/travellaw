@@ -827,18 +827,21 @@ export const GET_SITEMAP_SLUGS = gql`
           slug
           modified
           isFrontPage
+          excludeFromSitemap
         }
       }
       posts(first: $first) {
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       forms(first: $first) {
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       galleries {
@@ -851,6 +854,7 @@ export const GET_SITEMAP_SLUGS = gql`
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       faqTopics(first: $first) {
