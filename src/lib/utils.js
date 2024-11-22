@@ -1,7 +1,9 @@
 import { parse } from 'node-html-parser';
 import PostTemplate from '../template/postTemplate';
+import { renderPage } from '../template/pageTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
-import { getPostsByIds, getStickyPosts } from '../lib/fetchPosts';
+import { getPostsByIds, getStickyPosts, getPostsByTag, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios, fetchPageByPath } from '../lib/fetchPosts';
+import { Image } from 'astro:assets';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 const postAlias = import.meta.env.POST_ALIAS;
@@ -180,7 +182,6 @@ function decodeHTMLEntities(text) {
 }
 
 // Export async function to replace WordPress shortcodes with custom functionality
-// Helper function to replace all instances of a shortcode
 async function replaceAllShortCodes(content, pattern, replaceFn) {
   let newContent = content;
   let match;
@@ -200,18 +201,162 @@ async function replaceAllShortCodes(content, pattern, replaceFn) {
 export async function replaceShortCodes(content) {
   content = decodeHTMLEntities(content);
   const shortCodes = [
+    // [page path="some-path"]
     {
-      // <p>[podcast latest="true" feed="https://example.com/feed" image="https://someurl.com/img/test.jpg"]</p>
-      // Update the pattern to match the <p> tag and the shortcode with all attributes
-      pattern: /<p>\[podcast\s+latest="([^"]+)"\s+feed="([^"]+)"\s+image="([^"]+)"\]<\/p>/g,
-      replace: async (match, latest, feedUrl, image) => {
+      pattern: /\[page\s+uri="([^"]+)"\]/g,
+      replace: async (match, uri) => {
+        const page = await fetchPageByPath(uri);
+        if (page) {
+          return renderPage({ page });
+        }
+        return '';
+      }
+    },
+    {
+      pattern: /<p>\[podcast\s+([^\]]+)\]<\/p>/g,
+      replace: async (match, attributes) => {
         try {
-          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image);
+          const decodedAttributes = decodeHTMLEntities(attributes);
+
+          const listenMatch = decodedAttributes.match(/listen="([^"]+)"/);
+          const listen = listenMatch ? listenMatch[1].toLowerCase() === 'true' : false;
+
+          const feedMatch = decodedAttributes.match(/feed="([^"]+)"/);
+          const feedUrl = feedMatch ? feedMatch[1] : '';
+
+          const imageMatch = decodedAttributes.match(/image="([^"]+)"/);
+          const image = imageMatch ? imageMatch[1] : '';
+
+          if (!feedUrl) {
+            console.error('Podcast shortcode is missing required "feed" attribute');
+            return '<!-- Podcast shortcode is missing required "feed" attribute -->';
+          }
+
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, listen);
           return podcastHtml;
         } catch (error) {
-          console.error('Error rendering podcast:', error);
-          return `<p>Error loading podcast: ${error.message}</p>`;
+          console.error('Error processing podcast shortcode:', error);
+          return `<!-- Error processing podcast shortcode: ${error.message} -->`;
         }
+      }
+    },
+    // [gallery-images slug="featured-clients" width="200"]
+    {
+      pattern: /<p>\[gallery-images([^\]]*)\]<\/p>/g,
+      replace: async (match, attributes) => {
+        const decodedAttributes = decodeHTMLEntities(attributes);
+        const slugMatch = decodedAttributes.match(/slug="([^"]+)"/);
+        const slug = slugMatch ? slugMatch[1] : '';
+
+        const widthMatch = decodedAttributes.match(/width="([^"]+)"/);
+        const width = widthMatch ? parseInt(widthMatch[1], 10) : 400; // Ensure width is an integer
+
+        // Fetch gallery images from the API
+        const images = await fetchGalleryImages(slug);
+
+        // Generate the HTML for the gallery images
+        if (images.length === 0) {
+          return `<p>No gallery images found</p>`;
+        }
+
+        const galleryHtml = await Promise.all(images.map(async image => {
+          let imageLocal;
+          if (image.sourceUrl) {
+            imageLocal = await getImages('gallery', image.sourceUrl);
+          }
+          return `
+            <figure>
+              <Image
+                src="${imageLocal?.default?.src || image.sourceUrl}"
+                alt="${image?.altText}"
+                width="${width}"
+                inferSize
+                loading="lazy"
+              />
+            </figure>
+          `;
+        }));
+
+        return `<div class="gallery-short-code">${galleryHtml.join('')}</div>`;
+      }
+    },
+    // [display-portfolio count="4" sticky="true" width="400"]
+    {
+      pattern: /<p>\[portfolios([^\]]*)\]<\/p>/g,
+      replace: async (match, attributes) => {
+        // Decode HTML entities in the attributes
+        const decodedAttributes = decodeHTMLEntities(attributes);
+        const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? parseInt(countMatch[1], 10) : 4; // Ensure count is an integer
+        const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
+        const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
+        const widthMatch = decodedAttributes.match(/width="([^"]+)"/);
+        const width = widthMatch ? parseInt(widthMatch[1], 10) : 400; // Ensure width is an integer
+        const portfolios = await fetchAllPortfolios(count, sticky);
+        if (portfolios.length === 0) {
+          return `<p>No portfolios found</p>`;
+        }
+
+        const portfolioHtml = await Promise.all(portfolios.map(async portfolio => {
+          let imageLocal;
+          if (portfolio.additionalImage.sourceUrl) {
+            imageLocal = await getImages('additional', portfolio.additionalImage.sourceUrl);
+          }
+          return `
+            <div class="portfolio">
+              <a href="/portfolio/${portfolio.slug}/" aria-label="Project ${portfolio.title}">
+                <Image
+                  src="${imageLocal?.default?.src || portfolio.additionalImage.sourceUrl}"
+                  alt="${portfolio.additionalImage.altText}"
+                  width="${width}"
+                  loading="lazy"
+                  decoding="async"
+                  class="portfolio-image"
+                />
+              </a>
+              <div class="tags">
+              ${portfolio.tags.nodes.map(tag => `<div class="tag">${tag.name}</div>`).join('')}
+              </div>
+            </div>
+          `;
+        }));
+
+        return `<div class="portfolios-short-code">${portfolioHtml.join('')}</div>`;
+      }
+    },
+    // [testimonials count="4"]
+    {
+      pattern: /<p>\[testimonials([^\]]*)\]<\/p>/g,
+      replace: async (match, attributes) => {
+        // Decode HTML entities in the attributes
+        const decodedAttributes = decodeHTMLEntities(attributes);
+
+        // Parse attributes
+        const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? countMatch[1] : 4;
+
+        // Fetch testimonials from the API
+        const testimonials = await fetchTestimonials(count);
+
+        // Generate the HTML for the testimonials
+        const rating = 5;
+        const testimonialHtml = testimonials.map(testimonial => `
+          <div class="testimonial">
+            <div class="content">${testimonial.content}</div>
+            <div class="details">
+              <div class="author">
+                <div class="title">${testimonial.title}</div>
+                <div class="source">${testimonial.source}</div>
+              </div>
+              <div class="rating">
+                <div class="rating-stars">${'<i class="icon icon-[mdi--star]"></i>'.repeat(rating)}</div>
+                <div class="rating-actual">${rating} / 5</div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        return `<div class="testimonials-short-code">${testimonialHtml}</div>`;
       }
     },
     {
@@ -223,32 +368,39 @@ export async function replaceShortCodes(content) {
         // Parse attributes
         const idMatch = decodedAttributes.match(/id="([^"]+)"/);
         const titleMatch = decodedAttributes.match(/title="([^"]+)"/);
+
         const stickyMatch = decodedAttributes.match(/sticky="([^"]+)"/);
+        const sticky = stickyMatch ? stickyMatch[1].toLowerCase() === 'true' : false;
+
         const classMatch = decodedAttributes.match(/class="([^"]+)"/);
-        // match tag
+        const classes = classMatch ? classMatch[1] : '';
+
         const tagMatch = decodedAttributes.match(/tag="([^"]+)"/);
+        const tag = tagMatch ? tagMatch[1] : '';
+
         const countMatch = decodedAttributes.match(/count="([^"]+)"/);
+        const count = countMatch ? countMatch[1] : 1;
+
+        const readMoreMatch = decodedAttributes.match(/read-more="([^"]+)"/);
+        const readMore = readMoreMatch ? decodeHTMLEntities(readMoreMatch[1]) : '';
+
+        const dateMatch = decodedAttributes.match(/date="([^"]+)"/);
+        const dateInclude = dateMatch ? dateMatch[1].toLowerCase() === 'true' : false;
 
         const ids = idMatch ? idMatch[1].split(',').map(id => id.trim()) : [];
-        const title = titleMatch ? titleMatch[1] : '';
-        const sticky = stickyMatch ? stickyMatch[1] === 'true' : false;
-        const classes = classMatch ? classMatch[1] : '';
-        const tag = tagMatch ? tagMatch[1] : '';
-        const count = countMatch ? countMatch[1] : 1;
 
         let posts = [];
 
         if (tag) {
           posts = await getPostsByTag(tag, count);
         } else if (sticky) {
-          posts = await getStickyPosts();
+          posts = await getStickyPosts(count);
         } else if (ids.length > 0) {
           posts = await getPostsByIds(ids);
         }
-
         if (posts && posts.length > 0) {
           const postPreviews = await Promise.all(posts.map(post =>
-            PostTemplate({ post, classes: 'post-template', path: postAlias })
+            PostTemplate({ post, classes: 'post-template', path: postAlias, readMore, dateInclude })
           ));
           const classList = [];
           if (classes) {
@@ -262,7 +414,6 @@ export async function replaceShortCodes(content) {
           `;
         }
 
-        // Return the original match if posts are not found
         return match;
       }
     }

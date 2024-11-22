@@ -1,4 +1,5 @@
 ---
+// src/components/Seo.astro
 import { GET_FAVICON } from "../lib/queries";
 import client from '../lib/apolloClient';
 
@@ -7,30 +8,33 @@ const { data:favIcon } = await client.query({
 });
 
 let canonicalUrl = '';
-const is404 = Astro.url.pathname === '/404';
+const is404 = Astro.url.pathname === '/404' || Astro.url.pathname === '/404/';
 const { pathname } = Astro.url;
 const siteUrl = import.meta.env.SITE_URL;
-if (pathname) {
+
+if (pathname && !is404) {
   canonicalUrl = pathname === '/' ? `${siteUrl}` : `${siteUrl}${pathname}`;
 }
+
 const faviconUrl = favIcon?.customSiteSettings?.faviconLogo?.sourceUrl;
 const faviconType = favIcon?.customSiteSettings?.faviconLogo?.mimeType;
 const logo = favIcon?.customSiteSettings?.logo?.sourceUrl;
+if (!logo) {
+  throw new Error('Logo not found');
+}
 const logoUrl = `${siteUrl}/images/logos/${logo.split('/').pop()}`;
 const { title, description } = Astro.props;
 
 ---
 
-<head>
-  <title>{title}</title>
-  <meta property="og:title" content={title}>
-  <meta property="og:description" content={description}>
-  <meta property="og:image" content={logoUrl}>
-  <meta property="og:url" content={siteUrl}>
-  <meta property="og:type" content="website">
-  {description && <meta name="description" content={description} />}
-  {faviconUrl && <link rel="icon" href={faviconUrl} type={faviconType} /> }
-  {canonicalUrl && !is404 && <link rel="canonical" href={canonicalUrl} />}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+<title>{title}</title>
+<meta property="og:title" content={title}>
+{ description && <meta property="og:description" content={description}> }
+<meta property="og:image" content={logoUrl}>
+<meta property="og:url" content={siteUrl}>
+<meta property="og:type" content="website">
+{ description && <meta name="description" content={description} /> }
+{ faviconUrl && <link rel="icon" href={faviconUrl} type={faviconType} /> }
+{ canonicalUrl && !is404 && <link rel="canonical" href={canonicalUrl} /> }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">

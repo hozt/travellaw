@@ -1,21 +1,33 @@
 ---
-
 const id = import.meta.env.GA_ID;
 if (!id) {
-    return;
+  return null;
 }
 
 const gtagScript = `
+function loadGoogleAnalytics() {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=${id}';
+    script.onload = resolve;
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+}
+
+window.addEventListener('load', async function() {
+  try {
+    await loadGoogleAnalytics();
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", "${id}");
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${id}');
+  } catch (error) {
+    console.error("Failed to load Google Analytics: ", error);
+  }
+});
 `;
 ---
-<!-- Google tag (gtag.js) -->
-<script is:inline async
-    src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
-></script>
+
 <script is:inline set:html={gtagScript}></script>

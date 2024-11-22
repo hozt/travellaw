@@ -48,6 +48,13 @@ a {
   }
 }
 
+.has-text-align-right {
+  @apply text-right;
+}
+.has-text-align-left {
+  @apply text-left;
+}
+
 .alignright {
   @apply mx-auto mb-4 text-center md:float-right md:ml-4;
 }
@@ -87,7 +94,7 @@ ol {
 }
 
 p {
-  @apply mb-5;
+  @apply mb-3;
 }
 
 hr {
@@ -127,7 +134,7 @@ a.wp-block-file__button.wp-element-button {
 
 .wp-block-cover,
 .wp-block-media-text {
-    @apply flex flex-col md:flex-row items-center md:mx-auto bg-neutral-300 p-3;
+    @apply flex flex-col md:flex-row items-center md:mx-auto p-3;
     &.alignfull {
         min-height: unset !important;
     }
@@ -156,8 +163,18 @@ a.wp-block-file__button.wp-element-button {
         }
     }
     p {
-        @apply empty:hidden mb-0;
+        @apply empty:hidden mb-4;
     }
+}
+
+.wp-block-cover {
+  @apply relative overflow-hidden p-0;
+  .wp-block-cover__inner-container {
+      @apply absolute left-0 right-0;
+  }
+  img {
+    @apply object-cover w-full h-full rounded-xl;
+  }
 }
 
 .wp-block-columns {
@@ -165,7 +182,22 @@ a.wp-block-file__button.wp-element-button {
 }
 
 .wp-block-column {
-    @apply py-0;
+  flex: 1 1 0%;
+}
+
+.wp-block-column {
+    @apply py-0 flex-1;
+
+    &.is-vertically-aligned-bottom {
+        @apply flex flex-col justify-end;
+    }
+    &.is-vertically-aligned-top {
+        @apply flex flex-col justify-start;
+    }
+    &.is-vertically-aligned-center {
+        @apply flex flex-col justify-center;
+    }
+
     p {
         @apply my-0;
     }

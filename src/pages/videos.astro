@@ -40,7 +40,7 @@ const title = page?.title || `Video`;
   <div class="main-body">
     <div class="video">
       {videos.map((video) => (
-        <PostPreview key={video.databaseId} post={video} path="videos" classes="post-preview" />
+        <PostPreview post={video} path="videos" classes="post-preview" />
       ))}
     </div>
   </div>

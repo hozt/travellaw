@@ -13,7 +13,7 @@ const postAlias = import.meta.env.POST_ALIAS || 'blog';
 
 <script define:vars={{ postAlias }}>
   if (postAlias === "blog") {
-    window.location.href = "/blog";
+    window.location.href = "/blog/";
   }
 </script>
 <Posts title="Articles" />

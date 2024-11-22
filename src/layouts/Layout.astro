@@ -5,10 +5,37 @@ import Seo from '../components/Seo.astro';
 import AdminMenu from '../components/AdminMenu.astro';
 import HeaderSite from '../componentsSite/HeaderSite.astro';
 import FooterSite from '../componentsSite/FooterSite.astro';
+import CustomJs from '../components/CustomJs.astro';
 import Analytics from '../components/Analytics.astro';
-import SiteTitle from '../components/SiteTitle.astro';
 
-const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description } = Astro.props;
+const slug = Astro.params.slug;
+const slugClass = slug ? slug.replace(/[^a-zA-Z0-9]/g, '-') : '';
+
+let ContentBottom = null;
+let contentBottomExists = false;
+
+let components = import.meta.glob('../componentsSite/ContentBottom.astro');
+
+if (components['../componentsSite/ContentBottom.astro']) {
+  try {
+    ContentBottom = (await components['../componentsSite/ContentBottom.astro']() as { default: any }).default;
+    contentBottomExists = true;
+  } catch (error) {}
+}
+
+let CopyrightSite = null;
+let copyrightSiteExists = false;
+
+components = import.meta.glob('../componentsSite/Copyright.astro');
+if (components['../componentsSite/Copyright.astro']) {
+  try {
+    CopyrightSite = (await components['../componentsSite/Copyright.astro']() as { default: any }).default;
+    copyrightSiteExists = true;
+  } catch (error) {}
+}
+
+
+const { pageId, postId, galleryId, tagId, categoryId, templateId, classes, title, description, customJs } = Astro.props;
 const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (postId ? ` post-${postId}` : '') + (templateId ? ` template-${templateId}` : '');
 
 ---
@@ -18,18 +45,22 @@ const classList = (classes || '') + ' ' + (pageId ? `page-${pageId}` : '') + (po
   <head>
     <Seo title={title} description={description} />
   </head>
-  <body>
-    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} />
-    <HeaderSite />
-    <main class={classList.trim()}>
-      <slot />
-    </main>
+  <body class={slugClass}>
+    <div class="site-container">
+      <HeaderSite />
+      <main class={classList.trim()}>
+        <slot />
+      </main>
+      {contentBottomExists && <ContentBottom defer:visible />}
+    </div>
     <footer>
-      <FooterSite />
+      <FooterSite defer:idle />
       <div class="copyright">
-        Copyright &copy; {new Date().getFullYear()} <SiteTitle /> all rights reserved
+        {copyrightSiteExists && <CopyrightSite defer:idle />}
       </div>
     </footer>
-    <Analytics />
+    { customJs && <CustomJs customJs={customJs} /> }
+    <Analytics defer:idle />
+    <AdminMenu pageId={pageId} postId={postId} tagId={tagId} categoryId={categoryId} templateId={templateId} galleryId={galleryId} defer:idle />
   </body>
 </html>

@@ -1,0 +1,95 @@
+---
+// src/components/LanguageSwitcher.astro
+import client from '../lib/apolloClient';
+import { GET_LANGUAGES } from '../lib/queries';
+
+const { dropdown } = Astro.props;
+
+const { data: languagesData } = await client.query({
+  query: GET_LANGUAGES
+});
+
+const languages = languagesData.languages.map(language => ({
+  ...language,
+  homeUrl: language.homeUrl.replace(/https?:\/\/[^/]+/, '')
+}));
+
+// Get the current path
+const currentPath = Astro.url.pathname;
+
+// Function to determine if a language is currently active
+const isCurrentLanguage = (langHomeUrl) => {
+  return currentPath.startsWith(langHomeUrl) || (langHomeUrl === '/' && currentPath === '/');
+};
+
+---
+<div class="language-switcher">
+    {dropdown ? (
+        <select id="lang-select" aria-label="Language Switcher">
+            {languages.map(language => (
+                <option
+                    value={language.homeUrl}
+                    selected={isCurrentLanguage(language.homeUrl)}
+                >
+                    {language.name}
+                </option>
+            ))}
+        </select>
+    ) : (
+        <div id="lang-buttons">
+            {languages.map(language => (
+                <button
+                    class={isCurrentLanguage(language.homeUrl) ? 'active' : ''}
+                    data-href={language.homeUrl}
+                    aria-label={`Switch to ${language.name}`}
+                >
+                    {language.name}
+                </button>
+            ))}
+        </div>
+    )}
+</div>
+
+<script>
+  function initLanguageSwitcher() {
+    const buttons = document.querySelectorAll('#lang-buttons button');
+    const currentPath = window.location.pathname;
+
+    if (buttons.length > 0) {
+      buttons.forEach(button => {
+        const href = button.getAttribute('data-href');
+        const isPolish = currentPath.startsWith('/pl/');
+        const isEnglish = href === '/' || href === '/en/';
+
+        if (isPolish && isEnglish) {
+          // Show English button when on Polish page
+          button.style.display = 'inline-block';
+        } else if (!isPolish && !isEnglish) {
+          // Show Polish button when on English page
+          button.style.display = 'inline-block';
+        } else {
+          // Hide current language button
+          button.style.display = 'none';
+        }
+
+        button.addEventListener('click', () => {
+          window.location.href = href;
+        });
+      });
+    }
+  }
+
+  // Run the function immediately
+  initLanguageSwitcher();
+
+  // Also run it on astro:page-load event, if it occurs
+  document.addEventListener('astro:page-load', initLanguageSwitcher);
+</script>
+
+<style>
+    .language-switcher {
+        button.active {
+            display: none;
+        }
+    }
+</style>

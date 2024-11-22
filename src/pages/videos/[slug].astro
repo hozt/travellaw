@@ -23,14 +23,14 @@ const { data } = await client.query({
 });
 
 const video = data.videoBy;
-
+const titleTag = video?.metaTitle || video?.title;
 ---
 
-<Layout title={video?.title} postId={video?.databaseId} classes="video" description={video?.metaDescription} classes="video">
+<Layout title={titleTag} postId={video?.databaseId} classes="video" description={video?.metaDescription} classes="video">
   <BannerTitle
     title={video?.title}
     subtitle={video?.subtitle}
-    crumbs={[{ label: "Videos", path: "/videos" }, { label: video?.title }]}
+    crumbs={[{ label: "Videos", path: "/videos/" }, { label: video?.title }]}
   />
   <div class="main-body">
     <VideoPlayer url={video?.videoUrl} title={video?.title} />

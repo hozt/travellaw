@@ -2,16 +2,26 @@
 import { Image } from 'astro:assets';
 import Breadcrumb from './Breadcrumb.astro';
 import { getImages } from '../lib/utils';
+import client from '../lib/apolloClient';
+import { GET_SITE_SETTINGS } from '../lib/queries';
 
-const { title, subtitle, image, width, height, crumbs=[] } = Astro.props;
+const { data } = await client.query({
+  query: GET_SITE_SETTINGS,
+});
+
+const siteSettings = data?.customSiteSettings;
+const headerSourceUrl = siteSettings?.defaultHeaderImage?.sourceUrl;
+const breadcrumbPosition = import.meta.env.BREADCRUMB_POSITION || 'bottom';
+const { title, subtitle, tagLine, image, width, height, crumbs=[] } = Astro.props;
 
 let imageLocal = null;
-
+let defaultHeader = false;
 if (image) {
   imageLocal = await getImages('banners', image);
+} else if (headerSourceUrl) {
+  defaultHeader = true;
+  imageLocal = await getImages('banners', headerSourceUrl);
 }
-
-const showBottom = Boolean(imageLocal);
 
 const alt = title;
 const widths = [768, 1024, 1440, 2000];
@@ -19,8 +29,7 @@ const formats = ['avif', 'webp', 'jpg'];
 const sizes = "100vw";
 ---
 
-{!showBottom && <Breadcrumb crumbs={crumbs} />}
-<div class={`banner overflow-hidden relative ${imageLocal ? 'banner-image' : 'no-banner-image'}`}>
+<div class={`banner overflow-hidden relative ${imageLocal ? 'banner-image' : 'no-banner-image'} ${defaultHeader ? 'default-banner' : ''}`}>
   {imageLocal && (
     <Image
       src={imageLocal.default}
@@ -28,14 +37,16 @@ const sizes = "100vw";
       formats={formats}
       sizes={sizes}
       alt={alt}
-      class="object-cover w-full h-full animate-zoom-out"
+      class=`object-cover w-full h-full animate-zoom-out`
       decoding="async"
       loading="eager"
     />
   )}
   <div class={`banner-text flex flex-col items-center justify-center inset-0 ${imageLocal ? 'absolute' : ''}`}>
-    <h1 class="text-2xl text-center md:text-4xl">{title}</h1>
-    {subtitle && <h2 class="text-lg text-center md:text-xl">{subtitle}</h2>}
+    {tagLine && <div class="tag-line">{tagLine}</div>}
+    <h1>{title}</h1>
+    {subtitle && <h2>{subtitle}</h2>}
+    { breadcrumbPosition === 'middle' && <Breadcrumb crumbs={crumbs} /> }
   </div>
 </div>
-{showBottom && <Breadcrumb crumbs={crumbs} />}
+{ breadcrumbPosition === 'bottom' && <Breadcrumb crumbs={crumbs} /> }

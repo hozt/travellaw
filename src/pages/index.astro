@@ -1,69 +1,93 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
+import ContactForm from '../components/ContactForm.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
-import { GET_HOME_PAGE, GET_PAGE } from '../lib/queries';
+import { GET_PAGE, GET_TAG_LINE } from '../lib/queries';
 
-// Try to import ComponentSite using import.meta.glob
-const components = import.meta.glob('../componentsSite/index.astro');
-let ComponentSite = null;
-let componentSiteExists = false;
+const components = await import.meta.glob('../componentsSite/index.astro', { eager: true });
+const ComponentSite = components['../componentsSite/index.astro']?.default || null;
 
-if (components['../componentsSite/index.astro']) {
-  try {
-    ComponentSite = (await components['../componentsSite/index.astro']() as { default: any }).default;
-    componentSiteExists = true;
-  } catch (error) {}
+// Parallel GraphQL queries
+const [pageResponse, tagLineResponse] = await Promise.all([
+  client.query({
+    query: GET_PAGE,
+    variables: { uri: '/' },
+  }),
+  client.query({
+    query: GET_TAG_LINE,
+  })
+]);
+
+if (!pageResponse?.data?.pageBy) {
+  throw new Error('No page data found for homepage');
 }
 
-// Fetch front page
-const frontPages = await client.query({
-  query: GET_HOME_PAGE,
-  variables: { first: 200 },
-});
-
-const frontPage = frontPages.data.pages.nodes.filter((page) => page.isFrontPage);
-
-if (frontPage.length === 0) {
-  throw new Error('No front page found');
-}
-
-const pageData = await client.query({
-  query: GET_PAGE,
-  variables: { uri: frontPage[0].uri },
-});
-
-if (!pageData?.data?.pageBy) {
-  throw new Error('No page data found uri: ' + frontPage[0].uri);
-}
-
+// Destructure with default values for safety
 const {
+  title = '',
+  subtitle = '',
+  content = '',
+  bannerImage = {},
+  metaTitle = '',
+  metaDescription = '',
+  databaseId = '',
+  customJs = ''
+} = pageResponse.data.pageBy;
+
+// Process content transformations in parallel
+const processContent = async (content: string) => {
+  if (!content) return '';
+
+  const withImages = await replaceImageUrls(content);
+  const withIcons = replaceIconShortcode(withImages);
+  return replaceShortCodes(withIcons);
+};
+
+let updatedContent = await processContent(content);
+const tagLine = tagLineResponse?.data?.customSiteSettings?.tagLine || '';
+
+// Compute banner image props once
+const bannerProps = {
   title,
   subtitle,
-  content,
-  bannerImage,
-  metaDescription,
-  databaseId
-} = pageData?.data?.pageBy;
+  tagLine,
+  image: bannerImage?.sourceUrl || '',
+  width: bannerImage?.mediaDetails?.width || 0,
+  height: bannerImage?.mediaDetails?.height || 0,
+};
 
-let updatedContent = content ? await replaceImageUrls(content) : '';
-updatedContent = replaceIconShortcode(updatedContent);
-updatedContent = await replaceShortCodes(updatedContent);
+const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
+let formRemovedContent = '';
+let extractedForm = '';
+
+if (hasHeadlessForm) {
+  const formMatch = updatedContent.match(/<headless-form[\s\S]*?<\/headless-form>/);
+  if (formMatch) {
+    extractedForm = formMatch[0];
+    formRemovedContent = updatedContent.replace(/<headless-form[\s\S]*?<\/headless-form>/, '');
+  } else {
+    formRemovedContent = updatedContent;
+  }
+}
+
 ---
 
-<Layout title={title} subtitle={subtitle} classes="front" pageId={databaseId} description={metaDescription}>
-  <BannerTitle
-    title={title}
-    subtitle={subtitle}
-    image={bannerImage?.sourceUrl}
-    width={bannerImage?.mediaDetails?.width}
-    height={bannerImage?.mediaDetails?.height}
-  />
+<Layout
+  title={metaTitle || title}
+  subtitle={subtitle}
+  classes="front"
+  pageId={databaseId}
+  description={metaDescription}
+  customJs={customJs}
+>
+  <BannerTitle {...bannerProps} />
   <div class="main-body">
-    {componentSiteExists
-      ? <ComponentSite content={updatedContent} />
-      : <div class="content" set:html={updatedContent}></div>
+    {ComponentSite
+      ? <ComponentSite content={formRemovedContent || updatedContent } />
+      : <div class="content" set:html={formRemovedContent || updatedContent } />
     }
+    {hasHeadlessForm && <ContactForm content={extractedForm} />}
   </div>
 </Layout>

@@ -27,7 +27,7 @@ const menuItemsFormatted = menuItems.map((menuItem) => {
 <nav>
   <ul class=`list-none social-menu ${classes}`>
     { menuItemsFormatted.map((menuItem) => (
-      <li key={menuItem.id}>
+      <li>
         <a href={menuItem.url} target="_blank" rel="noopener noreferrer">
           <i class={`icon ${menuItem.menuClasses}`} aria-hidden="true"></i>
           <span class="sr-only">{menuItem.label}</span>

@@ -1,7 +1,8 @@
+// src/template/postTemplate.js
 import { getImages } from '../lib/utils';
 
 async function PostTemplate(props) {
-  const { post, path, classes } = props;
+  const { post, path, classes, readMore, dateInclude } = props;
   const postAlias = path || process.env.POST_ALIAS;
 
   const {
@@ -9,8 +10,8 @@ async function PostTemplate(props) {
     excerpt,
     slug,
     featuredImage,
-    databaseId,
-    linkUrl
+    linkUrl,
+    date
   } = post;
 
   const imageUrl = featuredImage?.node?.sourceUrl;
@@ -25,7 +26,7 @@ async function PostTemplate(props) {
     <div class="${classes}">
       ${imageLocal ? `
         <div class="featured-image">
-          <a href="/${postAlias}/${slug}">
+          <a href="/${postAlias}/${slug}/">
             <img
               src="${imageLocal.default.src}"
               alt="${altText}"
@@ -36,10 +37,12 @@ async function PostTemplate(props) {
 
       <div class="post-content ${imageLocal ? 'has-image' : ''}">
         <div class="post-title">
-          <a href="/${postAlias}/${slug}">${escapeHtml(title)}</a>
+          <a href="/${postAlias}/${slug}/">${escapeHtml(title)}</a>
         </div>
         ${cleanLinkUrl ? `<div class="post-link">${escapeHtml(cleanLinkUrl)}</div>` : ''}
         <div class="post-excerpt">${excerpt}</div>
+        ${dateInclude ? `<div class="post-date">${date}</div>` : ''}
+        ${readMore ? `<a href="/${postAlias}/${slug}/" class="read-more">${readMore}</a>` : ''}
       </div>
     </div>
   `;

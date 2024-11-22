@@ -8,9 +8,12 @@ export const GET_PAGE = gql`
       content
       dateGmt
       slug
+      uri
       subtitle
       title
+      metaTitle
       metaDescription
+      customJs
       bannerImage {
         sourceUrl
         mediaDetails {
@@ -25,6 +28,30 @@ export const GET_PAGE = gql`
           mediaDetails {
             height
             width
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_MENU_ITEMS_BY_LANGUAGE = gql`
+  query($first: Int!, $language: LanguageCodeFilterEnum!) {
+    menuItems(where: { location: PRIMARY, language: $language }) {
+      nodes {
+        id
+        label
+        cssClasses
+        url
+        target
+        parentDatabaseId
+        childItems(first: $first) {
+          nodes {
+            id
+            label
+            url
+            target
+            cssClasses
           }
         }
       }
@@ -67,7 +94,7 @@ export const GET_MENU_ITEMS = gql`
 
 export const GET_MENU_ITEMS_BY_LOCATION = gql`
   query($location: MenuLocationEnum!) {
-    menuItems(where: { location: $location }) {
+    menuItems(where: { location: $location }, first: 100) {
       nodes {
         id
         label
@@ -97,6 +124,14 @@ export const GET_ENABLED_FEATURES = gql`
   }
 `;
 
+export const GET_TAG_LINE = gql`
+  query {
+    customSiteSettings {
+      tagLine
+    }
+  }
+`;
+
 export const GET_SITE_SETTINGS = gql`
   query {
     customSiteSettings {
@@ -110,6 +145,15 @@ export const GET_SITE_SETTINGS = gql`
         id
       }
       mobileLogo {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+        id
+      }
+      defaultHeaderImage {
         altText
         sourceUrl
         mediaDetails {
@@ -132,46 +176,57 @@ export const GET_SITE_TITLE = gql`
   }
 `;
 
-export const GET_HOME_PAGE = gql`
-  query($first: Int!) {
-    pages(first: $first, where: { status: PUBLISH }) {
-      nodes {
-        isFrontPage
-        uri
-      }
+
+export const GET_LANGUAGES = gql`
+  query {
+    languages {
+      slug
+      code
+      locale
+      homeUrl
+      name
     }
   }
 `;
 
+export const GET_PAGES_FRAGMENT = gql`
+  fragment GetPagesFields on Page {
+    uri
+    slug
+    isFrontPage
+    title
+    subtitle
+    content
+    customJs
+    bannerImage {
+      sourceUrl
+      mediaDetails {
+        width
+        height
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        altText
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+    metaTitle
+    metaDescription
+    databaseId
+  }
+`;
+
 export const GET_PAGES = gql`
+  ${GET_PAGES_FRAGMENT}
   query($first: Int!) {
     pages(first: $first, where: { status: PUBLISH }) {
       nodes {
-        uri
-        slug
-        isFrontPage
-        title
-        subtitle
-        content
-        bannerImage {
-          sourceUrl
-          mediaDetails {
-            width
-            height
-          }
-        }
-        featuredImage {
-          node {
-            sourceUrl
-            altText
-            mediaDetails {
-              width
-              height
-            }
-          }
-        }
-        metaDescription
-        databaseId
+        ...GetPagesFields
       }
     }
   }
@@ -199,6 +254,7 @@ export const GET_POST = gql`
       subtitle
       title
       slug
+      metaTitle
       metaDescription
       date
       content
@@ -242,6 +298,7 @@ export const POST_EXCERPT_FRAGMENT = gql`
     excerpt
     slug
     databaseId
+    date
     featuredImage {
       node {
         altText
@@ -271,7 +328,7 @@ export const GET_POSTS_EXCERPTS = gql`
 export const GET_POSTS_EXCERPTS_STICKY = gql`
   ${POST_EXCERPT_FRAGMENT}
   query {
-    posts(first: 10, where: {isStickyPost: true}) {
+    posts(first: 10, where: {isStickyPost: true, orderby: {field: MENU_ORDER, order: ASC}}) {
       nodes {
         ...PostExcerptFields
       }
@@ -282,7 +339,7 @@ export const GET_POSTS_EXCERPTS_STICKY = gql`
 export const GET_POSTS_EXCERPTS_BY_IDS = gql`
   ${POST_EXCERPT_FRAGMENT}
   query ($ids: [ID!]) {
-    posts(where: {in: $ids}) {
+    posts(where: {in: $ids, orderby: { field: DATE, order: DESC }}) {
       nodes {
         ...PostExcerptFields
       }
@@ -291,10 +348,11 @@ export const GET_POSTS_EXCERPTS_BY_IDS = gql`
 `;
 
 export const GET_POSTS_BY_TAG_COUNT = gql`
+  ${POST_EXCERPT_FRAGMENT}
   query ($tag: String!, $count: Int!) {
-    posts(where: { tag: $tag }, first: $count) {
+    posts(where: { tag: $tag, orderby: { field: DATE, order: DESC } }, first: $count) {
       nodes {
-        ...PostExcerpt
+        ...PostExcerptFields
       }
     }
   }
@@ -510,6 +568,16 @@ export const GET_FAQ_TOPICS = gql`
   }
 `;
 
+export const GET_FAQ_TOPIC_BY_SLUG = gql`
+  query($slug: ID!) {
+    faqTopic(id: $slug, idType: SLUG) {
+      name
+      description
+      faqTopicId
+    }
+  }
+`;
+
 export const GET_TEMPLATE = gql`
   query($slug: String!) {
     templateBy(slug: $slug) {
@@ -517,6 +585,7 @@ export const GET_TEMPLATE = gql`
       databaseId
       content
       subtitle
+      metaTitle
       metaDescription
       bannerImage {
         sourceUrl
@@ -611,6 +680,7 @@ export const GET_FORM = gql`
       databaseId
       content
       subtitle
+      metaTitle
       metaDescription
       bannerImage {
         sourceUrl
@@ -626,6 +696,21 @@ export const GET_FORM = gql`
 export const GET_TESTIMONIALS = gql`
   query {
     testimonials(where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
+      nodes {
+        databaseId
+        title
+        content
+        source
+      }
+    }
+  }
+`;
+
+//   query ($tag: String!, $count: Int!) {
+// get testimonials order by random limit to count
+export const GET_TESTIMONIALS_LIMIT = gql`
+  query($count: Int!) {
+    testimonials(where: {status: PUBLISH}, first: $count) {
       nodes {
         databaseId
         title
@@ -667,6 +752,8 @@ export const GET_GALLERY_SLUGS = gql`
       databaseId
       title
       subtitle
+      metaTitle
+      metaDescription
       bannerImage {
           sourceUrl
           mediaDetails {
@@ -686,6 +773,7 @@ export const GET_GALLERY = gql`
       databaseId
       galleryImages {
         sourceUrl
+        altText
         mediaDetails {
           height
           width
@@ -739,18 +827,21 @@ export const GET_SITEMAP_SLUGS = gql`
           slug
           modified
           isFrontPage
+          excludeFromSitemap
         }
       }
       posts(first: $first) {
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       forms(first: $first) {
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       galleries {
@@ -763,6 +854,7 @@ export const GET_SITEMAP_SLUGS = gql`
         nodes {
           slug
           modified
+          excludeFromSitemap
         }
       }
       faqTopics(first: $first) {
@@ -776,11 +868,17 @@ export const GET_SITEMAP_SLUGS = gql`
           slug
         }
       }
+      portfolioCategories(first: $first) {
+        nodes {
+          slug
+        }
+      }
       categories(first: $first) {
         nodes {
           slug
         }
       }
+
     }
 `;
 
@@ -788,10 +886,26 @@ export const GET_SITEMAP_SLUGS = gql`
 
 export const GET_ALL_PORTFOLIOS = gql`
   query($first: Int!) {
-    portfolios(first: $first, where: {status: PUBLISH}) {
+    portfolios(first: $first, where: {status: PUBLISH, orderby: {order: ASC, field: MENU_ORDER}}) {
       nodes {
         databaseId
         slug
+        isSticky
+        additionalImage {
+          sourceUrl
+          title
+          altText
+          mediaDetails {
+            height
+            width
+          }
+        }
+        tags:portfolioCategories {
+          nodes {
+            name
+            slug
+          }
+        }
       }
     }
   }
@@ -804,6 +918,7 @@ export const GET_PORTFOLIO = gql`
       subtitle
       title
       slug
+      metaTitle
       metaDescription
       date
       content
@@ -875,6 +990,18 @@ export const GET_PORTFOLIO_EXCERPTS = gql`
           }
         }
       }
+    }
+  }
+`;
+
+export const GET_EMBED_PAGE = gql`
+  query($id: ID!) {
+    page(id: $id, idType: URI) {
+      content
+      title
+      subtitle
+      databaseId
+      slug
     }
   }
 `;

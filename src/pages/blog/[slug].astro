@@ -53,9 +53,12 @@ if (featuredImageSourceUrl) {
 const srcset = localImage
   ? `${localImage.default.src} 1x`
   : '';
+
+const titleTag = page?.metaTitle || page?.title;
+
 ---
 
-<Layout pageId={page?.databaseId} title={page?.title} description={page?.metaDescription} classes="post">
+<Layout pageId={page?.databaseId} title={titleTag} description={page?.metaDescription} classes="post">
   <BannerTitle
     title={page?.title}
     subtitle={page?.subtitle}
@@ -65,7 +68,7 @@ const srcset = localImage
     crumbs={[{ label: 'Articles', path: '/articles/'}, { label: page?.title }]}
   />
   <div class="main-body">
-    {localImage && (
+    {localImage && !page?.bannerImage?.sourceUrl && (
       <Image
         src={localImage.default}
         srcset={srcset}

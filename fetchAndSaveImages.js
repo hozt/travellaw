@@ -52,6 +52,15 @@ const query = gql`
         }
       }
     }
+    videos(first: $first) {
+      nodes {
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+      }
+    }
     templates(first: $first) {
       nodes {
         bannerImage {
@@ -67,6 +76,9 @@ const query = gql`
         sourceUrl
       }
       faviconLogo {
+        sourceUrl
+      }
+      defaultHeaderImage {
         sourceUrl
       }
     }
@@ -114,6 +126,27 @@ const queryPosts = gql`
           }
         }
         content
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+const queryOthers = gql`
+  query GetOthers($first: Int!, $after: String) {
+    others(first: $first, after: $after) {
+      nodes {
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+        galleryImages {
+          sourceUrl
+        }
       }
       pageInfo {
         endCursor
@@ -208,12 +241,20 @@ async function fetchImageUrls() {
     });
 
     // Collect featured images
-    ['pages', 'forms', 'templates', 'portfolios'].forEach(type => {
+    ['pages', 'forms', 'templates', 'portfolios', 'videos'].forEach(type => {
       data[type]?.nodes?.forEach(node => {
         if (node?.featuredImage?.node?.sourceUrl) {
           imageUrls.featured.push(node.featuredImage.node.sourceUrl);
         }
       });
+    });
+
+    // get featured from others
+    const othersFeatured = await fetchAllOthers();
+    othersFeatured.forEach(node => {
+      if (node?.featuredImage?.node?.sourceUrl) {
+        imageUrls.featured.push(node.featuredImage.node.sourceUrl);
+      }
     });
 
     // get all additional images from portfolios
@@ -237,7 +278,9 @@ async function fetchImageUrls() {
     if (data.customSiteSettings?.mobileLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.mobileLogo.sourceUrl);
     }
-    // save favicon to /public/favicon.svg  convert to svg
+    if (data.customSiteSettings?.defaultHeaderImage?.sourceUrl) {
+      imageUrls.banners.push(data.customSiteSettings.defaultHeaderImage.sourceUrl);
+    }
     if (data.customSiteSettings?.faviconLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.faviconLogo.sourceUrl);
     }
@@ -249,8 +292,17 @@ async function fetchImageUrls() {
         }
       });
     });
-
-    console.log('Image URLs fetched successfully');
+    // Collect other gallery images
+    const others = await fetchAllOthers();
+    console.log('Others:', others);
+    others.forEach(node => {
+      node.galleryImages.forEach(image => {
+        if (image?.sourceUrl) {
+          imageUrls.gallery.push(image?.sourceUrl);
+          console.log('Image URL:', image?.sourceUrl);
+        }
+      });
+    });
     return imageUrls;
   } catch (error) {
     console.error('Error in fetchImageUrls:', error.message);
@@ -274,6 +326,23 @@ async function fetchAllPosts() {
     after = pageInfo.endCursor;
   }
   return allPosts;
+}
+
+async function fetchAllOthers() {
+  let allOthers = [];
+  let hasNextPage = true;
+  let after = null;
+  while (hasNextPage) {
+    const data = await request(endpoint, queryOthers, { first: 100, after });
+    const nodes = data.others.nodes;
+    allOthers = [...allOthers, ...nodes];
+    const pageInfo = data.others.pageInfo;
+    hasNextPage = pageInfo.hasNextPage;
+    after = pageInfo.endCursor;
+  }
+  // remove all the gallery images that are null
+  allOthers = allOthers.filter(({ galleryImages }) => galleryImages);
+  return allOthers;
 }
 
 async function fetchMenuIcons() {
@@ -389,6 +458,30 @@ async function downloadAllImages(imageUrls) {
   await Promise.all(downloadPromises);
 }
 
+async function copyIconsToPublic() {
+  const iconsPath = path.join(__dirname, 'assets', 'icons');
+  const publicIconsPath = path.join(__dirname, 'public', 'images', 'icons');
+
+  try {
+    await fs.mkdir(publicIconsPath, { recursive: true });
+
+    const files = await fs.readdir(iconsPath);
+
+    for (const file of files) {
+      const source = path.join(iconsPath, file);
+      const dest = path.join(publicIconsPath, file);
+      try {
+        await fs.copyFile(source, dest);
+        console.log(`Copied ${file} to public folder`);
+      } catch (err) {
+        console.error(`Error copying ${file} to public folder:`, err);
+      }
+    }
+  } catch (err) {
+    console.error('Error processing icons:', err);
+  }
+}
+
 function replaceIconClass(htmlString) {
   // Regular expression to match any Font Awesome solid icon class
   const regex = /<i class="fas fa-([^"]+)"><\/i>/g;
@@ -463,6 +556,7 @@ async function saveAllContentToFile() {
       console.log('Gallery Images:', imageUrls.gallery.length);
       console.log('Starting image downloads...');
       await downloadAllImages(imageUrls);
+      await copyIconsToPublic();
       await fetchAndSavePDFs();
       await saveRedirectsToFile();
       await saveAllContentToFile();

@@ -1,12 +1,45 @@
 ---
+// src/components/Navigation.astro
 import client from '../lib/apolloClient';
-import { GET_MENU_ITEMS } from '../lib/queries';
+import { GET_MENU_ITEMS, GET_MENU_ITEMS_BY_LANGUAGE, GET_LANGUAGES } from '../lib/queries';
 import CustomLink from './CustomLink.astro';
 
-const { data } = await client.query({
-  query: GET_MENU_ITEMS,
-  variables: { first: 200 },
-});
+const slug = Astro.params.slug;
+const defaultLanguage = import.meta.env.DEFAULT_LANGUAGE;
+
+let languageCode = '';
+if (defaultLanguage && slug?.includes('/')) {
+  const parsedSlug = slug.split('/').filter(Boolean);
+  if (parsedSlug.length > 0) {
+    languageCode = parsedSlug[0];
+    const { data: languagesData } = await client.query({
+      query: GET_LANGUAGES
+    });
+    // check if the language code is valid from languagesData
+    const validLanguageCodes = languagesData.languages.map(lang => lang.slug);
+    if (!validLanguageCodes.includes(languageCode)) {
+      languageCode = ''; // Reset if invalid
+    } else {
+      languageCode = languageCode.toUpperCase();
+    }
+  }
+}
+
+let data;
+
+if (languageCode) {
+  const { data: menuData } = await client.query({
+    query: GET_MENU_ITEMS_BY_LANGUAGE,
+    variables: { first: 200, language: languageCode },
+  });
+  data = menuData;
+} else {
+  const { data: menuData } = await client.query({
+    query: GET_MENU_ITEMS,
+    variables: { first: 200 },
+  });
+  data = menuData;
+}
 
 const menuItems = data?.menuItems?.nodes;
 
@@ -22,17 +55,17 @@ function getClassNames(item) {
 
 <ul class="main-menu">
   {menuItems.map(item => item.parentDatabaseId === 0 && (
-    <li class={`menu-item ${getClassNames(item)}`} key={item.id}>
+    <li class={`menu-item ${getClassNames(item)}${item.childItems?.nodes?.length > 0 ? ' has-indicator' : ''}`}>
       <CustomLink url={item.url} label={item.label} classes={item.cssClasses} indicator={item.childItems?.nodes?.length > 0} />
       {item.childItems?.nodes?.length > 0 && (
-        <ul class="sub-menu">
+        <ul class="hidden sub-menu group-hover:block">
           {item.childItems.nodes.map(child => (
-            <li class={child.cssClasses?.join(' ') || ''} key={child.id}>
+            <li class={`menu-item-child ${child.cssClasses?.join(' ') || ''}`}>
               <CustomLink url={child.url} label={child.label} classes={child.cssClasses} />
               {child.childItems?.nodes?.length > 0 && (
                 <ul class="sub-menu-child">
                   {child.childItems.nodes.map(grandchild => (
-                    <li class={grandchild ? grandchild.cssClasses?.join(' ') : ''} key={grandchild.id}>
+                    <li class={`menu-item-grandchild ${grandchild.cssClasses?.join(' ') || ''}`}>
                       <CustomLink url={grandchild.url} label={grandchild.label} classes={grandchild.cssClasses} />
                     </li>
                   ))}
@@ -46,58 +79,97 @@ function getClassNames(item) {
   ))}
 </ul>
 
-<style>
-  .menu-item:hover .sub-menu,
-  .menu-item:focus-within .sub-menu,
-  .menu-item.active .sub-menu {
-    @apply block;
-  }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const menuItems = document.querySelectorAll('.menu-item');
-  const isMobile = window.innerWidth <= 767;
+  const isMobileOrTablet = window.innerWidth <= 1024;
 
   menuItems.forEach(item => {
     const link = item.querySelector('a');
     const submenu = item.querySelector('.sub-menu');
 
     if (submenu) {
+      // Toggle submenu visibility on mobile/tablet
       link.addEventListener('click', function(e) {
-        if (isMobile) {
-          if (!item.classList.contains('active')) {
-            e.preventDefault();  // Prevent default only when the submenu is not open
-            item.classList.toggle('active');
-            submenu.style.display = item.classList.contains('active') ? 'block' : 'none';
-          }
-        }
-      });
-
-      item.addEventListener('touchstart', function(e) {
-        if (!item.classList.contains('active')) {
-          e.preventDefault();
+        if (isMobileOrTablet) {
+          e.preventDefault();  // Prevent link navigation if expanding submenu
           menuItems.forEach(otherItem => {
             if (otherItem !== item) {
               otherItem.classList.remove('active');
               otherItem.querySelector('.sub-menu')?.style.removeProperty('display');
             }
           });
-          item.classList.add('active');
+          item.classList.toggle('active');
+        }
+      });
+
+      let hideTimeout;
+      const hoverDelay = 120;
+
+      // Handle hover delay for desktop view
+      if (!isMobileOrTablet) {
+        item.addEventListener('mouseenter', () => {
+          clearTimeout(hideTimeout);
           submenu.style.display = 'block';
+        });
+
+        item.addEventListener('mouseleave', (event) => {
+          hideTimeout = setTimeout(() => {
+            // Check if the mouse is not over the submenu
+            if (!submenu.contains(event.relatedTarget)) {
+              submenu.style.display = 'none';
+            }
+          }, hoverDelay);
+        });
+
+        // Add event listeners to the submenu as well
+        submenu.addEventListener('mouseenter', () => {
+          clearTimeout(hideTimeout);
+        });
+
+        submenu.addEventListener('mouseleave', (event) => {
+          // Check if the mouse is not over the parent item
+          if (!item.contains(event.relatedTarget)) {
+            hideTimeout = setTimeout(() => {
+              submenu.style.display = 'none';
+            }, hoverDelay);
+          }
+        });
+      }
+
+      // Handle third-level submenus (grandchild)
+      const childItems = submenu.querySelectorAll('.menu-item-child');
+      childItems.forEach(childItem => {
+        const childLink = childItem.querySelector('a');
+        const subMenuChild = childItem.querySelector('.sub-menu-child');
+
+        if (subMenuChild) {
+          // Show third-level menu on click for mobile/tablet
+          childLink.addEventListener('click', function(e) {
+            if (isMobileOrTablet) {
+              e.preventDefault();  // Prevent link navigation if expanding third level
+              childItems.forEach(otherChild => {
+                if (otherChild !== childItem) {
+                  otherChild.classList.remove('active');
+                  otherChild.querySelector('.sub-menu-child')?.style.removeProperty('display');
+                }
+              });
+              childItem.classList.toggle('active');
+            }
+          });
+        }
+      });
+
+      // Close all submenus when clicked outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.menu-item')) {
+          menuItems.forEach(item => {
+            item.classList.remove('active');
+            item.querySelector('.sub-menu')?.style.removeProperty('display');
+          });
         }
       });
     }
   });
-
-  // Close submenu if clicked outside
-  document.addEventListener('touchstart', function(e) {
-    if (!e.target.closest('.menu-item')) {
-      menuItems.forEach(item => {
-        item.classList.remove('active');
-        item.querySelector('.sub-menu')?.style.removeProperty('display');
-      });
-    }
-  }, { passive: true });
 });
 </script>

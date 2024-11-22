@@ -4,17 +4,25 @@ import client from '../lib/apolloClient';
 import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
+import ContactForm from '../components/ContactForm.astro';
 import { replaceImageUrls } from '../lib/utils';
 import { getImages, replaceIconShortcode } from '../lib/utils';
 import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
-  let { data } = await client.query({
-    query: GET_PAGES,
-    variables: { first: 200 },
-  });
+  let data;
+  try {
+    const result = await client.query({
+      query: GET_PAGES,
+      variables: { first: 200 },
+    });
+    data = result.data;
+  } catch (error) {
+    console.error("Error fetching pages:", error);
+    throw error;
+  }
 
-  const filteredPages = data.pages.nodes.filter(page => page.isFrontPage === false);
+  const filteredPages = data.pages.nodes;
 
   return filteredPages.map(page => {
     const slugArray = page.uri.split('/').filter(Boolean);
@@ -25,7 +33,7 @@ export async function getStaticPaths() {
   });
 }
 
-const { slug } = Astro.params; // This is a string in Astro
+const { slug } = Astro.params;
 
 const { data: pagesData } = await client.query({
   query: GET_PAGE,
@@ -46,9 +54,13 @@ const {
   subtitle,
   content,
   bannerImage,
+  metaTitle,
   metaDescription,
-  databaseId
+  databaseId,
+  customJs
 } = page;
+
+const titleTag = metaTitle || title;
 
 const featuredImage = page?.featuredImage?.node;
 
@@ -77,9 +89,14 @@ if (currentPath.includes('/')) {
 
 fullCrumbs.push({ label: title, path: '' });
 
+// <div class="headless-form-block
+// it should have both form and the class headless-form-block
+const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
+const formats = ['avif', 'webp', 'jpg'];
+
 ---
 
-<Layout pageId={databaseId} title={title} description={metaDescription} classes="page">
+<Layout pageId={databaseId} title={titleTag} description={metaDescription} classes="page" customJs={customJs}>
   <BannerTitle
     title={title}
     subtitle={subtitle}
@@ -93,12 +110,17 @@ fullCrumbs.push({ label: title, path: '' });
       <Image
         src={localImage.default}
         alt={featuredImage?.altText || title}
-        width={featuredImage?.mediaDetails?.width}
-        height={featuredImage?.mediaDetails?.height}
+        widths={[300, 600, 900, 1200]}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         class="featured-image"
+        formats={formats}
         loading="eager"
       />
     )}
-    <div set:html={updatedContent} />
+    {hasHeadlessForm ? (
+      <ContactForm content={updatedContent} />
+    ) : (
+      <div set:html={updatedContent} />
+    )}
   </div>
 </Layout>

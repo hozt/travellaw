@@ -6,6 +6,10 @@ function hasClassNoLink(classes) {
   return classes && classes.includes("no-link");
 }
 
+function hasClassSpacer(classes) {
+  return classes && classes.includes("spacer");
+}
+
 function isExternalUrl(url) {
   return /^(https?:|mailto:|tel:)/.test(url);
 }
@@ -17,17 +21,17 @@ const linkClasses = classes ? classes.join(' ') : '';
 
 {!hasClassNoLink(classes) ? (
   isExternalUrl(adjustedUrl) ? (
-    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={linkClasses} client:load>
+    <a href={adjustedUrl} target="_blank" rel="noopener noreferrer" class={linkClasses}>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   ) : (
-    <a href={adjustedUrl} class={linkClasses} client:load>
+    <a href={adjustedUrl} class={linkClasses}>
       {label} {indicator && <span class="indicator"></span>}
     </a>
   )
 ) : (
   <span class={linkClasses}>
-    {label} {indicator && <span class="indicator"></span>}
+    {hasClassSpacer(classes) ? '\u00A0' : label} {indicator && <span class="indicator"></span>}
   </span>
 )}
 
