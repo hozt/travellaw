@@ -1,73 +1,59 @@
 ---
-// same as src/pages/blog/[page].astroimport Layout from "../../layouts/Layout.astro";
-import Layout from "../../layouts/Layout.astro";
-import PostPreview from "../../components/PostPreview.astro";
-import BannerTitle from "../../components/BannerTitle.astro";
-import { GET_ARTICLES_COUNT, GET_TEMPLATE } from "../../lib/queries";
-import Pagination from "../../components/Pagination.astro";
-import { fetchArticles } from "../../lib/api";
-import { articleStore } from "../../store/articleStore";
-import client from "../../lib/apolloClient";
-import { getTotalCount } from "../../lib/fetchAllResults";
+import Layout from "../layouts/Layout.astro";
+import PostPreview from "../components/PostPreview.astro";
+import BannerTitle from "../components/BannerTitle.astro";
+import { GET_ARTICLES_COUNT, GET_TEMPLATE, GET_POSTS_EXCERPTS } from "../lib/queries";
+import Pagination from "../components/Pagination.astro";
+import client from "../lib/apolloClient";
+import { getTotalCount } from "../lib/fetchAllResults";
+
+const postAlias = import.meta.env.POST_ALIAS;
 
 const ITEMS_PER_PAGE = 10;
 
-export async function getStaticPaths() {
-  const postAlias = import.meta.env.POST_ALIAS;
-  if (postAlias !== 'blog') {
-    return [];
-  }
-  const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
+const currentPage = 1;
 
-  // Calculate the number of pages
-  const totalPages = Math.ceil(totalArticles / 10);
-
-  // Generate paths for all pages
-  const paths = Array.from({ length: totalPages }, (_, i) => ({
-    params: { page: (i + 1).toString() },
-  }));
-
-  return paths;
-}
-
-const { page } = Astro.params;
-const currentPage = parseInt(page) || 1;
-
-const templateData = await client.query({
+const { data: templateData } = await client.query({
   query: GET_TEMPLATE,
-  variables: { slug: "article" },
+  variables: { slug: postAlias },
 });
 
-const template = templateData.data.templateBy;
-const title = template?.title || "Articles";
-
-let store;
-articleStore.subscribe((value) => (store = value))();
+const template = templateData.templateBy;
+const title = template?.title || postAlias.charAt(0).toUpperCase() + postAlias.slice(1);
 
 const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
 
-const articles = await fetchArticles(currentPage, store.pageInfo.endCursor);
+const { data: articlesData } = await client.query({
+  query: GET_POSTS_EXCERPTS,
+  variables: {
+    first: 10,
+    after: null,
+  },
+});
 
-const totalPages =
-  Math.ceil(totalArticles / ITEMS_PER_PAGE);
+const articles = articlesData?.posts?.nodes;
+const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
+const crumbs = [{'label': title}];
+
+if (!articles || articles.length === 0) {
+  return Astro.redirect('/404', '404');
+}
 
 ---
 
-<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="page" templateId={template?.databaseId}>
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">
   <BannerTitle
     title={title}
     subtitle={template?.subtitle}
     image={template?.bannerImage?.sourceUrl}
     width={template?.bannerImage?.mediaDetails.width}
     height={template?.bannerImage?.mediaDetails.height}
-    crumbs={[{ label: title }]}
+    crumbs={crumbs}
   />
   <div class="main-body">
-    <div class="article-list">
-      {articles.map((article) => (
-        <PostPreview post={article} classes="post-preview" />
-      ))}
-    </div>
+    {articles.map((article) => (
+      <PostPreview post={article} classes="post-preview" />
+    ))}
     <Pagination currentPage={currentPage} totalPages={totalPages} />
   </div>
 </Layout>
