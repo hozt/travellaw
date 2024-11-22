@@ -15,7 +15,7 @@ const baseUrl = new URL(Astro.request.url).origin;
     {fullCrumbs.map((crumb, index) => (
       <li class="flex items-center" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         {index > 0 && (
-          <span class="px-3 separator">{separator}</span>
+          <span class="px-3 separator" set:html={separator}></span>
         )}
         {crumb.path ? (
           <a href={crumb.path} class="text-gray-500 no-underline hover:text-gray-700" itemprop="item">
