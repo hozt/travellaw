@@ -1,4 +1,5 @@
 ---
+// src/components/Pagination.astro
 const { currentPage, totalPages } = Astro.props;
 const postAlias = import.meta.env.POST_ALIAS;
 
@@ -10,6 +11,7 @@ const isFirst = currentPage === 1;
 const isLast = currentPage === totalPages;
 const prevPage = currentPage - 1;
 const nextPage = currentPage + 1;
+
 const maxPagesToShow = 15;
 const halfMaxPagesToShow = Math.floor(maxPagesToShow / 2);
 
@@ -18,6 +20,10 @@ let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
 
 if (endPage - startPage < maxPagesToShow - 1) {
   startPage = Math.max(endPage - maxPagesToShow + 1, 1);
+} else if (startPage === 1) {
+  endPage = Math.min(maxPagesToShow, totalPages);
+} else if (endPage === totalPages) {
+  startPage = Math.max(totalPages - maxPagesToShow + 1, 1);
 }
 ---
 

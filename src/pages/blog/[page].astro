@@ -45,12 +45,8 @@ let store;
 articleStore.subscribe((value) => (store = value))();
 
 const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
-
 const articles = await fetchArticles(currentPage, store.pageInfo.endCursor);
-
-const totalPages =
-  Math.ceil(totalArticles / ITEMS_PER_PAGE) +
-  (store.pageInfo.hasNextPage ? 1 : 0);
+const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
 
 ---
 
