@@ -12,6 +12,7 @@ const { data } = await client.query({
 const siteSettings = data?.customSiteSettings;
 const headerSourceUrl = siteSettings?.defaultHeaderImage?.sourceUrl;
 const breadcrumbPosition = import.meta.env.BREADCRUMB_POSITION || 'bottom';
+const breadcrumbSeparator = import.meta.env.BREADCRUMB_SEPARATOR || '>';
 const { title, subtitle, tagLine, image, width, height, crumbs=[] } = Astro.props;
 
 let imageLocal = null;
@@ -29,6 +30,7 @@ const formats = ['avif', 'webp', 'jpg'];
 const sizes = "100vw";
 ---
 
+{ (breadcrumbPosition === 'top' && !imageLocal) && <Breadcrumb crumbs={crumbs} separator={breadcrumbSeparator} /> }
 <div class={`banner overflow-hidden relative ${imageLocal ? 'banner-image' : 'no-banner-image'} ${defaultHeader ? 'default-banner' : ''}`}>
   {imageLocal && (
     <Image
@@ -46,7 +48,7 @@ const sizes = "100vw";
     {tagLine && <div class="tag-line">{tagLine}</div>}
     <h1>{title}</h1>
     {subtitle && <h2>{subtitle}</h2>}
-    { breadcrumbPosition === 'middle' && <Breadcrumb crumbs={crumbs} /> }
+    { breadcrumbPosition === 'middle' && <Breadcrumb crumbs={crumbs} separator={breadcrumbSeparator} /> }
   </div>
 </div>
-{ breadcrumbPosition === 'bottom' && <Breadcrumb crumbs={crumbs} /> }
+{ breadcrumbPosition === 'bottom' || (imageLocal && breadcrumbPosition !== 'middle') && <Breadcrumb crumbs={crumbs} separator={breadcrumbSeparator} /> }

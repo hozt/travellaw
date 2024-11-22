@@ -1,3 +1,10 @@
+
+@layer components {
+    .custom-container {
+        @apply mx-4 md:mx-auto max-w-screen-lg md:px-16 px-2;
+    }
+}
+
 .logo-wrapper {
     @apply flex items-center justify-center;
     .logo-desktop {
@@ -19,7 +26,10 @@
     @apply mx-4 lg:mx-auto max-w-screen-lg;
 }
 .breadcrumbs {
-    @apply text-sm text-gray-700 mt-1;
+    @apply text-sm text-gray-700 mt-2 custom-container p-0;
+    .separator {
+        @apply text-lg leading-tight;
+    }
 }
 
 .main-body {
@@ -64,7 +74,7 @@
 }
 
 .banner-image {
-    @apply text-white drop-shadow-md mb-4 md:h-auto bg-dark h-72;
+    @apply text-white drop-shadow-md mb-2 md:h-auto bg-dark h-72;
 
     img {
         @apply opacity-70 max-h-[350px];
@@ -103,31 +113,21 @@
 }
 
 
-.footer-menu {
-    @apply font-sans text-base;
-
-    a {
-      @apply text-white no-underline hover:text-neutral-300;
-    }
-
-    span.no-link {
-      @apply text-lg font-semibold;
-    }
-  }
-
 .footer-menu > ul {
     @apply gap-16 ml-0 md:columns-2 mb-0;
 }
 
 .footer-menu {
-    @apply font-sans text-base;
-
+    @apply font-sans text-sm;
+    li {
+        @apply mb-1;
+    }
     a {
         @apply text-white no-underline hover:text-neutral-300;
     }
 
-    span.no-link {
-        @apply text-lg font-semibold;
+    li > .no-link {
+        @apply text-base font-semibold mb-1 block;
     }
 }
 
@@ -194,15 +194,25 @@ footer {
 }
 
 .front-services {
-  @apply grid grid-cols-2 gap-3 text-center md:grid-cols-3;
-
-  .front-text {
-    @apply block mb-4 text-lg leading-snug no-underline text-dark lg:text-xl;
-  }
-
-  .front-icon {
-    @apply flex items-center justify-center w-16 h-16 mx-auto mb-3 text-5xl text-gray-700 border-2 border-gray-700 rounded-full hover:bg-dark hover:text-white;
-  }
+    @apply grid grid-cols-2 gap-3 text-center md:grid-cols-3 mb-4;
+    a {
+      @apply no-underline text-dark hover:text-black;
+    }
+    p {
+      @apply block mb-4 text-lg leading-snug no-underline text-dark lg:text-xl;
+    }
+    .front-icon {
+      @apply flex items-center justify-center w-16 h-16 mx-auto mb-1 text-gray-700 border-2 border-gray-700 rounded-full bg-transparent;
+    }
+    .icon {
+      @apply text-3xl text-gray-700 relative top-1;
+    }
+    .group:hover .front-icon {
+      @apply bg-dark text-white;
+    }
+    .group:hover .icon {
+      @apply text-white;
+    }
 }
 
 .post-image {
@@ -241,5 +251,8 @@ footer {
     }
     textarea {
         @apply max-w-full;
+    }
+    button {
+        @apply w-full p-3 mt-4 text-white rounded bg-secondary focus:outline-none focus:ring-2;
     }
 }
