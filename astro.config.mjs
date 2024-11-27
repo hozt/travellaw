@@ -6,6 +6,7 @@ import compressor from "astro-compressor";
 const site = process.env.SITE_URL;
 
 export default defineConfig({
+  output: 'static',
   vite: {
     css: {
       preprocessorOptions: {
