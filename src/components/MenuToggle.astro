@@ -9,22 +9,3 @@
         <i id="menu-icon" class="icon-[mdi--menu]"></i>
     </button>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const menuToggle = document.getElementById('menu-toggle');
-        const menuIcon = document.getElementById('menu-icon');
-        const mainNav = document.querySelector('.main-menu');
-
-        if (!menuToggle || !menuIcon || !mainNav) return;
-
-        menuToggle.addEventListener('click', () => {
-            const isExpanded = mainNav.classList.contains('block');
-            mainNav.classList.toggle('block', !isExpanded);
-            mainNav.classList.toggle('hidden', isExpanded);
-
-            menuIcon.classList.toggle('icon-[mdi--menu]', isExpanded);
-            menuIcon.classList.toggle('icon-[mdi--close]', !isExpanded);
-        });
-    });
-</script>
