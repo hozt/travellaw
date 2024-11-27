@@ -14,7 +14,7 @@
     .logo-mobile {
         @apply my-4 flex md:hidden justify-center items-center w-full;
         img {
-            @apply w-[300px] h-auto;
+            @apply w-[300px] h-auto mr-10;
         }
     }
     .mobile-toggle {
@@ -26,7 +26,7 @@
     @apply mx-4 lg:mx-auto max-w-screen-lg;
 }
 .breadcrumbs {
-    @apply text-sm text-gray-700 mt-2 custom-container p-0;
+    @apply text-xs text-gray-700 mt-2 mb-2 custom-container p-0;
     .separator {
         @apply text-lg leading-tight;
     }
@@ -35,41 +35,49 @@
 .main-body {
     @apply lg:min-h-[400px] lg:max-w-screen-lg py-6 mx-4 lg:py-8 lg:mx-auto overflow-hidden;
 }
-.main-menu {
-    @apply text-base w-full mb-0 flex flex-col flex-wrap p-0 mx-auto list-none md:flex md:justify-center text-white md:bg-secondary md:flex-row;
 
+.main-menu {
+    @apply font-sans text-[16px] w-full hidden flex-col flex-wrap p-0 mx-0 list-none md:flex md:justify-center bg-light-gray md:bg-secondary md:flex-row py-2 md:py-0 md:shadow-none mb-2 md:mb-0;
     li {
-        @apply m-0 relative;
+        @apply m-0 relative border-b border-light-gray md:border-none;
     }
     > li {
-        @apply mx-2;
+        @apply md:mx-2;
     }
     span.no-link, a {
-        @apply block px-4 py-1.5 no-underline text-dark md:text-white hover:bg-dark hover:text-white;
+        @apply block px-4 py-3 md:py-2 no-underline text-black md:text-white md:hover:text-dark md:hover:bg-light-gray;
     }
     .sub-menu {
-        @apply hidden mb-0 mt-0 ml-2 md:ml-0 z-30 relative shadow md:group-hover:block md:bg-neutral-100 md:absolute md:w-56;
+        @apply hidden mb-0 mt-0 ml-2 md:ml-0 z-30 relative md:group-hover:block md:text-dark md:bg-light-gray md:absolute md:w-56;
         li {
-            @apply pb-0 mx-0 leading-tight;
+            @apply pb-1 mx-0 leading-tight last:pb-0;
         }
         a {
-            @apply text-dark hover:bg-black hover:text-white py-1.5 relative z-40;
+            @apply md:text-dark md:hover:bg-dark md:hover:text-white py-1;
         }
         .no-link {
-            @apply hover:bg-neutral-100 text-dark hover:text-dark;
+            @apply md:hover:bg-white md:text-dark md:hover:text-dark;
         }
     }
     .sub-menu-child {
-        @apply mb-0;
-    }
-    .menu-resources .sub-menu {
-        @apply lg:gap-4 lg:w-[550px] lg:columns-2 lg:-ml-40;
+        @apply mb-0 md:ml-0 ml-2;
+        li a {
+            @apply pl-6;
+        }
     }
     .indicator {
-        @apply icon-[mdi--menu-down] text-xl absolute;
+        @apply icon-[mdi--menu-down] text-xl pr-2 -mb-1;
     }
     .active .sub-menu {
-        display: block; /* Ensure submenu is displayed when active */
+        @apply block;
+    }
+    @media (max-width: 767px) {
+        .active .sub-menu {
+            @apply static;
+        }
+        .sub-menu a {
+            @apply py-2;
+        }
     }
 }
 
@@ -161,6 +169,8 @@ footer {
 
 }
 
+
+
 .post {
     .featured-image {
         @apply mb-4 md:ml-4 mx-auto float-end w-auto;
@@ -179,7 +189,7 @@ footer {
 
 .page {
     .featured-image {
-        @apply float-end max-w-[400px];
+        @apply float-end max-w-[400px] mb-6 md:mb-0 md:ml-4;
     }
 }
 
@@ -212,6 +222,9 @@ footer {
     }
     .group:hover .icon {
       @apply text-white;
+    }
+    .spacer {
+      @apply hidden md:block;
     }
 }
 

@@ -14,9 +14,11 @@ module.exports = {
       colors: {
         primary: "#1c30aa",
         secondary: "#5c5c5c",
+        tertiary: "#5c5c5c",
         dark: "#1a1a1b",
         link: "#1c30aa",
         "link-hover": "#020f61",
+        "light-gray": "#f5f5f5",
 
       },
       fontFamily: {
