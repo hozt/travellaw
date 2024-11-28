@@ -65,6 +65,9 @@
             @apply pl-6;
         }
     }
+    .menu-resources .sub-menu {
+        @apply lg:gap-4 lg:w-[550px] lg:columns-2 lg:-ml-40;
+    }
     .indicator {
         @apply icon-[mdi--menu-down] text-xl pr-2 -mb-1;
     }
