@@ -1,0 +1,51 @@
+---
+// src/pages/private/[slug].astro
+import client from '../../lib/apolloClient';
+import { GET_ALL_PRIVATE_PAGES, GET_PRIVATE_PAGE } from '../../lib/queries';
+import PrivatePageWrapper from '../../components/PrivatePageWrapper.astro';
+
+export async function getStaticPaths() {
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_PRIVATE_PAGES,
+      variables: { first: 500 },
+    });
+
+    if (!data || !data.privates) {
+      console.error('No private data found');
+      return [];
+    }
+
+    return data.privates.nodes.map(page => ({
+      params: { slug: page?.slug },
+      props: { page },
+    }));
+  } catch (error) {
+    console.error('Error fetching private content:', error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+const { data } = await client.query({
+  query: GET_PRIVATE_PAGE,
+  variables: { slug },
+});
+
+const page = data?.privateBy;
+
+if (!page) {
+  throw new Error(`private not found for slug: ${slug}`);
+}
+
+const siteUrl = import.meta.env.SITE_URL;
+---
+
+<PrivatePageWrapper
+  pageId={page?.databaseId}
+  title={page?.title}
+  description={page?.metaDescription}
+  classes="private"
+  slug={slug}
+  siteUrl={siteUrl}
+/>

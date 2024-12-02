@@ -1,0 +1,30 @@
+---
+// src/pages/private/index.astro
+import client from '../../lib/apolloClient';
+import { GET_PRIVATE_PAGE } from '../../lib/queries';
+import PrivatePageWrapper from '../../components/PrivatePageWrapper.astro';
+
+const slug = 'index';
+const { data } = await client.query({
+  query: GET_PRIVATE_PAGE,
+  variables: { slug },
+});
+
+const page = data?.privateBy;
+
+if (!page) {
+  console.log('Private index page not found');
+  return Astro.redirect('/404', '404');
+}
+
+const siteUrl = import.meta.env.SITE_URL;
+---
+
+<PrivatePageWrapper
+  pageId={page?.databaseId}
+  title={page?.title}
+  description={page?.metaDescription}
+  classes="private"
+  slug={slug}
+  siteUrl={siteUrl}
+/>

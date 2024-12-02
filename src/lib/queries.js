@@ -1005,3 +1005,25 @@ export const GET_EMBED_PAGE = gql`
     }
   }
 `;
+
+export const GET_ALL_PRIVATE_PAGES = gql`
+  query {
+    privates {
+      nodes {
+        databaseId
+        slug
+      }
+    }
+  }
+`;
+
+export const GET_PRIVATE_PAGE = gql`
+  query($slug: String!) {
+    privateBy(slug: $slug) {
+      databaseId
+      content
+      title
+      slug
+    }
+  }
+`;

@@ -1,0 +1,142 @@
+---
+// src/components/PrivatePageWrapper.astro
+import client from '../lib/apolloClient';
+import Layout from '../layouts/Layout.astro';
+import BannerTitle from './BannerTitle.astro';
+import { GET_TEMPLATE } from '../lib/queries';
+
+const { pageId, title, description, classes, slug, siteUrl } = Astro.props;
+
+const { data: templateData } = await client.query({
+  query: GET_TEMPLATE,
+  variables: { slug: "login" },
+});
+
+const page = templateData?.templateBy;
+
+---
+
+<Layout pageId={pageId} title={title} description={description} classes={classes} templateId={page?.databaseId}>
+  <div class="main-body">
+    <div id="login-wrapper" class="">
+      <BannerTitle
+        title="Login Required"
+        subtitle="Please login to access this content"
+      />
+      <!-- if page is not found, show login form otherwise  show page.content -->
+      <div class="login-body">
+        { page?.content && <div class="login-header" set:html={ page.content } /> }
+        <div class="mx-4 mt-8 sm:mx-auto sm:w-full sm:max-w-md md:mx-auto">
+            <h1>Login</h1>
+            <div class="px-4 py-8 shadow bg-neutral-50 sm:rounded-lg sm:px-10">
+            <form id="loginForm" class="space-y-6">
+                <div>
+                <label for="password" class="block font-semibold">
+                    Enter Password
+                </label>
+                <div class="mt-1">
+                    <input id="password" name="password" type="password" required
+                        class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                </div>
+                <div>
+                <button type="submit" class="ml-4">
+                    Login
+                </button>
+                </div>
+            </form>
+            <p id="errorMessage" class="mt-2 text-sm text-center text-red-600"></p>
+            </div>
+        </div>
+
+        </div>
+
+
+    <div id="protected-content">
+      <BannerTitle
+        title={title}
+      />
+      <div id="protected-content-inner" class="custom-container" />
+    </div>
+  </div>
+</Layout>
+
+<script define:vars={{ siteUrl, pageSlug: slug }}>
+  // Check for authentication on page load
+  checkAuthentication();
+
+  async function checkAuthentication() {
+    if (!pageSlug) {
+        console.error('Slug is not defined');
+        showLoginForm();
+        return;
+    }
+    try {
+        const response = await fetch(`${siteUrl}/private-login?slug=${encodeURIComponent(pageSlug)}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        if (response.ok) {
+            const content = await response.text();
+            showProtectedContent(content);
+        } else if (response.headers.get('X-Cloudflare-Function') === 'true') {
+            showProtectedContent(updatedContent);
+        } else {
+            showLoginForm();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showLoginForm();
+    }
+  }
+
+  function showLoginForm() {
+    document.getElementById('login-wrapper').classList.remove('hidden');
+    document.getElementById('protected-content').classList.add('hidden');
+  }
+
+  function showProtectedContent(content) {
+    console.log('showProtectedContent');
+    console.log('content:', content);
+    document.getElementById('login-wrapper').classList.add('hidden');
+    const protectedContentInner = document.getElementById('protected-content-inner');
+    protectedContentInner.innerHTML = content;
+    protectedContentInner.classList.remove('hidden');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${siteUrl}/private-login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password, slug: pageSlug }),
+                credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const content = await response.text();
+                    showProtectedContent(content);
+                } else {
+                errorMessage.textContent = 'Invalid password. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An error occurred. Please try again later.';
+            }
+        });
+    }
+  });
+</script>
