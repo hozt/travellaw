@@ -1,95 +1,40 @@
 ---
-let serverError = '';
-let isSubmitted = false;
 const content = Astro.props.content;
-// remove the <button fro the content and set it as a constant
-const button = content.match(/<button[^>]*>.*<\/button>/)[0];
-// get the label of the button
-const buttonLabel = button.match(/<button[^>]*>(.*)<\/button>/)[1];
-// remove the button from the content
-const contentWithoutButton = content.replace(button, '');
-
-if (Astro.request.method === 'POST') {
-  try {
-    const formData = await Astro.request.formData();
-    const formDataJson = {};
-
-    formData.forEach((value, key) => {
-      formDataJson[key] = value;
-    });
-
-    const turnstileResponse = formData.get('cf-turnstile-response');
-
-    if (!turnstileResponse) {
-      throw new Error('Turnstile verification failed. Please try again.');
-    }
-
-    // get all the fields submitted
-    const allFields = Object.keys(formDataJson);
-    const response = await fetch('/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...formDataJson,
-        'cf-turnstile-response': turnstileResponse,
-        allFields,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error('Failed to send email');
-    }
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error);
-    }
-
-    isSubmitted = true;
-  } catch (error) {
-    console.error('Error:', error);
-    serverError = error.message;
-  }
-}
-
-const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
-
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <div class="contact-form-wrapper">
-  {isSubmitted ? (
-    <div class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
-      <strong class="font-bold">Success!</strong>
-      <span class="block sm:inline"> Your message has been sent.</span>
-    </div>
-  ) : (
-    <form method="POST" action="/contact" class="contact-form">
-      <div set:html={contentWithoutButton} />
-
-      <div id="cf-turnstile" class="mb-4 cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>
-
-      <button type="submit" id="submitButton" class="focus:outline-none focus:ring-2">
-        {buttonLabel}
-      </button>
-    </form>
-  )}
-
-  {serverError && (
-    <div class="relative px-4 py-3 mt-4 text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
-      <strong class="font-bold">Error:</strong>
-      <span class="block sm:inline"> {serverError}</span>
-    </div>
-  )}
+  <div class="contact-form" set:html={content} />
 </div>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
-<script>
+<script define:vars={{ turnstileSiteKey }}>
   let isSubmitting = false;
+
+  function renderTurnstile() {
+    turnstile.render('#cf-turnstile', {
+      sitekey: turnstileSiteKey,
+      theme: 'light',
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('.headless-form-block');
+    const submitButton = document.getElementById('submitButton');
+
+    if (form && submitButton) {
+      const turnstileDiv = document.createElement('div');
+      turnstileDiv.id = 'cf-turnstile';
+      form.insertBefore(turnstileDiv, submitButton);
+
+      if (typeof turnstile !== 'undefined') {
+        renderTurnstile();
+      } else {
+        window.onloadTurnstileCallback = renderTurnstile;
+      }
+    }
+  });
 
   document.querySelector('form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -114,8 +59,9 @@ const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
     const formData = new FormData(event.target);
     formData.append('cf-turnstile-response', turnstileResponse);
 
+    console.log('Submitting form:', formData);
     try {
-      const response = await fetch(event.target.action, {
+      const response = await fetch('/contact', {
         method: 'POST',
         body: formData,
       });
