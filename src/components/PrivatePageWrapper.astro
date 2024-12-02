@@ -48,9 +48,8 @@ const page = templateData?.templateBy;
             <p id="errorMessage" class="mt-2 text-sm text-center text-red-600"></p>
             </div>
         </div>
-
-        </div>
-
+      </div>
+    </div>
 
     <div id="protected-content">
       <BannerTitle
@@ -99,7 +98,6 @@ const page = templateData?.templateBy;
   }
 
   function showProtectedContent(content) {
-    console.log('showProtectedContent');
     console.log('content:', content);
     document.getElementById('login-wrapper').classList.add('hidden');
     const protectedContentInner = document.getElementById('protected-content-inner');
