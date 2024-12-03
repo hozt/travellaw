@@ -49,6 +49,7 @@ const page = templateData?.templateBy;
             </div>
         </div>
       </div>
+      { page?.contentFooter && <div class="content-footer" set:html={ page.contentFooter } /> }
     </div>
 
     <div id="protected-content">
@@ -102,7 +103,7 @@ const page = templateData?.templateBy;
     document.getElementById('login-wrapper').classList.add('hidden');
     const protectedContentInner = document.getElementById('protected-content-inner');
     protectedContentInner.innerHTML = content;
-    protectedContentInner.classList.remove('hidden');
+    document.getElementById('protected-content').classList.remove('hidden');
   }
 
   document.addEventListener('DOMContentLoaded', () => {

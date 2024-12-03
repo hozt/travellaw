@@ -584,6 +584,7 @@ export const GET_TEMPLATE = gql`
       title
       databaseId
       content
+      contentFooter
       subtitle
       metaTitle
       metaDescription
