@@ -44,7 +44,7 @@ footer ul.sub-menu {
 .banner {
   @apply overflow-hidden relative;
   .banner-image img {
-    @apply object-cover w-full h-full animate-zoom-out;
+    @apply object-cover w-full h-full;
   }
   .banner-text {
     @apply flex flex-col items-center justify-center inset-0;

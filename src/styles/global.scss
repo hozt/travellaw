@@ -189,7 +189,7 @@ a.wp-block-file__button.wp-element-button {
     @apply py-0 flex-1;
 
     &.is-vertically-aligned-bottom {
-        @apply flex flex-col justify-end;
+        @apply mt-auto mb-0 flex flex-col justify-end;
     }
     &.is-vertically-aligned-top {
         @apply flex flex-col justify-start;

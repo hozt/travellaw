@@ -299,6 +299,12 @@ export const POST_EXCERPT_FRAGMENT = gql`
     slug
     databaseId
     date
+    tags {
+      nodes {
+        name
+        slug
+      }
+    }
     featuredImage {
       node {
         altText
