@@ -29,13 +29,15 @@ async function PostTemplate(props) {
   return `
     <div class="${classes}">
       ${imageLocal ? `
-        <div class="featured-image">
-          <a href="/${postAlias}/${slug}/">
-            <img
-              src="${imageLocal.default.src}"
-              alt="${altText}"
-            />
-          </a>
+        <div class="featured-image-wrapper">
+          <div class="featured-image">
+            <a href="/${postAlias}/${slug}/">
+              <img
+                src="${imageLocal.default.src}"
+                alt="${altText}"
+              />
+            </a>
+          </div>
         </div>
       ` : ''}
 

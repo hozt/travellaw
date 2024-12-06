@@ -50,7 +50,7 @@ const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
 
 ---
 
-<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="page" templateId={template?.databaseId}>
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="articles" templateId={template?.databaseId}>
   <BannerTitle
     title={title}
     subtitle={template?.subtitle}
