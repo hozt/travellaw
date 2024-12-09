@@ -5,11 +5,14 @@ import { GET_POST, GET_ALL_POSTS } from '../../lib/queries';
 import Layout from '../../layouts/Layout.astro';
 import BannerTitle from '../../components/BannerTitle.astro';
 import TagLinks from '../../components/TagLinks.astro';
+import VideoPlayer from "../../components/VideoPlayer.astro";
 import RelatedPosts from '../../components/RelatedPosts.astro';
 import { replaceImageUrls } from '../../lib/utils';
 import { Image } from 'astro:assets';
 import { getImages } from '../../lib/utils';
 import { getAllResults } from '../../lib/fetchAllResults';
+
+const mainBodyTitle = import.meta.env.MAIN_BODY_TITLE;
 
 export async function getStaticPaths() {
   const postAlias = import.meta.env.POST_ALIAS;
@@ -77,7 +80,9 @@ const titleTag = page?.metaTitle || page?.title;
         loading="eager"
       />
     )}
+    { mainBodyTitle && <h1 class="title-main">{page?.title}</h1> }
     <div set:html={updatedContent} />
+    { page?.videoUrl && <VideoPlayer url={page?.videoUrl} title={page?.title} /> }
     <TagLinks tags={page?.tags} />
     <RelatedPosts relatedPosts={page?.relatedPosts} />
   </div>

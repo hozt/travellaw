@@ -4,7 +4,7 @@ import Parser from 'rss-parser';
 const parser = new Parser();
 
 // Function to fetch and render the latest podcast episode
-export async function renderLatestPodcastEpisode(feedUrl, podcastImage, latest, readMore) {
+export async function renderLatestPodcastEpisode(feedUrl, podcastImage, readMore, title) {
   try {
     const feed = await parser.parseURL(feedUrl);
 
@@ -26,6 +26,7 @@ export async function renderLatestPodcastEpisode(feedUrl, podcastImage, latest, 
             </a>
           </div>
           <div class="post-content has-image">
+            ${title ? `<div class="post-tag">${title}</div>` : ''}
             <div class="post-title"><a href="/podcast/#latest">Docs Talk Shop</a></div>
             <div class="post-excerpt">${latestEpisode.title}</div>
             ${ readMore ? `<a href="${latestEpisode.enclosure.url}" class="read-more">${readMore}</a>` : '' }

@@ -2,7 +2,7 @@
 import { getImages } from '../lib/utils';
 
 async function PostTemplate(props) {
-  const { post, path, classes, readMore, dateInclude } = props;
+  const { post, path, classes, readMore, dateInclude, tagList } = props;
   const postAlias = path || process.env.POST_ALIAS;
 
   const {
@@ -11,8 +11,12 @@ async function PostTemplate(props) {
     slug,
     featuredImage,
     linkUrl,
-    date
+    date,
+    tags
   } = post;
+
+  // if tags are populated return the first tag
+  const firstTag = tags.nodes.length > 0 ? tags.nodes[0].name : null;
 
   const imageUrl = featuredImage?.node?.sourceUrl;
   let imageLocal = null;
@@ -25,17 +29,20 @@ async function PostTemplate(props) {
   return `
     <div class="${classes}">
       ${imageLocal ? `
-        <div class="featured-image">
-          <a href="/${postAlias}/${slug}/">
-            <img
-              src="${imageLocal.default.src}"
-              alt="${altText}"
-            />
-          </a>
+        <div class="featured-image-wrapper">
+          <div class="featured-image">
+            <a href="/${postAlias}/${slug}/">
+              <img
+                src="${imageLocal.default.src}"
+                alt="${altText}"
+              />
+            </a>
+          </div>
         </div>
       ` : ''}
 
       <div class="post-content ${imageLocal ? 'has-image' : ''}">
+        ${firstTag ? `<div class="post-tag">${firstTag}</div>` : ''}
         <div class="post-title">
           <a href="/${postAlias}/${slug}/">${escapeHtml(title)}</a>
         </div>

@@ -258,6 +258,7 @@ export const GET_POST = gql`
       metaDescription
       date
       content
+      videoUrl
       tags {
         nodes {
           name
@@ -299,6 +300,12 @@ export const POST_EXCERPT_FRAGMENT = gql`
     slug
     databaseId
     date
+    tags {
+      nodes {
+        name
+        slug
+      }
+    }
     featuredImage {
       node {
         altText
@@ -584,6 +591,7 @@ export const GET_TEMPLATE = gql`
       title
       databaseId
       content
+      contentFooter
       subtitle
       metaTitle
       metaDescription
@@ -1001,6 +1009,28 @@ export const GET_EMBED_PAGE = gql`
       title
       subtitle
       databaseId
+      slug
+    }
+  }
+`;
+
+export const GET_ALL_PRIVATE_PAGES = gql`
+  query {
+    privates {
+      nodes {
+        databaseId
+        slug
+      }
+    }
+  }
+`;
+
+export const GET_PRIVATE_PAGE = gql`
+  query($slug: String!) {
+    privateBy(slug: $slug) {
+      databaseId
+      content
+      title
       slug
     }
   }

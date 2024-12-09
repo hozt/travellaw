@@ -218,21 +218,24 @@ export async function replaceShortCodes(content) {
         try {
           const decodedAttributes = decodeHTMLEntities(attributes);
 
-          const listenMatch = decodedAttributes.match(/listen="([^"]+)"/);
-          const listen = listenMatch ? listenMatch[1].toLowerCase() === 'true' : false;
-
           const feedMatch = decodedAttributes.match(/feed="([^"]+)"/);
           const feedUrl = feedMatch ? feedMatch[1] : '';
 
           const imageMatch = decodedAttributes.match(/image="([^"]+)"/);
           const image = imageMatch ? imageMatch[1] : '';
 
+          const readMoreMatch = decodedAttributes.match(/read-more="([^"]+)"/);
+          const readMore = readMoreMatch ? decodeHTMLEntities(readMoreMatch[1]) : '';
+
+          const titleMatch = decodedAttributes.match(/title="([^"]+)"/);
+          const title = titleMatch ? titleMatch[1] : '';
+
           if (!feedUrl) {
             console.error('Podcast shortcode is missing required "feed" attribute');
             return '<!-- Podcast shortcode is missing required "feed" attribute -->';
           }
 
-          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, listen);
+          const podcastHtml = await renderLatestPodcastEpisode(feedUrl, image, readMore, title);
           return podcastHtml;
         } catch (error) {
           console.error('Error processing podcast shortcode:', error);
@@ -378,6 +381,9 @@ export async function replaceShortCodes(content) {
         const tagMatch = decodedAttributes.match(/tag="([^"]+)"/);
         const tag = tagMatch ? tagMatch[1] : '';
 
+        const tagListMatch = decodedAttributes.match(/tag-list="([^"]+)"/);
+        const tagList = tagListMatch ? tagListMatch[1].toLowerCase() === 'true' : false
+
         const countMatch = decodedAttributes.match(/count="([^"]+)"/);
         const count = countMatch ? countMatch[1] : 1;
 
@@ -400,7 +406,7 @@ export async function replaceShortCodes(content) {
         }
         if (posts && posts.length > 0) {
           const postPreviews = await Promise.all(posts.map(post =>
-            PostTemplate({ post, classes: 'post-template', path: postAlias, readMore, dateInclude })
+            PostTemplate({ post, classes: 'post-template', path: postAlias, readMore, dateInclude, tagList })
           ));
           const classList = [];
           if (classes) {

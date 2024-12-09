@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
-import ContactForm from '../components/ContactForm.astro';
 import client from '../lib/apolloClient';
 import { replaceImageUrls, replaceIconShortcode, replaceShortCodes } from '../lib/utils';
 import { GET_PAGE, GET_TAG_LINE } from '../lib/queries';
@@ -58,20 +57,6 @@ const bannerProps = {
   height: bannerImage?.mediaDetails?.height || 0,
 };
 
-const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
-let formRemovedContent = '';
-let extractedForm = '';
-
-if (hasHeadlessForm) {
-  const formMatch = updatedContent.match(/<headless-form[\s\S]*?<\/headless-form>/);
-  if (formMatch) {
-    extractedForm = formMatch[0];
-    formRemovedContent = updatedContent.replace(/<headless-form[\s\S]*?<\/headless-form>/, '');
-  } else {
-    formRemovedContent = updatedContent;
-  }
-}
-
 ---
 
 <Layout
@@ -85,9 +70,8 @@ if (hasHeadlessForm) {
   <BannerTitle {...bannerProps} />
   <div class="main-body">
     {ComponentSite
-      ? <ComponentSite content={formRemovedContent || updatedContent } />
-      : <div class="content" set:html={formRemovedContent || updatedContent } />
+      ? <ComponentSite content={ updatedContent } />
+      : <div class="content" set:html={ updatedContent } />
     }
-    {hasHeadlessForm && <ContactForm content={extractedForm} />}
   </div>
 </Layout>

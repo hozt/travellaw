@@ -22,27 +22,30 @@ const altText = featuredImage?.node?.altText || title;
 // remove https:// and http:// from the linkUrl also remove the trailing / if is present
 const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
 ---
+<div class="post-preview-wrapper">
+  <div class={classes}>
+    {imageLocal && (
+      <div class="featured-image-wrapper">
+        <div class="featured-image">
+          <a href={`/${postAlias}/${slug}/`}>
+            <Image
+              src={imageLocal.default}
+              alt={altText}
+              width={400}
+              inferSize
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </div>
+    )}
 
-<div class={classes}>
-  {imageLocal && (
-    <div class="featured-image">
-      <a href={`/${postAlias}/${slug}/`}>
-        <Image
-          src={imageLocal.default}
-          alt={altText}
-          width={400}
-          inferSize
-          loading="lazy"
-        />
-      </a>
+    <div class={`post-content ${imageLocal ? 'has-image' : ''}`}>
+      <div class="post-title">
+        <CustomLink url={`/${postAlias}/${slug}/`} label={title} />
+      </div>
+      { linkUrl && (<div class="post-link">{linkUrl}</div>) }
+      <div class="post-excerpt" set:html={excerpt} />
     </div>
-  )}
-
-  <div class={`post-content ${imageLocal ? 'has-image' : ''}`}>
-    <div class="post-title">
-      <CustomLink url={`/${postAlias}/${slug}/`} label={title} />
-    </div>
-    { linkUrl && (<div class="post-link">{linkUrl}</div>) }
-    <div class="post-excerpt" set:html={excerpt} />
   </div>
 </div>

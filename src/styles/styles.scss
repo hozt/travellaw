@@ -40,3 +40,13 @@ footer ul.sub-menu {
 .float_right {
   @apply float-right ml-6;
 }
+
+.banner {
+  @apply overflow-hidden relative;
+  .banner-image img {
+    @apply object-cover w-full h-full;
+  }
+  .banner-text {
+    @apply flex flex-col items-center justify-center inset-0;
+  }
+}
