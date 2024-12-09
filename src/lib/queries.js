@@ -258,6 +258,7 @@ export const GET_POST = gql`
       metaDescription
       date
       content
+      videoUrl
       tags {
         nodes {
           name
