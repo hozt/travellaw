@@ -41,7 +41,7 @@ if (!articles || articles.length === 0) {
 
 ---
 
-<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} classes="posts">
+<Layout title={`${title} - Page ${currentPage}`} description={template?.metaDescription} templateId={template?.databaseId} classes="posts">
   <BannerTitle
     title={title}
     subtitle={template?.subtitle}
