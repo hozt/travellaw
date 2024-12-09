@@ -85,10 +85,10 @@
 }
 
 .banner-image {
-    @apply text-white drop-shadow-md mb-2 md:h-auto bg-dark h-72;
+    @apply text-white drop-shadow-md mb-2 h-auto bg-dark min-h-48;
 
     img {
-        @apply opacity-70 max-h-[350px];
+        @apply opacity-70 max-h-[500px];
     }
 
     .banner-text {
