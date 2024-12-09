@@ -80,7 +80,9 @@ if (!posts) {
     height={page?.bannerImage?.mediaDetails.height}
     crumbs={[{ label: "Portfolio", path: "/portfolio/"}, { label: "Tag" }, { label: title }]}
   />
-  { tagDescription && <div class="tag-description" set:html={tagDescription} /> }
+  {tagDescription && (
+    <div class="tag-description" set:html={tagDescription.replace(/\n/g, '<br />')} />
+  )}
   <div class="main-body">
     <div class="category">
       {

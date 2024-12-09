@@ -4,10 +4,11 @@ import client from '../lib/apolloClient';
 import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
-import ContactForm from '../components/ContactForm.astro';
 import { replaceImageUrls } from '../lib/utils';
 import { getImages, replaceIconShortcode } from '../lib/utils';
 import { Image } from 'astro:assets';
+
+const mainBodyTitle = import.meta.env.MAIN_BODY_TITLE;
 
 export async function getStaticPaths() {
   let data;
@@ -89,9 +90,6 @@ if (currentPath.includes('/')) {
 
 fullCrumbs.push({ label: title, path: '' });
 
-// <div class="headless-form-block
-// it should have both form and the class headless-form-block
-const hasHeadlessForm = updatedContent.includes('headless-form-block') && updatedContent.includes('form');
 const formats = ['avif', 'webp', 'jpg'];
 
 ---
@@ -117,10 +115,7 @@ const formats = ['avif', 'webp', 'jpg'];
         loading="eager"
       />
     )}
-    {hasHeadlessForm ? (
-      <ContactForm content={updatedContent} />
-    ) : (
-      <div set:html={updatedContent} />
-    )}
+    { mainBodyTitle && <h1 class="title-main">{page?.title}</h1> }
+    <div set:html={updatedContent} />
   </div>
 </Layout>
