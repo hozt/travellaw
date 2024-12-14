@@ -3,19 +3,23 @@ const { relatedPosts } = Astro.props;
 const postAlias = import.meta.env.POST_ALIAS;
 
 const hasRelatedPosts = relatedPosts && Array.isArray(relatedPosts) && relatedPosts.length > 1;
+// remove any that do not have a title or slug
+const filteredRelatedPosts = relatedPosts.filter(post => post?.title && post?.slug);
+if (!hasRelatedPosts || filteredRelatedPosts.length === 0) {
+  return '';
+}
+
 ---
 
-{hasRelatedPosts && (
-  <div class="related-posts">
-    <div class="related-heading">Related Posts</div>
-    <ul class="related-post">
-      {relatedPosts.map((related) => (
-        <li>
-          <a href={`/${postAlias}/${related.slug}`} class="related-post">
-            {related.title}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+<div class="related-posts">
+  <div class="related-heading">Related Posts</div>
+  <ul class="related-post">
+    {filteredRelatedPosts.map((related) => (
+      <li>
+        <a href={`/${postAlias}/${related.slug}/`} class="related-post">
+          {related.title}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>

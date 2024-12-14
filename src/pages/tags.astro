@@ -11,7 +11,9 @@ const { data: templateData } = await client.query({
   variables: { slug: 'tags' }
 });
 
-const tags = await getAllResults(GET_TAGS);
+let tags = await getAllResults(GET_TAGS);
+tags = tags.filter((tag) => !tag.hideFromDisplay);
+
 
 const page = templateData.templateBy;
 

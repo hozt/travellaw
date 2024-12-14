@@ -4,9 +4,9 @@ import client from '../lib/apolloClient';
 import { GET_PAGES, GET_PAGE } from '../lib/queries';
 import Layout from '../layouts/Layout.astro';
 import BannerTitle from '../components/BannerTitle.astro';
+import FeaturedImage from '../components/FeaturedImage.astro';
 import { replaceImageUrls } from '../lib/utils';
-import { getImages, replaceIconShortcode } from '../lib/utils';
-import { Image } from 'astro:assets';
+import { replaceIconShortcode } from '../lib/utils';
 
 const mainBodyTitle = import.meta.env.MAIN_BODY_TITLE;
 
@@ -62,13 +62,7 @@ const {
 } = page;
 
 const titleTag = metaTitle || title;
-
 const featuredImage = page?.featuredImage?.node;
-
-let localImage = null;
-if (featuredImage?.sourceUrl) {
-  localImage = await getImages('featured', featuredImage.sourceUrl);
-}
 
 let updatedContent = content ? await replaceImageUrls(content) : '';
 updatedContent = replaceIconShortcode(updatedContent);
@@ -90,8 +84,6 @@ if (currentPath.includes('/')) {
 
 fullCrumbs.push({ label: title, path: '' });
 
-const formats = ['avif', 'webp', 'jpg'];
-
 ---
 
 <Layout pageId={databaseId} title={titleTag} description={metaDescription} classes="page" customJs={customJs}>
@@ -104,17 +96,7 @@ const formats = ['avif', 'webp', 'jpg'];
     crumbs={fullCrumbs}
   />
   <div class="main-body content">
-    {localImage && (
-      <Image
-        src={localImage.default}
-        alt={featuredImage?.altText || title}
-        widths={[300, 600, 900, 1200]}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        class="featured-image"
-        formats={formats}
-        loading="eager"
-      />
-    )}
+    <FeaturedImage imageSourceUrl={featuredImage?.sourceUrl} imageAltText={featuredImage?.altText} />
     { mainBodyTitle && <h1 class="title-main">{page?.title}</h1> }
     <div set:html={updatedContent} />
   </div>

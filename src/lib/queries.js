@@ -486,6 +486,7 @@ export const GET_TAGS = gql`
         databaseId
         description
         count
+        hideFromDisplay
         posts {
           nodes {
             id

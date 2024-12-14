@@ -18,6 +18,11 @@
   }
 }
 
+.mobile-toggle {
+  button {
+    @apply text-3xl;
+  }
+}
 
 footer ul.sub-menu {
   @apply pl-0 m-0 lg:block;
