@@ -162,6 +162,14 @@ export const GET_SITE_SETTINGS = gql`
         }
         id
       }
+      defaultFeaturedImage {
+        altText
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
       siteTitle
       tagLine
     }

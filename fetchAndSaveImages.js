@@ -81,6 +81,9 @@ const query = gql`
       defaultHeaderImage {
         sourceUrl
       }
+      defaultFeaturedImage {
+        sourceUrl
+      }
     }
     galleries {
       nodes {
@@ -280,6 +283,9 @@ async function fetchImageUrls() {
     }
     if (data.customSiteSettings?.defaultHeaderImage?.sourceUrl) {
       imageUrls.banners.push(data.customSiteSettings.defaultHeaderImage.sourceUrl);
+    }
+    if (data.customSiteSettings?.defaultFeaturedImage?.sourceUrl) {
+      imageUrls.featured.push(data.customSiteSettings.defaultFeaturedImage.sourceUrl);
     }
     if (data.customSiteSettings?.faviconLogo?.sourceUrl) {
       imageUrls.logos.push(data.customSiteSettings.faviconLogo.sourceUrl);
