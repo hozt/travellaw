@@ -3,7 +3,6 @@ import PostTemplate from '../template/postTemplate';
 import { renderPage } from '../template/pageTemplate';
 import { renderLatestPodcastEpisode } from '../template/podcastTemplate.js';
 import { getPostsByIds, getStickyPosts, getPostsByTag, fetchTestimonials, fetchGalleryImages, fetchAllPortfolios, fetchPageByPath } from '../lib/fetchPosts';
-import { Image } from 'astro:assets';
 const siteUrl = import.meta.env.SITE_URL;
 const apiUrl = import.meta.env.API_URL;
 const postAlias = import.meta.env.POST_ALIAS;

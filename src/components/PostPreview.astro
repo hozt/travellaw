@@ -1,8 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import { getImages } from '../lib/utils';
+import { getDefaultFeaturedImage } from '../lib/fetchSiteSettings.js';
 import CustomLink from './CustomLink.astro';
 
+const defaultFeaturedImage = await getDefaultFeaturedImage();
 const { post, path, classes } = Astro.props;
 const postAlias = path || import.meta.env.POST_ALIAS;
 
@@ -17,7 +19,12 @@ const imageUrl = featuredImage?.node?.sourceUrl;
 let imageLocal = null;
 if (imageUrl) {
     imageLocal = await getImages('featured', imageUrl);
+} else if (defaultFeaturedImage) {
+    imageLocal = await getImages('featured', defaultFeaturedImage);
+} else {
+    imageLocal = null;
 }
+
 const altText = featuredImage?.node?.altText || title;
 // remove https:// and http:// from the linkUrl also remove the trailing / if is present
 const linkUrl = post.linkUrl ? post.linkUrl.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '') : null;
