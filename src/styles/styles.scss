@@ -55,3 +55,15 @@ footer ul.sub-menu {
     @apply flex flex-col items-center justify-center inset-0;
   }
 }
+
+.breadcrumbs {
+  ol {
+    @apply flex ml-0 list-none;
+  }
+  a {
+    @apply text-gray-500 no-underline hover:text-gray-700;
+  }
+  .breadcrumb-title {
+    @apply text-gray-500;
+  }
+}

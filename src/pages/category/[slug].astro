@@ -58,7 +58,7 @@ const title = page?.title || `${categoryName}`;
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
-    crumbs={[{ label: "Categories", path: "/category" }, { label: title }]}
+    crumbs={[{ label: "Categories", path: "/category/" }, { label: title }]}
   />
   { categoryDescription && <div class="container category-description">{categoryDescription}</div>}
   { page?.content && <div class="container content" set:html={page?.content} />}

@@ -58,7 +58,7 @@ if (!posts) {
     image={page?.bannerImage?.sourceUrl}
     width={page?.bannerImage?.mediaDetails.width}
     height={page?.bannerImage?.mediaDetails.height}
-    crumbs={[{ label: "Tag", path: "/tags" }, { label: title }]}
+    crumbs={[{ label: "Tag", path: "/tags/" }, { label: title }]}
   />
   {tagDescription && (
     <div class="tag-description" set:html={tagDescription.replace(/\n/g, '<br />')} />

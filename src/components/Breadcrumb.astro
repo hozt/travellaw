@@ -11,19 +11,19 @@ const baseUrl = new URL(Astro.request.url).origin;
 ---
 
 <nav class="breadcrumbs" aria-label="Breadcrumb">
-  <ol class="flex ml-0 list-reset" itemscope itemtype="https://schema.org/BreadcrumbList">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
     {fullCrumbs.map((crumb, index) => (
       <li class="flex items-center" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         {index > 0 && (
           <span class="px-3 separator" set:html={separator}></span>
         )}
         {crumb.path ? (
-          <a href={crumb.path} class="text-gray-500 no-underline hover:text-gray-700" itemprop="item">
+          <a href={crumb.path} itemprop="item">
             <span itemprop="name">{crumb.label}</span>
           </a>
         ) : (
           <span
-            class="text-gray-500 hover:text-gray-700 breadcrumb-title"
+            class="breadcrumb-title"
             itemprop="name"
             aria-current="page"
           >

@@ -39,7 +39,7 @@ const title = page?.title || `Categories`;
     <ul class="category">
       {categories.map((category) => (
         <li>
-          <a href={`/category/${category.slug}`} class="no-underline">{category.name} {category.count > 0 && ( <span class="count">({category.count})</span> )}</a>
+          <a href={`/category/${category.slug}/`} class="no-underline">{category.name} {category.count > 0 && ( <span class="count">({category.count})</span> )}</a>
         </li>
       ))}
     </ul>
