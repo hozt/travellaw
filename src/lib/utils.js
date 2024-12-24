@@ -56,14 +56,24 @@ export async function replaceImageUrls(content, localImageDir = 'images/content'
   root.querySelectorAll('a').forEach(a => {
     const href = a.getAttribute('href');
     if (href) {
+      let newHref = href;
       if (href.endsWith('.pdf')) {
-        const newHref = replacePdfUrl(href, localPdfDir);
-        a.setAttribute('href', newHref);
+        newHref = replacePdfUrl(href, localPdfDir);
       } else if (href.startsWith(siteUrl)) {
-        a.setAttribute('href', href.replace(siteUrl, ''));
+        newHref = href.replace(siteUrl, '');
       } else if (href.startsWith(apiUrl)) {
-        a.setAttribute('href', href.replace(apiUrl, ''));
+        newHref = href.replace(apiUrl, '');
       }
+
+      // Ensure trailing slash for non-PDF links
+      if (!newHref.endsWith('.pdf') && !newHref.endsWith('/')) {
+        newHref += '/';
+      }
+
+      // Remove double slashes (except for http:// or https://)
+      newHref = newHref.replace(/([^:]\/)\/+/g, "$1");
+
+      a.setAttribute('href', newHref);
     }
   });
 
