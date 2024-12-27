@@ -38,7 +38,7 @@ const title = page?.title || `Tags`;
     <ul class="tag">
       {tags.map((tag) => (
         <li>
-          <a href={`/tags/${tag.slug}`} class="no-underline">{tag.name} {tag.count > 0 && ( <span class="count">({tag.count})</span> )}</a>
+          <a href={`/tags/${tag.slug}/`} class="no-underline">{tag.name} {tag.count > 0 && ( <span class="count">({tag.count})</span> )}</a>
         </li>
       ))}
     </ul>
