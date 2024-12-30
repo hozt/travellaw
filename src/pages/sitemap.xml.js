@@ -88,9 +88,10 @@ const generateSitemap = async () => {
   const totalArticles = await getTotalCount(GET_ARTICLES_COUNT);
   const ITEMS_PER_PAGE = 10;
   const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
+  console.log('Total articles:', totalArticles, 'Total pages:', totalPages);
   if (totalPages > 1) {
     for (let i = 2; i <= totalPages; i++) {
-      landingPages.push(`
+      landingPagesEnabled.push(`
         <url>
           <loc>${siteUrl}/${postAlias}/${i}/</loc>
           <lastmod>${new Date().toISOString()}</lastmod>
