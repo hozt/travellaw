@@ -1,16 +1,26 @@
 ---
 import Logo from '../components/Logo.astro';
 import Navigation from '../components/Navigation.astro';
-import MenuTottgle from '../components/MenuToggle.astro';
+import MenuToggle from '../components/MenuToggle.astro';
+import Search from "astro-pagefind/components/Search";
+
 
 const hideToggle = false;
 const classList = 'main-menu-wrapper ' + (hideToggle ? 'hide-toggle' : '');
 
 ---
-<div class="logo-wrapper">
-    {!hideToggle && <MenuTottgle />}
+<div class="relative logo-wrapper">
+    {!hideToggle && <MenuToggle />}
     <Logo />
+    <div class="z-50 lg:hidden lg:max-w-44 search-container">
+        <Search id="header-search" uiOptions={{ showImages: false }} />
+    </div>
 </div>
-<nav id="main-nav" class={classList}>
-    <Navigation class="p-0 main-menu" />
-</nav>
+<div class="justify-center custom-container-xl lg:bg-secondary lg:flex lg:items-center">
+    <nav id="main-nav" class={classList}>
+        <Navigation class="p-0 main-menu" />
+    </nav>
+    <div class="z-50 hidden lg:block max-w-44 search-container">
+        <Search id="header-search" uiOptions={{ showImages: false }} />
+    </div>
+</div>

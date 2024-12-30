@@ -12,7 +12,7 @@
     }
 
     .logo-mobile {
-        @apply my-4 flex md:hidden justify-center items-center w-full;
+        @apply my-4 flex md:hidden justify-center items-center;
         img {
             @apply w-[300px] h-auto mr-10;
         }
@@ -288,5 +288,44 @@ blockquote {
 .page-45 {
     h4 {
         @apply mt-10 first:mt-0;
+    }
+}
+
+#header-search {
+    @apply ml-4 max-w-full;
+    .pagefind-ui__form {
+        @apply flex-shrink mr-2;
+    }
+    .pagefind-ui__form:before {
+        @apply h-0 p-0;
+        mask: none;
+    }
+
+    input.pagefind-ui__search-input {
+        @apply px-2 border-dark rounded-xl py-1 border h-auto text-sm font-normal focus:outline-none focus:ring-1 focus:ring-dark focus:border-dark;
+    }
+
+    .pagefind-ui__drawer {
+        @apply absolute lg:left-0 mt-1 bg-neutral-100 shadow-lg border-2 border-gray-200 rounded lg:w-[500%] w-[275%] top-12 lg:top-8;
+        max-width: 800px;
+        transform: translateX(-70%);
+    }
+    .pagefind-ui__result {
+        @apply px-4 pb-2 pt-0 border-b border-gray-200;
+    }
+    .pagefind-ui__message {
+        @apply p-4;
+    }
+    .pagefind-ui__result:last-child {
+        @apply border-b-0;
+    }
+    .pagefind-ui__result-title {
+        @apply font-semibold;
+    }
+    .pagefind-ui__result-excerpt {
+        @apply text-sm text-gray-600;
+    }
+    .pagefind-ui__button {
+        @apply rounded-none mx-5 m-5 mt-0 w-56;
     }
 }
